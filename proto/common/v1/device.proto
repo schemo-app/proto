@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package common.v1;
+
+option go_package = "github.com/schemo-app/proto/go/common/v1;common";
+
+// App is a program as it describes itself.
+message App {
+  // The program's name, e.g. "Schemo".
+  string name = 1;
+
+  string version = 2;
+}
+
+// Device is a machine and the program running on it, as the program reported them when it signed in.
+message Device {
+  // What the machine is called, as its owner named it.
+  string name = 1;
+
+  // What the machine runs, e.g. "macOS".
+  string platform = 2;
+
+  App app = 3;
+}

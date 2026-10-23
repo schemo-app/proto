@@ -1,0 +1,110 @@
+syntax = "proto3";
+
+package org.v1;
+
+import "common/v1/access.proto";
+import "common/v1/people.proto";
+import "org/v1/org.proto";
+
+option go_package = "github.com/schemo-app/proto/go/org/v1;org";
+
+// OrgMembershipService manages the people in an org and their access level: listing them, role
+// changes, removal, voluntary leaving, and ownership transfer. Memberships of a workspace are
+// managed by `workspace.v1.WorkspaceMembershipService`.
+service OrgMembershipService {
+  // ListMembers returns the people in an org, newest first.
+  rpc ListMembers(ListMembersRequest) returns (ListMembersResponse) {
+    option (common.v1.access) = ACCESS_ORG_READ;
+  }
+
+  // ChangeRole assigns a new role to an existing org member. Callers cannot grant a role with
+  // permissions exceeding their own.
+  rpc ChangeRole(ChangeRoleRequest) returns (ChangeRoleResponse) {
+    option (common.v1.access) = ACCESS_ORG_MANAGE_MEMBERS;
+  }
+
+  // RemoveMember removes a person from the org and revokes their access to all of its workspaces.
+  // The owner cannot be removed.
+  rpc RemoveMember(RemoveMemberRequest) returns (RemoveMemberResponse) {
+    option (common.v1.access) = ACCESS_ORG_MANAGE_MEMBERS;
+  }
+
+  // Leave removes the caller from the org and its workspaces. Refused for the owner, who must
+  // transfer ownership first.
+  rpc Leave(LeaveRequest) returns (LeaveResponse) {
+    option (common.v1.access) = ACCESS_AUTHENTICATED;
+  }
+
+  // TransferOwnership hands the org to another active member. Only the current owner holds the
+  // permission.
+  rpc TransferOwnership(TransferOwnershipRequest) returns (TransferOwnershipResponse) {
+    option (common.v1.access) = ACCESS_ORG_TRANSFER_OWNERSHIP;
+  }
+}
+
+message ListMembersRequest {
+  string org_id = 1;
+
+  // Only the members holding this role. Empty returns everyone.
+  string role_id = 2;
+
+  // Maximum items to return. 0 uses the server's default.
+  int32 page_size = 3;
+
+  // Opaque cursor from the previous response's `next_page_token`. Empty starts at the first page.
+  string page_token = 4;
+}
+
+message ListMembersResponse {
+  repeated common.v1.Member members = 1;
+
+  // Opaque cursor for the next page. Empty when there are no more results.
+  string next_page_token = 2;
+}
+
+message ChangeRoleRequest {
+  string org_id = 1;
+  string target_user_id = 2;
+  string new_role_id = 3;
+}
+
+message ChangeRoleResponse {
+  common.v1.Member member = 1;
+
+  // The role the member held before the change.
+  common.v1.RoleRef previous_role = 2;
+}
+
+message RemoveMemberRequest {
+  string org_id = 1;
+  string target_user_id = 2;
+}
+
+message RemoveMemberResponse {
+  // How many workspace memberships were revoked along with the org membership.
+  int32 workspaces_revoked = 1;
+}
+
+message LeaveRequest {
+  string org_id = 1;
+}
+
+message LeaveResponse {
+  // How many workspace memberships were revoked along with the org membership.
+  int32 workspaces_revoked = 1;
+}
+
+message TransferOwnershipRequest {
+  string org_id = 1;
+  string new_owner_user_id = 2;
+
+  // The role the previous owner holds afterwards. Empty applies the org's default admin role.
+  string previous_owner_role_id = 3;
+}
+
+message TransferOwnershipResponse {
+  Org org = 1;
+
+  // The previous owner's membership, with the role they now hold.
+  common.v1.Member previous_owner = 2;
+}

@@ -1,0 +1,213 @@
+syntax = "proto3";
+
+package sync.v1;
+
+import "common/v1/access.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/schemo-app/proto/go/sync/v1;sync";
+
+// SyncService keeps a workspace's content the same on every device that works in it. Devices push
+// the mutations they made and pull the ones others made; the server numbers every accepted
+// mutation, per workspace, in one sequence.
+service SyncService {
+  // Push submits a batch of entity mutations to one workspace. Each entity is judged on its own and
+  // answered in its own result, so one refusal does not cost the rest of the batch.
+  rpc Push(PushRequest) returns (PushResponse) {
+    option (common.v1.access) = ACCESS_WORKSPACE_WRITE;
+  }
+
+  // Pull returns the entity changes above a sequence number.
+  rpc Pull(PullRequest) returns (PullResponse) {
+    option (common.v1.access) = ACCESS_WORKSPACE_READ;
+  }
+
+  // Connect opens a long-lived stream that tells the device when a workspace it follows has moved,
+  // so that it pulls at once instead of waiting for its timer.
+  rpc Connect(ConnectRequest) returns (stream ConnectResponse) {
+    option (common.v1.access) = ACCESS_WORKSPACE_READ;
+  }
+}
+
+// EntityType is the kind of row an entity is.
+enum EntityType {
+  ENTITY_TYPE_UNSPECIFIED = 0;
+  ENTITY_TYPE_WORKSPACE = 1;
+  ENTITY_TYPE_COLLECTION = 2;
+  ENTITY_TYPE_REQUEST = 3;
+  ENTITY_TYPE_ENVIRONMENT = 4;
+  ENTITY_TYPE_VARIABLE = 5;
+  ENTITY_TYPE_COOKIE = 6;
+  ENTITY_TYPE_JAR_DOMAIN = 7;
+}
+
+// PushStatus is how the server judged one pushed entity.
+enum PushStatus {
+  PUSH_STATUS_UNSPECIFIED = 0;
+
+  // Stored as sent, at the version in `new_version`.
+  PUSH_STATUS_ACCEPTED = 1;
+
+  // Another device's newer edit stands. `winner` carries the row that does, and the pushed edit is
+  // not applied.
+  PUSH_STATUS_CONFLICT_RESOLVED = 2;
+
+  // Not stored. `reject_reason` says why.
+  PUSH_STATUS_REJECTED = 3;
+
+  // The mutation's `operation_id` was applied before; nothing changed.
+  PUSH_STATUS_DUPLICATE = 4;
+}
+
+// PushRejectReason is why an entity was REJECTED.
+enum PushRejectReason {
+  PUSH_REJECT_REASON_UNSPECIFIED = 0;
+
+  // The row's parent has not arrived. Push the parent first.
+  PUSH_REJECT_REASON_PARENT_NOT_FOUND = 1;
+
+  // The org's plan has no room for it.
+  PUSH_REJECT_REASON_QUOTA_EXCEEDED = 2;
+
+  // `data` is not a JSON object, or a secret path does not name a string in it.
+  PUSH_REJECT_REASON_INVALID_DATA = 3;
+
+  // The caller's role may not make this change.
+  PUSH_REJECT_REASON_FORBIDDEN = 4;
+
+  // Larger than the server's limits (see `platform.v1.Limits`). It will not fit next time either.
+  PUSH_REJECT_REASON_TOO_LARGE = 5;
+}
+
+// SyncEntity is one row of a workspace. The envelope is what the server reads; `data` is the row's
+// content as a JSON object, which the server stores as it came and never interprets, except at the
+// paths named in `secrets`.
+//
+// A path is a JSON pointer (RFC 6901) with one addition: a segment `@<id>` names the element of an
+// array whose "id" is <id>, so a secret inside a list survives the list being reordered.
+message SyncEntity {
+  EntityType kind = 1;
+  string id = 2;
+
+  // Identifies one client edit, so a retried push is answered DUPLICATE instead of applied twice.
+  string operation_id = 3;
+
+  // The version the edit was made on; the server's answer carries the next one.
+  int64 version = 4;
+  bool deleted = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+
+  // The row this one hangs from: a collection for a collection or request, an environment for a
+  // variable (empty for a global), a domain for a cookie. Empty at the top.
+  string parent_id = 8;
+  string name = 9;
+  int64 position = 10;
+
+  // The row's content, a JSON object. Empty for a tombstone.
+  bytes data = 11;
+
+  // Paths in `data` that hold a secret. A reader who may not see secrets gets them withheld.
+  repeated string secrets = 12;
+
+  // Secret paths whose value is not in `data`: the server withheld it from this reader, or the
+  // device keeps it at home. Pushed back, a withheld path keeps the value the server holds.
+  repeated string withheld = 13;
+}
+
+// SyncChange is one entry of a workspace's log.
+message SyncChange {
+  // The entry's place in the workspace's sequence.
+  int64 seq = 1;
+
+  SyncEntity entity = 2;
+}
+
+// PushResult is how one pushed entity went.
+message PushResult {
+  string entity_id = 1;
+  PushStatus status = 2;
+
+  // The entity's version after the push.
+  int64 new_version = 3;
+
+  // The row that stands, for CONFLICT_RESOLVED.
+  SyncEntity winner = 4;
+
+  // Why the entity was refused, for REJECTED.
+  PushRejectReason reject_reason = 5;
+}
+
+// WorkspaceCursor is how far a device has read one workspace.
+message WorkspaceCursor {
+  string workspace_id = 1;
+
+  // The last entity-log sequence number the device has.
+  int64 sync_seq = 2;
+
+  // The last history-log sequence number the device has; see `history/v1`.
+  int64 history_seq = 3;
+}
+
+// Poke says a workspace has moved past the device's cursor.
+message Poke {
+  string workspace_id = 1;
+
+  // The workspace's current sequence numbers.
+  int64 sync_seq = 2;
+  int64 history_seq = 3;
+}
+
+// WorkspacesChanged says the set of workspaces the person can reach has changed: one was added,
+// removed or shared. The device lists its workspaces again.
+message WorkspacesChanged {}
+
+// Heartbeat keeps an idle stream from being closed.
+message Heartbeat {}
+
+message PushRequest {
+  string workspace_id = 1;
+  repeated SyncEntity entities = 2;
+}
+
+message PushResponse {
+  repeated PushResult results = 1;
+}
+
+message PullRequest {
+  string workspace_id = 1;
+
+  // Read the changes above this sequence number.
+  int64 after_seq = 2;
+
+  // Maximum changes to return. A log read is not a page: it continues from `next_seq`.
+  int32 limit = 3;
+}
+
+message PullResponse {
+  repeated SyncChange changes = 1;
+
+  // Pass this as `after_seq` to continue.
+  int64 next_seq = 2;
+
+  // Whether more changes are waiting above `next_seq`.
+  bool has_more = 3;
+
+  // True when the server cannot answer from the device's cursor: the workspace was reset, or the
+  // device is so far behind that the changes it missed are gone. The device starts over.
+  bool resync_required = 4;
+}
+
+message ConnectRequest {
+  // The workspaces to follow, each with the cursor the device has reached. The server tells the
+  // device at once about any that are already ahead.
+  repeated WorkspaceCursor workspaces = 1;
+}
+
+message ConnectResponse {
+  oneof event {
+    Heartbeat heartbeat = 1;
+    Poke poke = 2;
+    WorkspacesChanged workspaces_changed = 3;
+  }
+}

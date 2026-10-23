@@ -1,0 +1,236 @@
+syntax = "proto3";
+
+package panel.v1;
+
+import "common/v1/access.proto";
+import "common/v1/device.proto";
+import "common/v1/feature.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
+import "role/v1/role.proto";
+import "workspace/v1/workspace.proto";
+
+option go_package = "github.com/schemo-app/proto/go/panel/v1;panel";
+
+// PanelService serves the browser panel: signing in with an emailed link, and confirming a desktop
+// app that asked to sign in. It is called from the panel's own browser session, not with a bearer
+// token.
+service PanelService {
+  // RequestLink emails a sign-in link. Delivery limits apply before it is sent.
+  rpc RequestLink(RequestLinkRequest) returns (RequestLinkResponse) {
+    option (common.v1.access) = ACCESS_PUBLIC;
+  }
+
+  // GetPendingDevice reads what the program waiting for confirmation says about itself.
+  rpc GetPendingDevice(GetPendingDeviceRequest) returns (GetPendingDeviceResponse) {
+    option (common.v1.access) = ACCESS_PUBLIC;
+  }
+
+  // AnswerDevice lets the program in as the signed-in person, or refuses it.
+  rpc AnswerDevice(AnswerDeviceRequest) returns (AnswerDeviceResponse) {
+    option (common.v1.access) = ACCESS_AUTHENTICATED;
+  }
+
+  // SignOut ends this browser's session.
+  rpc SignOut(SignOutRequest) returns (SignOutResponse) {
+    option (common.v1.access) = ACCESS_AUTHENTICATED;
+  }
+}
+
+// Theme is the colour scheme the panel is drawn in.
+enum Theme {
+  THEME_UNSPECIFIED = 0;
+  THEME_LIGHT = 1;
+  THEME_DARK = 2;
+
+  // Follow the browser.
+  THEME_SYSTEM = 3;
+}
+
+// NoticeState is one of the states the status screen shows.
+enum NoticeState {
+  NOTICE_STATE_UNSPECIFIED = 0;
+
+  // The sign-in letter was sent.
+  NOTICE_STATE_SENT = 1;
+
+  // The link was already used, or is not a link.
+  NOTICE_STATE_USED = 2;
+
+  // The link has expired.
+  NOTICE_STATE_EXPIRED = 3;
+
+  // The person refused the program.
+  NOTICE_STATE_DENIED = 4;
+
+  // The person let the program in.
+  NOTICE_STATE_DONE = 5;
+
+  // The program's code has expired.
+  NOTICE_STATE_CODE_EXPIRED = 6;
+
+  // The link could not be redeemed because of a failure on the server.
+  NOTICE_STATE_DOWN = 7;
+
+  // The server is not taking registrations.
+  NOTICE_STATE_CLOSED = 8;
+
+  // The address's mail domain is not allowed to sign in.
+  NOTICE_STATE_DOMAIN = 9;
+}
+
+// PendingDevice is a program waiting to be let in: what it says about itself, and how long the code
+// it showed has left.
+message PendingDevice {
+  reserved 3;
+  reserved "minutes_left";
+
+  string user_code = 1;
+  common.v1.Device device = 2;
+  google.protobuf.Duration expires_in = 4;
+}
+
+// Notice is what the status screen is about to say. The server writes it into the session when it
+// is the one that learned something (a link was followed, a code was answered), so a reload
+// repeats the screen instead of losing it.
+message Notice {
+  reserved 3;
+  reserved "minutes";
+
+  NoticeState state = 1;
+
+  // The address the letter went to, for SENT. Kept in the session, never in the address bar.
+  string email = 2;
+
+  // How long a link or a code lives, so the sentence carries the server's own number.
+  google.protobuf.Duration valid_for = 5;
+
+  // The program that asked, for DONE.
+  common.v1.Device device = 4;
+}
+
+// PanelState is what every screen of the panel starts from, signed in or not. It is not asked for:
+// the server writes it into the document it serves, so the first frame is drawn from it.
+message PanelState {
+  reserved 8;
+  reserved "link_minutes";
+  reserved 9;
+  reserved "code_minutes";
+
+  string language_code = 1;
+  Theme theme = 2;
+
+  bool signed_in = 3;
+
+  // Who it is, when it is anybody.
+  SignedInAccount account = 4;
+
+  // Whether the person arrived here from a program asking to sign in.
+  bool from_device = 5;
+
+  // What the server has to say about the last thing that happened, handed over once.
+  Notice notice = 6;
+
+  Server server = 7;
+
+  // The lifetimes the sentences quote: the letter's link, and a program's code.
+  google.protobuf.Duration link_ttl = 14;
+  google.protobuf.Duration device_code_ttl = 15;
+
+  // This browser's own session, when it is signed in: it is not one of the account's devices.
+  BrowserSession browser_session = 10;
+
+  // What a workspace may be for, as this server has it: the choices the screens offer.
+  repeated WorkspaceKindOption workspace_kinds = 11;
+
+  // The words a workspace may be coloured with, the first being the default. The panel draws each
+  // its own way; the server only knows the words.
+  repeated string workspace_colors = 12;
+
+  // What a role may be written for, in the order the screens list them.
+  repeated role.v1.RoleScope role_scopes = 13;
+}
+
+// WorkspaceKindOption is one thing a workspace may be for, and what the server lets it do. The
+// panel offers these and names none of them itself.
+message WorkspaceKindOption {
+  workspace.v1.WorkspaceKind kind = 1;
+
+  // The feature an org's plan needs to have a workspace of this kind. UNSPECIFIED when any plan
+  // does.
+  common.v1.Feature feature = 2;
+
+  // Whether people beside the one who made it may be put in it.
+  bool shared = 3;
+
+  // How far the org may see it, the first being the default. One entry is no choice.
+  repeated workspace.v1.WorkspaceVisibility visibilities = 4;
+}
+
+message SignedInAccount {
+  string email = 1;
+  string initials = 2;
+}
+
+// Server is the deployment as the panel presents it.
+message Server {
+  // The product's name.
+  string product = 1;
+
+  // The public address of the server.
+  string address = 2;
+
+  string version = 3;
+}
+
+// BrowserSession is when and from where this browser signed in, as its session recorded it.
+message BrowserSession {
+  google.protobuf.Timestamp signed_in_at = 1;
+  string ip = 2;
+}
+
+message RequestLinkRequest {
+  string email = 1;
+
+  // The language of the sign-in email.
+  string language_code = 2;
+}
+
+message RequestLinkResponse {
+  reserved 2;
+  reserved "link_minutes";
+
+  // The recipient address, normalized.
+  string email = 1;
+
+  // How long the link inside the letter lives.
+  google.protobuf.Duration link_ttl = 3;
+}
+
+message GetPendingDeviceRequest {
+  // The short code, however it was typed: the server reads it the way the program wrote it.
+  string user_code = 1;
+}
+
+message GetPendingDeviceResponse {
+  PendingDevice device = 1;
+
+  // Set instead of `device` when the code ran out: what the status screen says about it.
+  Notice notice = 2;
+}
+
+message AnswerDeviceRequest {
+  string user_code = 1;
+
+  // True lets the program in, false refuses it.
+  bool allow = 2;
+}
+
+message AnswerDeviceResponse {
+  // What the screen after this one draws.
+  Notice notice = 1;
+}
+
+message SignOutRequest {}
+
+message SignOutResponse {}

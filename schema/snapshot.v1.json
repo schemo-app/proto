@@ -1,0 +1,127 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/schemo-app/proto/main/schema/snapshot.v1.json",
+    "title": "Snapshot",
+    "description": "Current v1 writer model. Readers preserve compatibility with earlier v1 documents by applying zero defaults for omitted fields. Arrays may be null in Go JSON output.",
+    "x-format": "schemo.collection-snapshot",
+    "x-version": 1,
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["format", "version", "generator", "locale", "collection", "environment", "environments", "prose", "changes", "options"],
+    "properties": {
+        "format": { "type": "string" },
+        "version": { "type": "integer" },
+        "generator": { "$ref": "#/definitions/Generator" },
+        "locale": { "type": "string" },
+        "collection": { "$ref": "#/definitions/Collection" },
+        "environment": { "$ref": "#/definitions/Environment" },
+        "environments": { "type": ["array", "null"], "items": { "$ref": "#/definitions/Environment" } },
+        "prose": { "$ref": "#/definitions/Prose" },
+        "changes": { "type": ["array", "null"], "items": { "$ref": "#/definitions/Release" } },
+        "options": { "$ref": "#/definitions/Options" }
+    },
+    "definitions": {
+        "Options": {
+            "title": "Options", "type": "object", "additionalProperties": false,
+            "required": ["docs", "examples", "tryIt"],
+            "properties": {
+                "docs": { "type": "boolean" }, "examples": { "type": "boolean" }, "tryIt": { "type": "boolean" }
+            }
+        },
+        "Generator": {
+            "title": "Generator", "type": "object", "additionalProperties": false,
+            "required": ["name", "version"],
+            "properties": { "name": { "type": "string" }, "version": { "type": "string" } }
+        },
+        "Collection": {
+            "title": "Collection", "type": "object", "additionalProperties": false,
+            "required": ["id", "name", "description", "groups", "variables"],
+            "properties": {
+                "id": { "type": "string" }, "name": { "type": "string" }, "description": { "type": "string" },
+                "groups": { "type": ["array", "null"], "items": { "$ref": "#/definitions/Group" } },
+                "variables": { "type": ["array", "null"], "items": { "$ref": "#/definitions/Variable" } }
+            }
+        },
+        "Group": {
+            "title": "Group", "type": "object", "additionalProperties": false,
+            "required": ["id", "name", "description", "endpoints"],
+            "properties": {
+                "id": { "type": "string" }, "name": { "type": "string" },
+                "description": { "type": "string" },
+                "endpoints": { "type": ["array", "null"], "items": { "$ref": "#/definitions/Endpoint" } }
+            }
+        },
+        "Endpoint": {
+            "title": "Endpoint", "type": "object", "additionalProperties": false,
+            "required": ["id", "name", "method", "path", "description", "parameters", "body", "responses"],
+            "properties": {
+                "id": { "type": "string" }, "name": { "type": "string" },
+                "method": { "type": "string" }, "path": { "type": "string" }, "description": { "type": "string" },
+                "parameters": { "type": ["array", "null"], "items": { "$ref": "#/definitions/Parameter" } },
+                "body": { "anyOf": [{ "$ref": "#/definitions/Body" }, { "type": "null" }] },
+                "responses": { "type": ["array", "null"], "items": { "$ref": "#/definitions/Response" } }
+            }
+        },
+        "Parameter": {
+            "title": "Parameter", "type": "object", "additionalProperties": false,
+            "required": ["name", "in", "type", "required", "description", "example"],
+            "properties": {
+                "name": { "type": "string" }, "in": { "type": "string" }, "type": { "type": "string" },
+                "required": { "type": "boolean" }, "description": { "type": "string" }, "example": { "type": "string" }
+            }
+        },
+        "Body": {
+            "title": "Body", "type": "object", "additionalProperties": false,
+            "required": ["fields", "example"],
+            "properties": {
+                "fields": { "type": ["array", "null"], "items": { "$ref": "#/definitions/Field" } },
+                "example": { "type": "string" }
+            }
+        },
+        "Field": {
+            "title": "Field", "type": "object", "additionalProperties": false,
+            "required": ["name", "type", "required", "description"],
+            "properties": {
+                "name": { "type": "string" }, "type": { "type": "string" },
+                "required": { "type": "boolean" }, "description": { "type": "string" }
+            }
+        },
+        "Response": {
+            "title": "Response", "type": "object", "additionalProperties": false,
+            "required": ["status", "name", "body"],
+            "properties": { "status": { "type": "integer" }, "name": { "type": "string" }, "body": { "type": "string" } }
+        },
+        "Variable": {
+            "title": "Variable", "type": "object", "additionalProperties": false,
+            "required": ["key", "value"],
+            "properties": { "key": { "type": "string" }, "value": { "type": "string" } }
+        },
+        "Environment": {
+            "title": "Environment", "type": "object", "additionalProperties": false,
+            "required": ["name", "baseUrl"],
+            "properties": { "name": { "type": "string" }, "baseUrl": { "type": "string" } }
+        },
+        "Prose": {
+            "title": "Prose", "type": "object", "additionalProperties": false,
+            "required": ["lead", "auth", "errors", "limits"],
+            "properties": {
+                "lead": { "type": "string" }, "auth": { "type": "string" },
+                "errors": { "type": "string" }, "limits": { "type": "string" }
+            }
+        },
+        "Release": {
+            "title": "Release", "type": "object", "additionalProperties": false,
+            "required": ["at", "items", "revision"],
+            "properties": {
+                "at": { "type": "string", "format": "date-time" },
+                "items": { "type": ["array", "null"], "items": { "$ref": "#/definitions/Item" } },
+                "revision": { "type": "integer" }
+            }
+        },
+        "Item": {
+            "title": "Item", "type": "object", "additionalProperties": false,
+            "required": ["sign", "method", "name", "fields"],
+            "properties": { "sign": { "type": "string" }, "method": { "type": "string" }, "name": { "type": "string" }, "fields": { "type": ["array", "null"], "items": { "type": "string" } } }
+        }
+    }
+}

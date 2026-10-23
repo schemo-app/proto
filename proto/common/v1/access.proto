@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package common.v1;
+
+import "google/protobuf/descriptor.proto";
+
+option go_package = "github.com/schemo-app/proto/go/common/v1;common";
+
+// Access declares the authentication or resource permission required by an RPC.
+// Resource ownership, conditional permissions and plan limits are checked by the server use case.
+enum Access {
+  ACCESS_UNSPECIFIED = 0;
+  ACCESS_PUBLIC = 1;
+  ACCESS_AUTHENTICATED = 2;
+  ACCESS_AUDIT_READ = 3;
+  ACCESS_INVITE_MANAGE = 4;
+  ACCESS_ORG_DELETE = 5;
+  ACCESS_ORG_MANAGE_BILLING = 6;
+  ACCESS_ORG_MANAGE_MEMBERS = 7;
+  ACCESS_ORG_READ = 8;
+  ACCESS_ORG_TRANSFER_OWNERSHIP = 9;
+  ACCESS_ORG_UPDATE = 10;
+  ACCESS_ROLE_MANAGE = 11;
+  ACCESS_ROLE_READ = 12;
+  ACCESS_WORKSPACE_CREATE = 13;
+  ACCESS_WORKSPACE_DELETE = 14;
+  ACCESS_WORKSPACE_MANAGE_MEMBERS = 15;
+  ACCESS_WORKSPACE_READ = 16;
+  ACCESS_WORKSPACE_UPDATE = 17;
+  ACCESS_WORKSPACE_WRITE = 18;
+}
+
+extend google.protobuf.MethodOptions {
+  // Required on every RPC. AUTHENTICATED needs a session without an additional resource permission.
+  Access access = 51001;
+}

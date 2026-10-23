@@ -1,0 +1,38 @@
+{
+    "format": "schemo.collection-snapshot",
+    "version": 1,
+    "generator": { "name": "Example Client", "version": "1.0.0" },
+    "locale": "en",
+    "collection": {
+        "id": "collection-one",
+        "name": "Example API",
+        "description": "Public documentation",
+        "groups": [{
+            "id": "group-one",
+            "name": "Items",
+            "description": "Item operations",
+            "endpoints": [{
+                "id": "endpoint-one",
+                "name": "Create item",
+                "method": "POST",
+                "path": "/items",
+                "description": "Creates an item",
+                "parameters": [{
+                    "name": "trace", "in": "query", "type": "string", "required": false,
+                    "description": "Trace identifier", "example": "example-trace"
+                }],
+                "body": {
+                    "fields": [{ "name": "name", "type": "string", "required": true, "description": "Item name" }],
+                    "example": "{\"name\":\"Example\"}"
+                },
+                "responses": [{ "status": 201, "name": "Created", "body": "{\"ok\":true}" }]
+            }]
+        }],
+        "variables": [{ "key": "region", "value": "example" }]
+    },
+    "environment": { "name": "Example", "baseUrl": "https://api.example.test" },
+    "environments": null,
+    "prose": { "lead": "Overview", "auth": "Bearer token", "errors": "HTTP status", "limits": "Server policy" },
+    "changes": [{ "at": "2026-10-13T00:00:00Z", "items": [{ "sign": "+", "method": "POST", "name": "Create item", "fields": null }], "revision": 1 }],
+    "options": { "docs": true, "examples": true, "tryIt": true }
+}

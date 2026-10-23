@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package common.v1;
+
+option go_package = "github.com/schemo-app/proto/go/common/v1;common";
+
+// Feature is something a deployment can serve and a plan can include. A control is offered only
+// when the server has the feature and the org's plan includes it. The enum is open: a client keeps a
+// value it does not know and offers nothing for it.
+enum Feature {
+  FEATURE_UNSPECIFIED = 0;
+
+  // Syncing workspaces between devices through `sync/v1`.
+  FEATURE_SYNC = 1;
+
+  // Team workspaces, which more than one person can work in.
+  FEATURE_SHARED_WORKSPACES = 2;
+
+  // Reading and managing the org's roles, `role/v1`.
+  FEATURE_ROLES = 3;
+
+  // Execution history kept on the server, `history/v1`.
+  FEATURE_HISTORY = 4;
+
+  // The org's audit journal, `audit/v1`.
+  FEATURE_AUDIT = 5;
+
+  // Publishing a collection at a public address, `publication/v1`.
+  FEATURE_SHARE_LINKS = 6;
+
+  // Secret variable values stored and resolved on the server. Server-wide: no plan gates it.
+  FEATURE_SECRETS = 7;
+
+  // Subscriptions and payments, `billing/v1`. Server-wide: no plan gates it.
+  FEATURE_BILLING = 8;
+}

@@ -1,0 +1,153 @@
+syntax = "proto3";
+
+package role.v1;
+
+import "common/v1/access.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/schemo-app/proto/go/role/v1;role";
+
+// RoleService manages the roles of an org and its workspaces.
+//
+// A role is a named set of permissions, stored as data rather than compiled into the software: an
+// org uses the built-in roles or adds its own. Built-in roles are immutable, since their names are
+// quoted by every audit entry that ever referenced them.
+service RoleService {
+  // GetRole reads one role by id.
+  rpc GetRole(GetRoleRequest) returns (GetRoleResponse) {
+    option (common.v1.access) = ACCESS_ROLE_READ;
+  }
+
+  // ListRoles returns the roles of an org, optionally of one scope.
+  rpc ListRoles(ListRolesRequest) returns (ListRolesResponse) {
+    option (common.v1.access) = ACCESS_ROLE_READ;
+  }
+
+  // CreateRole adds a custom role to an org. A caller may only grant permissions they hold
+  // themselves.
+  rpc CreateRole(CreateRoleRequest) returns (CreateRoleResponse) {
+    option (common.v1.access) = ACCESS_ROLE_MANAGE;
+  }
+
+  // UpdateRole changes a custom role's name, description or permissions. Refused for a built-in
+  // role.
+  rpc UpdateRole(UpdateRoleRequest) returns (UpdateRoleResponse) {
+    option (common.v1.access) = ACCESS_ROLE_MANAGE;
+  }
+
+  // DeleteRole removes a custom role. Refused while anyone still holds it.
+  rpc DeleteRole(DeleteRoleRequest) returns (DeleteRoleResponse) {
+    option (common.v1.access) = ACCESS_ROLE_MANAGE;
+  }
+}
+
+// RoleScope names the level a role is written for.
+enum RoleScope {
+  ROLE_SCOPE_UNSPECIFIED = 0;
+
+  // Held in the org. Workspace roles are chosen from the org's roles.
+  ROLE_SCOPE_ORG = 1;
+
+  // Held in one workspace.
+  ROLE_SCOPE_WORKSPACE = 2;
+}
+
+// Role is a named set of permissions.
+message Role {
+  string id = 1;
+
+  // Empty for a built-in role: it belongs to every org and is nobody's row.
+  string org_id = 2;
+
+  RoleScope scope = 3;
+
+  // Display name, e.g. "Viewer", "Release engineer". Unique within an org and a scope.
+  string name = 4;
+
+  string description = 5;
+
+  // Permission keys this role grants (see `PermissionService`). An unknown key is kept and ignored
+  // by a server that does not recognize it, so a client can carry a newer permission across a
+  // round trip.
+  repeated string permissions = 6;
+
+  // True for a built-in role. It may be read and assigned, never edited or deleted.
+  bool is_built_in = 7;
+
+  // Whether this is the role given to a new member when none is named. At most one per org and
+  // scope.
+  bool is_default = 8;
+
+  // False for a role that a role change does not hand out: the org's owner role, which passes only
+  // by transferring ownership.
+  bool assignable = 9;
+
+  // Raised by every change to the role.
+  int32 version = 10;
+
+  string created_by_user_id = 11;
+  google.protobuf.Timestamp created_at = 12;
+  google.protobuf.Timestamp updated_at = 13;
+}
+
+// PermissionKeys is a set of permission keys, wrapped so that a request can tell "leave the
+// permissions alone" from "replace them with none".
+message PermissionKeys {
+  repeated string keys = 1;
+}
+
+message GetRoleRequest {
+  string org_id = 1;
+  string role_id = 2;
+}
+
+message GetRoleResponse {
+  Role role = 1;
+}
+
+message ListRolesRequest {
+  string org_id = 1;
+
+  // Only the roles of this scope. UNSPECIFIED returns both.
+  RoleScope scope = 2;
+}
+
+message ListRolesResponse {
+  repeated Role roles = 1;
+}
+
+message CreateRoleRequest {
+  string org_id = 1;
+  RoleScope scope = 2;
+  string name = 3;
+  string description = 4;
+
+  // 1..100 keys, validated against the catalogue. An unknown key is refused, not stored.
+  repeated string permissions = 5;
+}
+
+message CreateRoleResponse {
+  Role role = 1;
+}
+
+// UpdateRoleRequest is a partial update: a field that is absent is left as it is.
+message UpdateRoleRequest {
+  string org_id = 1;
+  string role_id = 2;
+  optional string name = 3;
+  optional string description = 4;
+
+  // When present, replaces the whole permission set.
+  PermissionKeys permissions = 5;
+}
+
+message UpdateRoleResponse {
+  Role role = 1;
+}
+
+message DeleteRoleRequest {
+  string org_id = 1;
+  string role_id = 2;
+}
+
+message DeleteRoleResponse {}

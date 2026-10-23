@@ -1,0 +1,13 @@
+version: v2
+clean: true
+plugins:
+  - local: ["node", "../node_modules/@bufbuild/protoc-gen-es/bin/protoc-gen-es"]
+    out: typescript
+    opt:
+      - target=js+dts
+      - import_extension=js
+inputs:
+  - directory: .
+  - module: buf.build/googleapis/googleapis:c17df5b2beca46928cc87d5656bd5343
+    paths:
+      - google/rpc/error_details.proto

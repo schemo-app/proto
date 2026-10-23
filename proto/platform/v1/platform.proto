@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+package platform.v1;
+
+import "common/v1/access.proto";
+import "common/v1/feature.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/schemo-app/proto/go/platform/v1;platform";
+
+// PlatformService describes the server deployment itself: identity, features and limits. Clients
+// call it before signing in, to decide what to offer.
+service PlatformService {
+  // GetInfo returns the server's identity, version, features and limits.
+  rpc GetInfo(GetInfoRequest) returns (GetInfoResponse) {
+    option (common.v1.access) = ACCESS_PUBLIC;
+  }
+}
+
+// RegistrationMode says who may create an account on this server.
+enum RegistrationMode {
+  REGISTRATION_MODE_UNSPECIFIED = 0;
+
+  // Anyone may sign up.
+  REGISTRATION_MODE_OPEN = 1;
+
+  // Signing up needs a valid token from an invitation link.
+  REGISTRATION_MODE_INVITE_ONLY = 2;
+}
+
+// ServerInfo describes the deployment, not any tenant or org.
+message ServerInfo {
+  // The operator's display name for the deployment, e.g. "Internal Dev Cluster". Empty uses the
+  // product's name.
+  string name = 1;
+
+  // Semantic version of the software, e.g. "1.4.0-rc.1".
+  string version = 2;
+
+  // The commit the binary was built from.
+  string commit = 3;
+
+  google.protobuf.Timestamp built_at = 4;
+
+  // The features this deployment can serve. A plan may include fewer; see `plan.v1`.
+  repeated common.v1.Feature features = 5;
+
+  // Limits a client must respect.
+  Limits limits = 6;
+
+  RegistrationMode registration = 7;
+}
+
+// Limits are thresholds the server enforces.
+message Limits {
+  // The largest body, in bytes, stored for a history record.
+  int64 max_body_bytes = 1;
+
+  // The largest request, in bytes, a sync push may carry.
+  int64 max_push_bytes = 2;
+
+  // How many days history is kept. Unset keeps it for ever.
+  optional int32 history_retention_days = 3;
+}
+
+message GetInfoRequest {}
+
+message GetInfoResponse {
+  ServerInfo server = 1;
+}

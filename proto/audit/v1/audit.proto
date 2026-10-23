@@ -1,0 +1,156 @@
+syntax = "proto3";
+
+package audit.v1;
+
+import "common/v1/access.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/schemo-app/proto/go/audit/v1;audit";
+
+// AuditService provides read-only access to the org's append-only audit journal.
+service AuditService {
+  // List returns journal entries, newest first, one page at a time.
+  rpc List(ListRequest) returns (ListResponse) {
+    option (common.v1.access) = ACCESS_AUDIT_READ;
+  }
+
+  // Export streams the entries that match as chunked CSV, for reporting and archiving.
+  rpc Export(ExportRequest) returns (stream ExportResponse) {
+    option (common.v1.access) = ACCESS_AUDIT_READ;
+  }
+}
+
+// ActionKind groups journal actions, as the journal's filter offers them.
+enum ActionKind {
+  // As a filter: every kind.
+  ACTION_KIND_UNSPECIFIED = 0;
+
+  // Changes to workspaces and what they hold.
+  ACTION_KIND_CONTENT = 1;
+
+  // Changes to who may do what: orgs, members, roles, invitations, publications.
+  ACTION_KIND_ACCESS = 2;
+
+  // Subscriptions and payments.
+  ACTION_KIND_PLAN = 3;
+
+  // Sign-ins, sessions and the account itself.
+  ACTION_KIND_AUTH = 4;
+
+  // Reads of history.
+  ACTION_KIND_READ = 5;
+}
+
+// ActorType says who did what an entry records.
+enum ActorType {
+  ACTOR_TYPE_UNSPECIFIED = 0;
+  ACTOR_TYPE_USER = 1;
+  ACTOR_TYPE_SYSTEM = 2;
+
+  // A device syncing on a person's behalf.
+  ACTOR_TYPE_SYNC = 3;
+}
+
+// AuditFilter selects journal entries. Every field that is left empty matches everything.
+message AuditFilter {
+  // Only entries of this workspace. Empty matches all workspaces of the org.
+  string workspace_id = 1;
+
+  // Only entries made by this user. Empty matches all actors, the system and sync included.
+  string actor_user_id = 2;
+
+  // Only entries of this exact action code, e.g. "org.update".
+  string action = 3;
+
+  // Only entries about this target.
+  string target_id = 4;
+
+  ActionKind action_kind = 5;
+
+  // Inclusive start of the time range.
+  google.protobuf.Timestamp from = 6;
+
+  // Exclusive end of the time range.
+  google.protobuf.Timestamp to = 7;
+}
+
+// AuditEntry is one immutable event in the journal.
+message AuditEntry {
+  string id = 1;
+  google.protobuf.Timestamp at = 2;
+
+  // Lower snake_case action code such as "auth.sign_in" or "workspace.create". An open set: a
+  // client shows a code it does not know as it is.
+  string action = 3;
+  ActionKind action_kind = 4;
+
+  // True when what the entry records did not happen: a payment that was refused.
+  bool failed = 5;
+
+  ActorType actor_type = 6;
+  string actor_user_id = 7;
+
+  // The actor's display name at the time of the event.
+  string actor_name = 8;
+
+  string actor_ip = 9;
+  string actor_device = 10;
+
+  // True when the browser panel did it, whose device name says nothing to a person reading there.
+  bool from_panel = 11;
+
+  string org_id = 12;
+  string workspace_id = 13;
+
+  // What the entry is about: "workspace", "collection", "environment", "user" and so on. An open
+  // set.
+  string target_type = 14;
+  string target_id = 15;
+
+  // The target's display name at the time of the event.
+  string target_name = 16;
+
+  // What is specific to the action. Its shape depends on `action`.
+  google.protobuf.Struct metadata = 17;
+}
+
+message ListRequest {
+  string org_id = 1;
+  AuditFilter filter = 2;
+
+  // Maximum items to return. 0 uses the server's default; larger values are clamped to its limit.
+  int32 page_size = 3;
+
+  // Opaque cursor from the previous response's `next_page_token`. Empty starts at the first page.
+  string page_token = 4;
+}
+
+message ListResponse {
+  repeated AuditEntry entries = 1;
+
+  // Opaque cursor for the next page. Empty when there are no more results.
+  string next_page_token = 2;
+}
+
+message ExportRequest {
+  string org_id = 1;
+  AuditFilter filter = 2;
+
+  // Soft cap on the rows exported. 0 uses the server's default.
+  int32 max_rows = 3;
+}
+
+message ExportResponse {
+  // A chunk of CSV. The first chunk starts with the header row.
+  bytes csv_chunk = 1;
+
+  // Set on the last message of the stream.
+  bool is_last = 2;
+
+  // Whether the export stopped at `max_rows` before it was complete.
+  bool truncated = 3;
+
+  // Rows exported so far, the total on the last chunk.
+  int32 row_count = 4;
+}

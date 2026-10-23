@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package role.v1;
+
+import "common/v1/access.proto";
+import "role/v1/role.proto";
+
+option go_package = "github.com/schemo-app/proto/go/role/v1;role";
+
+// PermissionService is the read-only catalogue of permissions a role may grant. Nothing is added
+// to it at runtime: a permission exists because the software enforces something with it.
+service PermissionService {
+  // ListPermissions returns every permission this server knows. It describes what the software can
+  // do, not what the caller is allowed to do.
+  rpc ListPermissions(ListPermissionsRequest) returns (ListPermissionsResponse) {
+    option (common.v1.access) = ACCESS_AUTHENTICATED;
+  }
+}
+
+// PermissionGroup is the heading a permission is listed under.
+enum PermissionGroup {
+  PERMISSION_GROUP_UNSPECIFIED = 0;
+  PERMISSION_GROUP_CONTENT = 1;
+  PERMISSION_GROUP_ACCESS = 2;
+  PERMISSION_GROUP_SECRETS = 3;
+  PERMISSION_GROUP_SERVER = 4;
+}
+
+message ListPermissionsRequest {}
+
+message ListPermissionsResponse {
+  repeated Permission permissions = 1;
+}
+
+// Permission is one thing a role may grant.
+message Permission {
+  // The key a role stores, e.g. "workspace:write", "secrets:read". Stable: it is stored in rows and
+  // quoted in audit entries, so a key that changes silently breaks a permission.
+  string key = 1;
+
+  // The scope a role must have to hold this permission.
+  RoleScope scope = 2;
+
+  PermissionGroup group = 3;
+
+  // Human-readable description shown next to the permission.
+  string description = 4;
+
+  // Whether granting this permission requires the caller to already hold it themselves.
+  bool guarded = 5;
+}

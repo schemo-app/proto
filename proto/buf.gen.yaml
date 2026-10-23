@@ -1,0 +1,17 @@
+version: v2
+clean: true
+plugins:
+  - local: ["go", "tool", "-modfile=../tools/go.mod", "protoc-gen-go"]
+    out: go
+    opt:
+      - paths=source_relative
+      - default_api_level=API_OPAQUE
+  - local: ["go", "tool", "-modfile=../tools/go.mod", "protoc-gen-connect-go"]
+    out: go
+    opt:
+      - paths=source_relative
+      - simple
+  - local: ["go", "tool", "-modfile=../tools/go.mod", "protoc-gen-go-grpc"]
+    out: go
+    opt:
+      - paths=source_relative

@@ -1,0 +1,101 @@
+syntax = "proto3";
+
+package workspace.v1;
+
+import "common/v1/access.proto";
+import "common/v1/people.proto";
+
+option go_package = "github.com/schemo-app/proto/go/workspace/v1;workspace";
+
+// WorkspaceMembershipService manages the people in one workspace. Membership of a workspace is
+// separate from membership of the org above it: an org member may be in none of its workspaces,
+// but a workspace member always belongs to the org.
+service WorkspaceMembershipService {
+  // ListMembers returns the people in a workspace.
+  rpc ListMembers(ListMembersRequest) returns (ListMembersResponse) {
+    option (common.v1.access) = ACCESS_WORKSPACE_READ;
+  }
+
+  // AddMember adds an existing org member to the workspace.
+  rpc AddMember(AddMemberRequest) returns (AddMemberResponse) {
+    option (common.v1.access) = ACCESS_WORKSPACE_MANAGE_MEMBERS;
+  }
+
+  // ChangeMemberRole assigns another role within this workspace only; the member's org role is
+  // untouched.
+  rpc ChangeMemberRole(ChangeMemberRoleRequest) returns (ChangeMemberRoleResponse) {
+    option (common.v1.access) = ACCESS_WORKSPACE_MANAGE_MEMBERS;
+  }
+
+  // RemoveMember removes a person from the workspace and stops their devices syncing it. They stay
+  // in the org.
+  rpc RemoveMember(RemoveMemberRequest) returns (RemoveMemberResponse) {
+    option (common.v1.access) = ACCESS_WORKSPACE_MANAGE_MEMBERS;
+  }
+
+  // Leave removes the caller from the workspace. Refused for the last remaining member, since a
+  // workspace with nobody in it cannot be handed to anyone.
+  rpc Leave(LeaveRequest) returns (LeaveResponse) {
+    option (common.v1.access) = ACCESS_AUTHENTICATED;
+  }
+}
+
+// WorkspaceMember is a person's place in one workspace.
+message WorkspaceMember {
+  common.v1.Member member = 1;
+
+  // True when the person has a device syncing this workspace or an open session in it.
+  bool syncing = 2;
+}
+
+message ListMembersRequest {
+  string workspace_id = 1;
+
+  // Maximum items to return. 0 uses the server's default.
+  int32 page_size = 2;
+
+  // Opaque cursor from the previous response's `next_page_token`. Empty starts at the first page.
+  string page_token = 3;
+}
+
+message ListMembersResponse {
+  repeated WorkspaceMember members = 1;
+
+  // Opaque cursor for the next page. Empty when there are no more results.
+  string next_page_token = 2;
+}
+
+message AddMemberRequest {
+  string workspace_id = 1;
+  string target_user_id = 2;
+
+  // Empty takes the org's default workspace role.
+  string role_id = 3;
+}
+
+message AddMemberResponse {
+  WorkspaceMember member = 1;
+}
+
+message ChangeMemberRoleRequest {
+  string workspace_id = 1;
+  string target_user_id = 2;
+  string role_id = 3;
+}
+
+message ChangeMemberRoleResponse {
+  WorkspaceMember member = 1;
+}
+
+message RemoveMemberRequest {
+  string workspace_id = 1;
+  string target_user_id = 2;
+}
+
+message RemoveMemberResponse {}
+
+message LeaveRequest {
+  string workspace_id = 1;
+}
+
+message LeaveResponse {}

@@ -1,0 +1,312 @@
+syntax = "proto3";
+
+package billing.v1;
+
+import "common/v1/access.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/schemo-app/proto/go/billing/v1;billing";
+
+// BillingService manages organization subscriptions, payments, and pricing offers.
+//
+// Org-scoped methods require `org:manage_billing`. If the server has no payment provider
+// configured, they are refused with a dedicated code: check for `FEATURE_BILLING` in
+// `platform.v1` first.
+service BillingService {
+  // Subscribe starts a subscription purchase and returns where to confirm the payment. Idempotent:
+  // repeating a request with the same `idempotency_key` returns the active transaction.
+  rpc Subscribe(SubscribeRequest) returns (SubscribeResponse) {
+    option (common.v1.access) = ACCESS_ORG_MANAGE_BILLING;
+  }
+
+  // GetPaymentStatus reads the state of a payment, which a client polls until it settles.
+  rpc GetPaymentStatus(GetPaymentStatusRequest) returns (GetPaymentStatusResponse) {
+    option (common.v1.access) = ACCESS_ORG_MANAGE_BILLING;
+  }
+
+  // GetSubscription reads the org's current or latest subscription.
+  rpc GetSubscription(GetSubscriptionRequest) returns (GetSubscriptionResponse) {
+    option (common.v1.access) = ACCESS_ORG_MANAGE_BILLING;
+  }
+
+  // RenewNow charges at once to extend the current subscription period.
+  rpc RenewNow(RenewNowRequest) returns (RenewNowResponse) {
+    option (common.v1.access) = ACCESS_ORG_MANAGE_BILLING;
+  }
+
+  // CancelSubscription stops auto-renewal. The subscription stays active until the period ends.
+  rpc CancelSubscription(CancelSubscriptionRequest) returns (CancelSubscriptionResponse) {
+    option (common.v1.access) = ACCESS_ORG_MANAGE_BILLING;
+  }
+
+  // ListPayments returns the org's charges, newest first.
+  rpc ListPayments(ListPaymentsRequest) returns (ListPaymentsResponse) {
+    option (common.v1.access) = ACCESS_ORG_MANAGE_BILLING;
+  }
+
+  // ListOffers returns the price list to any signed-in caller. With an org id the offers are quoted
+  // for that org's current membership.
+  rpc ListOffers(ListOffersRequest) returns (ListOffersResponse) {
+    option (common.v1.access) = ACCESS_AUTHENTICATED;
+  }
+
+  // GetPortal returns the provider's customer portal, where payment methods are managed.
+  rpc GetPortal(GetPortalRequest) returns (GetPortalResponse) {
+    option (common.v1.access) = ACCESS_ORG_MANAGE_BILLING;
+  }
+
+  // CompleteSandboxPayment settles or refuses a pending payment by hand. Only the sandbox provider
+  // takes it; with a real provider it is refused with `noProvider`.
+  rpc CompleteSandboxPayment(CompleteSandboxPaymentRequest) returns (CompleteSandboxPaymentResponse) {
+    option (common.v1.access) = ACCESS_ORG_MANAGE_BILLING;
+  }
+}
+
+// BillingPeriod is how often a subscription renews.
+enum BillingPeriod {
+  BILLING_PERIOD_UNSPECIFIED = 0;
+  BILLING_PERIOD_MONTH = 1;
+  BILLING_PERIOD_YEAR = 2;
+}
+
+// SubscriptionStatus is where a paid subscription stands.
+enum SubscriptionStatus {
+  SUBSCRIPTION_STATUS_UNSPECIFIED = 0;
+  SUBSCRIPTION_STATUS_ACTIVE = 1;
+
+  // The last renewal charge failed. The plan still applies until the period ends.
+  SUBSCRIPTION_STATUS_PAST_DUE = 2;
+
+  // Cancelled by the customer. It stays in force until the period ends and does not renew.
+  SUBSCRIPTION_STATUS_CANCELED = 3;
+  SUBSCRIPTION_STATUS_EXPIRED = 4;
+}
+
+// PaymentKind says why a charge was made.
+enum PaymentKind {
+  PAYMENT_KIND_UNSPECIFIED = 0;
+
+  // The first charge of a subscription, or a change of tier or seats.
+  PAYMENT_KIND_INITIAL = 1;
+  PAYMENT_KIND_RENEWAL = 2;
+}
+
+// PaymentStatus is where a payment stands.
+enum PaymentStatus {
+  PAYMENT_STATUS_UNSPECIFIED = 0;
+
+  // Recorded here; the provider has not acknowledged it yet.
+  PAYMENT_STATUS_CREATING = 1;
+
+  // Waiting for the customer to confirm, or for the bank to answer.
+  PAYMENT_STATUS_PENDING = 2;
+
+  // The provider needs the customer to act again, e.g. to confirm with their bank. The
+  // confirmation URL still works.
+  PAYMENT_STATUS_NEEDS_ATTENTION = 3;
+
+  PAYMENT_STATUS_SUCCEEDED = 4;
+
+  // Refused or abandoned. `Payment.cancel_reason` says why.
+  PAYMENT_STATUS_CANCELED = 5;
+}
+
+// Money is an amount in the smallest unit of a currency.
+message Money {
+  // The amount in minor units: 4900 with currency "RUB" is 49.00 RUB.
+  int64 amount_minor = 1;
+
+  // ISO 4217 code, e.g. "USD" or "RUB". Compare it case-insensitively.
+  string currency = 2;
+}
+
+// Subscription is an org's paid plan, with the price locked in when it was bought.
+message Subscription {
+  string id = 1;
+
+  // The plan's tier; see `plan.v1.Plan.tier`.
+  string tier = 2;
+
+  BillingPeriod period = 3;
+  int32 seats = 4;
+  SubscriptionStatus status = 5;
+
+  google.protobuf.Timestamp current_period_end = 6;
+  google.protobuf.Timestamp next_charge_at = 7;
+  google.protobuf.Timestamp canceled_at = 8;
+
+  // The renewal price. It does not change when the public price list does.
+  Money amount = 9;
+
+  // A masked description of the payment method, e.g. "Visa •••• 4242".
+  string payment_method_title = 10;
+}
+
+// Payment is one charge.
+message Payment {
+  string id = 1;
+  PaymentKind kind = 2;
+  PaymentStatus status = 3;
+
+  string tier = 4;
+  BillingPeriod period = 5;
+  int32 seats = 6;
+  Money amount = 7;
+
+  google.protobuf.Timestamp created_at = 8;
+
+  // The end of the period this payment paid for.
+  google.protobuf.Timestamp paid_period_end = 9;
+
+  // Why a canceled payment was canceled.
+  string cancel_reason = 10;
+}
+
+// Offer is one entry of the price list.
+message Offer {
+  string tier = 1;
+  BillingPeriod period = 2;
+  Money amount = 3;
+
+  // Seats the amount includes.
+  int32 seats = 4;
+
+  // The price of each seat beyond the included ones, per period. Unset when seats are not sold
+  // separately.
+  Money seat_amount = 5;
+
+  // For a quote: what the org would pay and how many seats it would hold, from its current
+  // membership. Informational; checkout checks again atomically.
+  Money total_amount = 6;
+  int32 total_seats = 7;
+
+  // A domain refusal code when the org's current usage cannot fit this offer. Empty when it fits.
+  string unavailable_code = 8;
+}
+
+message SubscribeRequest {
+  string org_id = 1;
+
+  // The tier to buy; see `plan.v1.Plan.tier`.
+  string tier = 2;
+
+  BillingPeriod period = 3;
+
+  // A client-generated UUID that makes the purchase safe to retry.
+  string idempotency_key = 4;
+}
+
+message SubscribeResponse {
+  string payment_id = 1;
+
+  // The provider's checkout page. Empty when the saved card was charged at once.
+  string confirmation_url = 2;
+
+  Money amount = 3;
+
+  // Set when the payment went through at once and the subscription is already extended.
+  Subscription subscription = 4;
+}
+
+message GetPaymentStatusRequest {
+  string org_id = 1;
+  string payment_id = 2;
+}
+
+message GetPaymentStatusResponse {
+  Payment payment = 1;
+
+  // Set once the payment has succeeded and the subscription is updated.
+  Subscription subscription = 2;
+
+  // True when the payment goes through the sandbox provider, which `CompleteSandboxPayment`
+  // settles instead of a bank.
+  bool sandbox = 3;
+}
+
+message GetSubscriptionRequest {
+  string org_id = 1;
+}
+
+message GetSubscriptionResponse {
+  // Unset if the org has never bought a subscription.
+  Subscription subscription = 1;
+
+  // True when this server takes payments through the sandbox provider.
+  bool sandbox = 2;
+}
+
+message RenewNowRequest {
+  string org_id = 1;
+  string idempotency_key = 2;
+}
+
+message RenewNowResponse {
+  string payment_id = 1;
+
+  // The provider's confirmation page, when the charge needs 3-D Secure or another confirmation.
+  string confirmation_url = 2;
+
+  Subscription subscription = 3;
+}
+
+message CancelSubscriptionRequest {
+  string org_id = 1;
+}
+
+message CancelSubscriptionResponse {
+  Subscription subscription = 1;
+}
+
+message ListPaymentsRequest {
+  string org_id = 1;
+
+  // Maximum items to return. 0 uses the server's default.
+  int32 page_size = 2;
+
+  // Opaque cursor from the previous response's `next_page_token`. Empty starts at the first page.
+  string page_token = 3;
+}
+
+message ListPaymentsResponse {
+  repeated Payment payments = 1;
+
+  // Opaque cursor for the next page. Empty when there are no more results.
+  string next_page_token = 2;
+}
+
+message ListOffersRequest {
+  // Empty returns the public price list. An org id returns offers quoted for that org.
+  string org_id = 1;
+}
+
+message ListOffersResponse {
+  repeated Offer offers = 1;
+
+  // The version of the price list new purchases are made under.
+  string price_version = 2;
+}
+
+message GetPortalRequest {
+  string org_id = 1;
+}
+
+message GetPortalResponse {
+  // The provider's billing portal. Empty if the provider has none.
+  string portal_url = 1;
+}
+
+message CompleteSandboxPaymentRequest {
+  string org_id = 1;
+  string payment_id = 2;
+
+  // True settles the payment, false refuses it.
+  bool paid = 3;
+}
+
+message CompleteSandboxPaymentResponse {
+  Payment payment = 1;
+
+  // Set when the payment was settled and the subscription is updated.
+  Subscription subscription = 2;
+}

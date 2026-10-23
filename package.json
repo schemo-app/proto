@@ -1,0 +1,46 @@
+{
+    "name": "@schemo-app/proto",
+    "version": "0.5.0",
+    "description": "Schemo RPC and publication contracts",
+    "license": "MIT",
+    "type": "module",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/schemo-app/proto.git"
+    },
+    "files": [
+        "typescript",
+        "snapshot/v1/*.d.ts",
+        "schema/*.json",
+        "schema/fixtures/*.json",
+        "LICENSE",
+        "LICENSES",
+        "THIRD_PARTY_NOTICES.md",
+        "README.md"
+    ],
+    "exports": {
+        "./rpc/*.js": {
+            "types": "./typescript/*.d.ts",
+            "import": "./typescript/*.js"
+        },
+        "./snapshot/v1": {
+            "types": "./snapshot/v1/types.d.ts"
+        },
+        "./schema/*": "./schema/*"
+    },
+    "sideEffects": false,
+    "scripts": {
+        "test": "node --test tools/tests/*.test.mjs",
+        "check:snapshot": "node tools/snapshot.mjs --check"
+    },
+    "devDependencies": {
+        "@bufbuild/protoc-gen-es": "2.15.0",
+        "ajv": "8.20.0",
+        "ajv-formats": "3.0.1",
+        "quicktype-core": "26.0.0",
+        "@bufbuild/protobuf": "2.15.0"
+    },
+    "peerDependencies": {
+        "@bufbuild/protobuf": "^2.15.0"
+    }
+}

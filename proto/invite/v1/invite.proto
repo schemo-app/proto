@@ -1,0 +1,200 @@
+syntax = "proto3";
+
+package invite.v1;
+
+import "common/v1/access.proto";
+import "common/v1/people.proto";
+import "google/protobuf/timestamp.proto";
+import "role/v1/role.proto";
+
+option go_package = "github.com/schemo-app/proto/go/invite/v1;invite";
+
+// InviteService creates, lists, revokes, and accepts invitation links.
+service InviteService {
+  // CreateInvite creates an invitation. The returned token is shown once and never again: only its
+  // hash is stored.
+  rpc CreateInvite(CreateInviteRequest) returns (CreateInviteResponse) {
+    option (common.v1.access) = ACCESS_INVITE_MANAGE;
+  }
+
+  // RevokeInvite invalidates a link that has not been used up.
+  rpc RevokeInvite(RevokeInviteRequest) returns (RevokeInviteResponse) {
+    option (common.v1.access) = ACCESS_INVITE_MANAGE;
+  }
+
+  // ListInvites returns the links an org has created, with their current status.
+  rpc ListInvites(ListInvitesRequest) returns (ListInvitesResponse) {
+    option (common.v1.access) = ACCESS_INVITE_MANAGE;
+  }
+
+  // PreviewInvite reports whether a link is still usable and whose it is, without requiring a
+  // session. A dead link is reported as a status in the body, not as a transport error.
+  rpc PreviewInvite(PreviewInviteRequest) returns (PreviewInviteResponse) {
+    option (common.v1.access) = ACCESS_PUBLIC;
+  }
+
+  // AcceptInvite redeems a link for the signed-in caller. Holding the token is the permission.
+  rpc AcceptInvite(AcceptInviteRequest) returns (AcceptInviteResponse) {
+    option (common.v1.access) = ACCESS_AUTHENTICATED;
+  }
+}
+
+// InviteStatus is where an invitation link stands.
+enum InviteStatus {
+  INVITE_STATUS_UNSPECIFIED = 0;
+
+  // Usable.
+  INVITE_STATUS_PENDING = 1;
+
+  INVITE_STATUS_EXPIRED = 2;
+
+  // Used as many times as it allows.
+  INVITE_STATUS_EXHAUSTED = 3;
+
+  INVITE_STATUS_REVOKED = 4;
+
+  // Only in a preview: no link has this token.
+  INVITE_STATUS_NOT_FOUND = 5;
+
+  // Only in a preview: the link names an address and the signed-in caller's is another.
+  INVITE_STATUS_WRONG_ADDRESS = 6;
+}
+
+// Invite is an invitation link. The token itself never appears here: only in the response that
+// created it and in the URL of whoever opened it.
+message Invite {
+  string id = 1;
+  string org_id = 2;
+
+  // Empty for an invitation to the org itself; set when the link also grants access to one
+  // workspace.
+  string workspace_id = 3;
+
+  common.v1.RoleRef role = 4;
+
+  // The address this invitation was sent to. Empty for a shareable link.
+  string email = 5;
+
+  // How many times the link may be used. Unset means unlimited.
+  optional int32 max_uses = 6;
+
+  int32 used_count = 7;
+
+  InviteStatus status = 8;
+
+  google.protobuf.Timestamp created_at = 9;
+  string created_by_user_id = 10;
+  string created_by_name = 11;
+  google.protobuf.Timestamp expires_at = 12;
+
+  // Unset while the link has not been revoked.
+  google.protobuf.Timestamp revoked_at = 13;
+}
+
+message CreateInviteRequest {
+  string org_id = 1;
+
+  // Empty invites to the org only; set to also grant access to that workspace.
+  string workspace_id = 2;
+
+  // Empty takes the org's default member role (see `org.v1.OrgSettings`).
+  string role_id = 3;
+
+  // The address this invitation is for. Empty makes the link usable by anyone holding it; when
+  // set, only that address may accept it. Must be a domain the org allows.
+  string invitee_email = 4;
+
+  // How many times the link may be used. Unset means unlimited.
+  optional int32 max_uses = 5;
+
+  // 0 takes the server's default.
+  int32 expires_in_hours = 6;
+
+  // The language the inviter is reading the panel in: "ru" or "en". The letter is written in the
+  // invitee's own language when they have an account and chose one, and in this one otherwise.
+  string language_code = 7;
+}
+
+message CreateInviteResponse {
+  Invite invite = 1;
+
+  // The raw token, returned only this once. The server keeps only its hash.
+  string token = 2;
+
+  // The full URL, ready to copy or send.
+  string invite_url = 3;
+}
+
+message RevokeInviteRequest {
+  string org_id = 1;
+  string invite_id = 2;
+}
+
+message RevokeInviteResponse {
+  Invite invite = 1;
+}
+
+message ListInvitesRequest {
+  string org_id = 1;
+
+  // Only the invitations in this status. UNSPECIFIED returns every one of them.
+  InviteStatus status = 2;
+
+  // Maximum items to return. 0 uses the server's default.
+  int32 page_size = 3;
+
+  // Opaque cursor from the previous response's `next_page_token`. Empty starts at the first page.
+  string page_token = 4;
+}
+
+message ListInvitesResponse {
+  repeated Invite invites = 1;
+
+  // Opaque cursor for the next page. Empty when there are no more results.
+  string next_page_token = 2;
+}
+
+message PreviewInviteRequest {
+  string token = 1;
+}
+
+// PreviewInviteResponse is everything a landing page may know before sign-in. Deliberately small,
+// since anyone holding the token can read it: it names the org but not its contents.
+message PreviewInviteResponse {
+  // PENDING when the link can be used; otherwise why it cannot.
+  InviteStatus status = 1;
+
+  // Set whenever the link exists at all, even if it has expired.
+  string org_name = 2;
+
+  string workspace_name = 3;
+  string inviter_name = 4;
+  common.v1.RoleRef role = 5;
+
+  // The scope of the role the invitation grants.
+  .role.v1.RoleScope role_scope = 6;
+
+  // Whether the signing-in address must match the one this invitation was sent to.
+  bool email_bound = 7;
+
+  // The address the invitation is for. Answered only to a signed-in caller, and empty for a link
+  // that names nobody.
+  string invitee_email = 8;
+
+  // True when the invitation names no address or names the caller's. Always false for an anonymous
+  // caller of an invitation that names one.
+  bool matches_caller = 9;
+}
+
+message AcceptInviteRequest {
+  string token = 1;
+}
+
+message AcceptInviteResponse {
+  string org_id = 1;
+  string workspace_id = 2;
+  common.v1.RoleRef role = 3;
+
+  // True when the caller was already a member; accepting an invitation twice is not an error.
+  bool already_member = 4;
+}

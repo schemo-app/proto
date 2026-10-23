@@ -1,0 +1,159 @@
+syntax = "proto3";
+
+package org.v1;
+
+import "common/v1/access.proto";
+import "common/v1/people.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/schemo-app/proto/go/org/v1;org";
+
+// OrgService manages an org's identity and configuration. The people in it are managed by
+// `OrgMembershipService`.
+service OrgService {
+  // Create creates an org and makes the caller its owner. Any signed-in caller may create one,
+  // subject to server-level limits.
+  rpc Create(CreateRequest) returns (CreateResponse) {
+    option (common.v1.access) = ACCESS_AUTHENTICATED;
+  }
+
+  // Update changes an org's name, description, slug, or settings.
+  rpc Update(UpdateRequest) returns (UpdateResponse) {
+    option (common.v1.access) = ACCESS_ORG_UPDATE;
+  }
+
+  // Delete removes an org and everything it holds: workspaces, content, history, memberships. Every
+  // device with one of its workspaces stops syncing it. The caller must name the org to confirm.
+  rpc Delete(DeleteRequest) returns (DeleteResponse) {
+    option (common.v1.access) = ACCESS_ORG_DELETE;
+  }
+
+  // Get reads one org.
+  rpc Get(GetRequest) returns (GetResponse) {
+    option (common.v1.access) = ACCESS_ORG_READ;
+  }
+
+  // ListMine returns every org the caller belongs to, with the role held in each. Clients call it
+  // right after sign-in to learn which workspaces to expect.
+  rpc ListMine(ListMineRequest) returns (ListMineResponse) {
+    option (common.v1.access) = ACCESS_AUTHENTICATED;
+  }
+}
+
+// Org is the tenant. Its members and workspaces are read through their own services.
+message Org {
+  string id = 1;
+  string name = 2;
+
+  // The address a person types, e.g. "acme". Lowercase and unique on the server.
+  string slug = 3;
+
+  string description = 4;
+
+  // The owner's user id. It changes only by transferring ownership.
+  string owner_user_id = 5;
+
+  // True for the org created for a person on first sign-in. It cannot be deleted.
+  bool is_personal = 6;
+
+  OrgSettings settings = 7;
+
+  // Raised by every change to the org.
+  int32 version = 8;
+
+  google.protobuf.Timestamp created_at = 9;
+  google.protobuf.Timestamp updated_at = 10;
+}
+
+// OrgSettings holds what the owner decides for everyone in the org.
+message OrgSettings {
+  // Whether an ordinary member may create workspaces, or only an owner or admin may.
+  bool members_create_workspaces = 1;
+
+  // The role given to a new org member when none is named.
+  string default_org_role_id = 2;
+
+  // The role given to a member added to a workspace without naming one.
+  string default_workspace_role_id = 3;
+
+  // Mail domains the org may invite, lowercase and without "@", e.g. "acme.com". Empty means any
+  // domain.
+  repeated string allowed_email_domains = 4;
+}
+
+// MyOrg is an org with what the caller is in it.
+message MyOrg {
+  Org org = 1;
+
+  // The role the caller holds in the org.
+  common.v1.RoleRef role = 2;
+
+  // The permission keys of that role.
+  repeated string permissions = 3;
+
+  // What the caller may do in the org, decided here so that no client names a permission key.
+  OrgCan can = 4;
+
+  // True for the org the caller is currently working in.
+  bool is_active = 5;
+}
+
+// OrgCan is what the caller may do in one org.
+message OrgCan {
+  // Whether the caller may make a workspace, which the org's own setting can withhold from members.
+  bool create_workspace = 1;
+
+  bool manage_members = 2;
+  bool manage_billing = 3;
+}
+
+message CreateRequest {
+  string name = 1;
+
+  // Derived from the name when empty.
+  string slug = 2;
+
+  string description = 3;
+}
+
+message CreateResponse {
+  Org org = 1;
+}
+
+// UpdateRequest is a partial update: a field that is absent is left as it is.
+message UpdateRequest {
+  string org_id = 1;
+  optional string name = 2;
+  optional string slug = 3;
+  optional string description = 4;
+
+  // When present, replaces all of the org's settings.
+  OrgSettings settings = 5;
+}
+
+message UpdateResponse {
+  Org org = 1;
+}
+
+message DeleteRequest {
+  string org_id = 1;
+
+  // Must equal the org's current name: the server checks it as the caller's confirmation.
+  string confirm_name = 2;
+}
+
+message DeleteResponse {}
+
+message GetRequest {
+  string org_id = 1;
+}
+
+message GetResponse {
+  Org org = 1;
+}
+
+message ListMineRequest {}
+
+message ListMineResponse {
+  repeated MyOrg orgs = 1;
+}

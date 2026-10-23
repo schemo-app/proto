@@ -1,0 +1,5 @@
+* text=auto eol=lf
+*.binpb binary
+go/** linguist-generated
+snapshot/v1/types.* linguist-generated
+typescript/** linguist-generated whitespace=-blank-at-eol,-blank-at-eof

@@ -1,0 +1,281 @@
+syntax = "proto3";
+
+package history.v1;
+
+import "common/v1/access.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/schemo-app/proto/go/history/v1;history";
+
+// HistoryService keeps the requests a workspace has sent, what came back, and what the scripts
+// around them reported. It is an append-only log that devices read from a sequence number.
+//
+// Records and runs are JSON documents the server stores as they came. It reads the few fields it
+// filters and orders by, which travel beside the document, and the secret paths of a record, which
+// it withholds from readers who may not see secrets (see `sync.v1.SyncEntity` for the path form).
+service HistoryService {
+  // Append submits a batch of records and runs. A record the server already holds is completed
+  // rather than refused: its document is replaced, the bodies it had not been given are added, and
+  // it takes a new place in the log so followers read it again.
+  rpc Append(AppendRequest) returns (AppendResponse) {
+    option (common.v1.access) = ACCESS_WORKSPACE_WRITE;
+  }
+
+  // Amend replaces a record's document, as when the person undoes some of its cookie writes.
+  rpc Amend(AmendRequest) returns (AmendResponse) {
+    option (common.v1.access) = ACCESS_WORKSPACE_WRITE;
+  }
+
+  // Delete removes records by id.
+  rpc Delete(DeleteRequest) returns (DeleteResponse) {
+    option (common.v1.access) = ACCESS_WORKSPACE_WRITE;
+  }
+
+  // List returns a page of records without their bodies.
+  rpc List(ListRequest) returns (ListResponse) {
+    option (common.v1.access) = ACCESS_WORKSPACE_READ;
+  }
+
+  // PullRecords reads the log of changes above a sequence number, for a device that follows it.
+  rpc PullRecords(PullRecordsRequest) returns (PullRecordsResponse) {
+    option (common.v1.access) = ACCESS_WORKSPACE_READ;
+  }
+
+  // Get reads one record with its script reports and, on request, its bodies.
+  rpc Get(GetRequest) returns (GetResponse) {
+    option (common.v1.access) = ACCESS_WORKSPACE_READ;
+  }
+
+  // GetRun reads one collection run.
+  rpc GetRun(GetRunRequest) returns (GetRunResponse) {
+    option (common.v1.access) = ACCESS_WORKSPACE_READ;
+  }
+}
+
+// RecordSource is where a record came from.
+enum RecordSource {
+  RECORD_SOURCE_UNSPECIFIED = 0;
+
+  // Sent from the app.
+  RECORD_SOURCE_MANUAL = 1;
+
+  // Captured from a browser by the extension.
+  RECORD_SOURCE_BROWSER = 2;
+}
+
+// BodySide says which half of the exchange a body belongs to.
+enum BodySide {
+  BODY_SIDE_UNSPECIFIED = 0;
+  BODY_SIDE_REQUEST = 1;
+  BODY_SIDE_RESPONSE = 2;
+}
+
+// AppendRefusal is why one record or run of a batch was not taken.
+enum AppendRefusal {
+  // Not refused: the record or run was stored.
+  APPEND_REFUSAL_UNSPECIFIED = 0;
+
+  // Larger than the server's limits (see `platform.v1.Limits`). It will not fit next time either.
+  APPEND_REFUSAL_TOO_LARGE = 1;
+
+  // The caller may not write to the workspace.
+  APPEND_REFUSAL_FORBIDDEN = 2;
+
+  // Nothing to store, or a document that is not a JSON object.
+  APPEND_REFUSAL_EMPTY = 3;
+}
+
+// Record is one request that was sent, with how it went.
+message Record {
+  string id = 1;
+  RecordSource source = 2;
+
+  // The collection request that was sent. Empty for a request sent on its own.
+  string node_id = 3;
+
+  // The run this record was sent by. Empty for a request sent on its own.
+  string run_id = 4;
+  google.protobuf.Timestamp started_at = 5;
+
+  // Everything else about the exchange — method, URL, headers, the answer, timings, cookie writes,
+  // the browser tab — as a JSON object.
+  bytes data = 6;
+
+  // Paths in `data` that hold a secret.
+  repeated string secrets = 7;
+
+  // Secret paths whose value is not in `data`. Sent again, a withheld path keeps the value the
+  // server holds.
+  repeated string withheld = 8;
+}
+
+// RecordBody is one body of a record.
+message RecordBody {
+  BodySide side = 1;
+  bytes content = 2;
+
+  // The size of the body before the server cut it.
+  int64 size = 3;
+  bool truncated = 4;
+}
+
+// Run is a collection run. It is a document of its own, kept once by its id however many records the
+// run produced, and it follows the same log the records do.
+message Run {
+  string id = 1;
+  string collection_id = 2;
+  google.protobuf.Timestamp started_at = 3;
+
+  // The run's environment, timings, counts and per-request results, as a JSON object.
+  bytes data = 4;
+}
+
+// RecordEntry is a record with its bodies and the reports of the scripts around it.
+message RecordEntry {
+  Record record = 1;
+  repeated RecordBody bodies = 2;
+
+  // The script reports, as a JSON array. Empty when no script ran.
+  bytes scripts = 3;
+}
+
+// AppendResult is how one record or run of a batch went.
+message AppendResult {
+  // The id of the record or the run.
+  string id = 1;
+
+  // UNSPECIFIED when it was stored.
+  AppendRefusal refusal = 2;
+}
+
+// RecordChange is one entry of the log: a record written or completed, a record deleted, or a run
+// written.
+message RecordChange {
+  // The entry's place in the log.
+  int64 seq = 1;
+
+  oneof change {
+    Record record = 2;
+
+    // The id of a record that was deleted. Nothing else is left of it.
+    string deleted_record_id = 3;
+
+    Run run = 4;
+  }
+}
+
+message AppendRequest {
+  string workspace_id = 1;
+  repeated RecordEntry records = 2;
+
+  // Runs are upserted by id: a run sent again with more in it replaces what the server held.
+  repeated Run runs = 3;
+}
+
+message AppendResponse {
+  // One for each record of the request, in its order.
+  repeated AppendResult results = 1;
+
+  // One for each run of the request, in its order.
+  repeated AppendResult run_results = 2;
+}
+
+message AmendRequest {
+  string workspace_id = 1;
+
+  // The record with its new document. Only `id`, `data`, `secrets` and `withheld` are read.
+  Record record = 2;
+}
+
+message AmendResponse {
+  Record record = 1;
+}
+
+message DeleteRequest {
+  string workspace_id = 1;
+  repeated string record_ids = 2;
+}
+
+message DeleteResponse {
+  int32 deleted = 1;
+}
+
+message ListRequest {
+  string workspace_id = 1;
+
+  // Only the records of this request. Empty returns every request.
+  string node_id = 2;
+
+  // Only the records from this source. UNSPECIFIED returns every source.
+  RecordSource source = 3;
+
+  // Only the records started within this range. An unset bound is open.
+  google.protobuf.Timestamp from = 4;
+  google.protobuf.Timestamp to = 5;
+
+  // Maximum items to return. 0 uses the server's default.
+  int32 page_size = 6;
+
+  // Opaque cursor from the previous response's `next_page_token`. Empty starts at the first page.
+  string page_token = 7;
+}
+
+message ListResponse {
+  repeated Record records = 1;
+
+  // Opaque cursor for the next page. Empty when there are no more results.
+  string next_page_token = 2;
+
+  // The workspace's log sequence number at the time of the read.
+  int64 head_seq = 3;
+}
+
+message PullRecordsRequest {
+  string workspace_id = 1;
+
+  // Read the changes above this sequence number.
+  int64 after_seq = 2;
+
+  // Maximum changes to return. A log read is not a page: it continues from `next_seq`.
+  int32 limit = 3;
+}
+
+message PullRecordsResponse {
+  repeated RecordChange changes = 1;
+
+  // Pass this as `after_seq` to continue.
+  int64 next_seq = 2;
+
+  // Whether more changes are waiting above `next_seq`.
+  bool has_more = 3;
+
+  // The lowest sequence number the log still holds: retention removed everything below it, and a
+  // read from a lower number starts here.
+  int64 floor_seq = 4;
+
+  // The highest sequence number in the log.
+  int64 head_seq = 5;
+}
+
+message GetRequest {
+  string workspace_id = 1;
+  string record_id = 2;
+  bool include_bodies = 3;
+}
+
+message GetResponse {
+  Record record = 1;
+  repeated RecordBody bodies = 2;
+
+  // The script reports, as a JSON array.
+  bytes scripts = 3;
+}
+
+message GetRunRequest {
+  string workspace_id = 1;
+  string run_id = 2;
+}
+
+message GetRunResponse {
+  Run run = 1;
+}

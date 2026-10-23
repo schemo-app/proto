@@ -1,0 +1,236 @@
+syntax = "proto3";
+
+package workspace.v1;
+
+import "common/v1/access.proto";
+import "common/v1/people.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/schemo-app/proto/go/workspace/v1;workspace";
+
+// WorkspaceService manages workspaces as things: created, named, coloured, deleted, listed. Who is
+// in a workspace is managed by `WorkspaceMembershipService`.
+//
+// A workspace's content (collections, requests, environments, variables) is written only through
+// `sync/v1`. This service reports counts and status.
+service WorkspaceService {
+  // Create creates a workspace in an org, with the caller as its first member.
+  rpc Create(CreateRequest) returns (CreateResponse) {
+    option (common.v1.access) = ACCESS_WORKSPACE_CREATE;
+  }
+
+  // Update changes a workspace's name, color, visibility or kind.
+  rpc Update(UpdateRequest) returns (UpdateResponse) {
+    option (common.v1.access) = ACCESS_WORKSPACE_UPDATE;
+  }
+
+  // Delete soft-deletes a workspace; every device syncing it stops.
+  rpc Delete(DeleteRequest) returns (DeleteResponse) {
+    option (common.v1.access) = ACCESS_WORKSPACE_DELETE;
+  }
+
+  // Get reads one workspace's metadata.
+  rpc Get(GetRequest) returns (GetResponse) {
+    option (common.v1.access) = ACCESS_WORKSPACE_READ;
+  }
+
+  // List returns the workspaces of an org that are visible to the caller.
+  rpc List(ListRequest) returns (ListResponse) {
+    option (common.v1.access) = ACCESS_ORG_READ;
+  }
+
+  // ListDeleted returns the deleted workspaces the caller may restore, across every org they are
+  // in, newest deletion first.
+  rpc ListDeleted(ListDeletedRequest) returns (ListDeletedResponse) {
+    option (common.v1.access) = ACCESS_WORKSPACE_DELETE;
+  }
+
+  // Restore brings a deleted workspace back before its retention runs out.
+  rpc Restore(RestoreRequest) returns (RestoreResponse) {
+    option (common.v1.access) = ACCESS_WORKSPACE_DELETE;
+  }
+
+  // Purge removes a deleted workspace for good, before its retention runs out.
+  rpc Purge(PurgeRequest) returns (PurgeResponse) {
+    option (common.v1.access) = ACCESS_WORKSPACE_DELETE;
+  }
+}
+
+// WorkspaceKind is what a workspace is for.
+enum WorkspaceKind {
+  WORKSPACE_KIND_UNSPECIFIED = 0;
+
+  // One person's. It cannot have other members.
+  WORKSPACE_KIND_PERSONAL = 1;
+
+  // Worked in together. It needs `FEATURE_SHARED_WORKSPACES`.
+  WORKSPACE_KIND_TEAM = 2;
+}
+
+// WorkspaceVisibility is who in the org can see a workspace.
+enum WorkspaceVisibility {
+  WORKSPACE_VISIBILITY_UNSPECIFIED = 0;
+
+  // Only its members.
+  WORKSPACE_VISIBILITY_PRIVATE = 1;
+
+  // Every member of the org.
+  WORKSPACE_VISIBILITY_INTERNAL = 2;
+}
+
+// Workspace is a workspace and the caller's place in it.
+message Workspace {
+  string id = 1;
+  string org_id = 2;
+  string name = 3;
+
+  // A word of the palette (see `panel.v1.PanelState.workspace_colors`) or a hex code.
+  string color = 4;
+
+  WorkspaceKind kind = 5;
+  WorkspaceVisibility visibility = 6;
+
+  // The role the caller holds in the workspace, and its permission keys.
+  common.v1.RoleRef role = 7;
+  repeated string permissions = 8;
+
+  // What the caller may do with the workspace, decided here so that no client names a permission
+  // key.
+  WorkspaceCan can = 9;
+
+  // True when the caller is a member of the workspace rather than seeing it through the org.
+  bool is_member = 10;
+
+  WorkspaceCounts counts = 11;
+
+  // When a device last wrote to the workspace.
+  google.protobuf.Timestamp last_sync_at = 12;
+
+  // The workspace's current sync sequence number; see `sync/v1`.
+  int64 last_sync_seq = 13;
+
+  // Raised by every change to the workspace's own row.
+  int64 version = 14;
+
+  google.protobuf.Timestamp created_at = 15;
+  google.protobuf.Timestamp updated_at = 16;
+
+  // When the workspace was deleted. Unset for one that is not.
+  google.protobuf.Timestamp deleted_at = 17;
+
+  // When a deleted workspace is removed for good. Unset for one that is not deleted.
+  google.protobuf.Timestamp purge_at = 18;
+}
+
+// WorkspaceCan is what the caller may do with one workspace.
+message WorkspaceCan {
+  bool update = 1;
+  bool delete = 2;
+  bool manage_members = 3;
+}
+
+// WorkspaceCounts is how much a workspace holds.
+message WorkspaceCounts {
+  int32 collections = 1;
+  int32 requests = 2;
+  int32 environments = 3;
+  int32 variables = 4;
+
+  // Members, i.e. people with access.
+  int32 members = 5;
+
+  // History records and their size, measured against the plan's quotas.
+  int32 records = 6;
+  int64 history_bytes = 7;
+}
+
+message CreateRequest {
+  string org_id = 1;
+
+  // The id to create the workspace under, chosen by the client so that a retry is idempotent.
+  string id = 2;
+
+  string name = 3;
+  string color = 4;
+
+  // UNSPECIFIED creates a personal workspace.
+  WorkspaceKind kind = 5;
+
+  WorkspaceVisibility visibility = 6;
+}
+
+message CreateResponse {
+  Workspace workspace = 1;
+}
+
+// UpdateRequest is a partial update: a field that is absent is left as it is.
+message UpdateRequest {
+  string workspace_id = 1;
+  optional string name = 2;
+  optional string color = 3;
+  optional WorkspaceVisibility visibility = 4;
+
+  // Changing a workspace between personal and team.
+  optional WorkspaceKind kind = 5;
+}
+
+message UpdateResponse {
+  Workspace workspace = 1;
+}
+
+message DeleteRequest {
+  string workspace_id = 1;
+}
+
+message DeleteResponse {}
+
+message GetRequest {
+  string workspace_id = 1;
+}
+
+message GetResponse {
+  Workspace workspace = 1;
+}
+
+message ListRequest {
+  string org_id = 1;
+
+  // Maximum items to return. 0 uses the server's default.
+  int32 page_size = 2;
+
+  // Opaque cursor from the previous response's `next_page_token`. Empty starts at the first page.
+  string page_token = 3;
+}
+
+message ListResponse {
+  repeated Workspace workspaces = 1;
+
+  // Opaque cursor for the next page. Empty when there are no more results.
+  string next_page_token = 2;
+
+  // The id of the org that belongs to the caller alone.
+  string own_org_id = 3;
+}
+
+message ListDeletedRequest {}
+
+message ListDeletedResponse {
+  repeated Workspace workspaces = 1;
+
+  // How many days a deleted workspace is kept before it is removed for good.
+  int32 retention_days = 2;
+}
+
+message RestoreRequest {
+  string workspace_id = 1;
+}
+
+message RestoreResponse {
+  Workspace workspace = 1;
+}
+
+message PurgeRequest {
+  string workspace_id = 1;
+}
+
+message PurgeResponse {}
