@@ -22,7 +22,7 @@ Consumers should use released artifacts directly. Code generation is only requir
 
 ### Go
 
-Install the versioned module with `go get github.com/schemo-app/proto@v0.5.0`.
+Install the versioned module with `go get github.com/schemo-app/proto@v0.6.0`.
 
 Import generated RPC packages:
 
@@ -41,7 +41,7 @@ import "github.com/schemo-app/proto/snapshot/v1"
 Install the ready package from the matching GitHub release:
 
 ```bash
-npm install https://github.com/schemo-app/proto/releases/download/v0.5.0/schemo-app-proto-0.5.0.tgz
+npm install https://github.com/schemo-app/proto/releases/download/v0.6.0/schemo-app-proto-0.6.0.tgz
 ```
 
 Import generated RPC bindings:
