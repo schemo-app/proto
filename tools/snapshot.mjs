@@ -15,7 +15,7 @@ class JSONTypeScript extends TypeScriptTargetLanguage {
 
 async function readSchema() {
     const schema = JSON.parse(await readFile(resolve(root, 'schema/snapshot.v1.json'), 'utf8'))
-    if (typeof schema['x-format'] !== 'string' || !Number.isSafeInteger(schema['x-version'])) {
+    if (typeof schema.properties.format.const !== 'string' || !Number.isSafeInteger(schema.properties.version.const)) {
         throw new Error('Snapshot format/version metadata is invalid')
     }
     // Field order is part of existing endpoint fingerprints, so quicktype keeps the declared order.
@@ -26,8 +26,12 @@ async function readSchema() {
 }
 
 async function quicktypeInput(schema) {
+    const model = structuredClone(schema)
+    // Keep the published field types while the JSON Schema enforces the envelope literals.
+    delete model.properties.format.const
+    delete model.properties.version.const
     const input = new JSONSchemaInput(undefined)
-    await input.addSource({ name: 'Snapshot', schema: JSON.stringify(schema) })
+    await input.addSource({ name: 'Snapshot', schema: JSON.stringify(model) })
     const inputData = new InputData()
     inputData.addInput(input)
     return inputData
@@ -36,9 +40,11 @@ async function quicktypeInput(schema) {
 function formatGo(generatedLines, schema) {
     const packageLine = generatedLines.findIndex(line => line.startsWith('package '))
     if (packageLine < 0) throw new Error('Generated Go package is missing')
-    const constants = `\nconst Format = ${JSON.stringify(schema['x-format'])}\nconst Version = ${schema['x-version']}\n`
+    const { format, version } = schema.properties
+    const constants = `\nconst Format = ${JSON.stringify(format.const)}\nconst Version = ${version.const}\n`
     const source = `// ${header}\n` + generatedLines.slice(packageLine).join('\n') + '\n' + constants
     const formatted = spawnSync('gofmt', { input: source, encoding: 'utf8' })
+    if (formatted.error) throw formatted.error
     if (formatted.status !== 0) throw new Error(formatted.stderr || 'gofmt failed')
     return formatted.stdout
 }
@@ -56,15 +62,14 @@ async function generate(schema) {
     ])
 }
 
-// Writes the generated file, or with --check fails when the committed one has drifted.
 async function emit(path, expected) {
-    if (checkOnly) {
-        const actual = await readFile(path, 'utf8').catch(() => '')
-        if (actual.replaceAll('\r\n', '\n') !== expected) throw new Error(`Snapshot generation drift: ${path}`)
+    if (!checkOnly) {
+        await mkdir(dirname(path), { recursive: true })
+        await writeFile(path, expected)
         return
     }
-    await mkdir(dirname(path), { recursive: true })
-    await writeFile(path, expected)
+    const actual = await readFile(path, 'utf8')
+    if (actual.replaceAll('\r\n', '\n') !== expected) throw new Error(`Snapshot generation drift: ${path}`)
 }
 
 for (const [path, expected] of await generate(await readSchema())) {

@@ -103,20 +103,12 @@ export const RoleScopeSchema = /*@__PURE__*/
   enumDesc(file_role_v1_role, 0);
 
 /**
- * RoleScope names the level a role is written for.
- *
  * @generated from enum role.v1.RoleScope
  */
 export const RoleScope = /*@__PURE__*/
   tsEnum(RoleScopeSchema);
 
 /**
- * RoleService manages the roles of an org and its workspaces.
- *
- * A role is a named set of permissions, stored as data rather than compiled into the software: an
- * org uses the built-in roles or adds its own. Built-in roles are immutable, since their names are
- * quoted by every audit entry that ever referenced them.
- *
  * @generated from service role.v1.RoleService
  */
 export const RoleService = /*@__PURE__*/

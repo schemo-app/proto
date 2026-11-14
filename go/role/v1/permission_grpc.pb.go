@@ -25,12 +25,7 @@ const (
 // PermissionServiceClient is the client API for PermissionService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-//
-// PermissionService is the read-only catalogue of permissions a role may grant. Nothing is added
-// to it at runtime: a permission exists because the software enforces something with it.
 type PermissionServiceClient interface {
-	// ListPermissions returns every permission this server knows. It describes what the software can
-	// do, not what the caller is allowed to do.
 	ListPermissions(ctx context.Context, in *ListPermissionsRequest, opts ...grpc.CallOption) (*ListPermissionsResponse, error)
 }
 
@@ -55,12 +50,7 @@ func (c *permissionServiceClient) ListPermissions(ctx context.Context, in *ListP
 // PermissionServiceServer is the server API for PermissionService service.
 // All implementations must embed UnimplementedPermissionServiceServer
 // for forward compatibility.
-//
-// PermissionService is the read-only catalogue of permissions a role may grant. Nothing is added
-// to it at runtime: a permission exists because the software enforces something with it.
 type PermissionServiceServer interface {
-	// ListPermissions returns every permission this server knows. It describes what the software can
-	// do, not what the caller is allowed to do.
 	ListPermissions(context.Context, *ListPermissionsRequest) (*ListPermissionsResponse, error)
 	mustEmbedUnimplementedPermissionServiceServer()
 }

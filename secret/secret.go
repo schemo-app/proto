@@ -8,14 +8,16 @@ package secret
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 	"slices"
 	"strconv"
 	"strings"
 )
 
 // Doc is parsed JSON data.
-type Doc struct{ root any }
+type Doc struct{ root map[string]any }
 
 // Parse reads data, which must be a JSON object. Empty data is an empty object.
 func Parse(data []byte) (*Doc, error) {
@@ -24,12 +26,15 @@ func Parse(data []byte) (*Doc, error) {
 	}
 	dec := json.NewDecoder(bytes.NewReader(data))
 	dec.UseNumber()
-	var root any
+	var root map[string]any
 	if err := dec.Decode(&root); err != nil {
 		return nil, fmt.Errorf("data is not JSON: %w", err)
 	}
-	if _, ok := root.(map[string]any); !ok {
-		return nil, fmt.Errorf("data is not a JSON object")
+	if root == nil {
+		return nil, errors.New("data is not a JSON object")
+	}
+	if err := dec.Decode(new(json.RawMessage)); err != io.EOF {
+		return nil, errors.New("trailing data after JSON object")
 	}
 	return &Doc{root: root}, nil
 }
@@ -69,7 +74,7 @@ func (d *Doc) walk(path string) (map[string]any, string, bool) {
 		return nil, "", false
 	}
 	segments := strings.Split(path[1:], "/")
-	at := d.root
+	var at any = d.root
 	for i, raw := range segments {
 		segment := unescape(raw)
 		last := i == len(segments)-1
@@ -142,41 +147,22 @@ func Withhold(data []byte, secrets []string) ([]byte, []string, error) {
 
 // Restore fills each withheld path that is empty in data with the value held has there.
 func Restore(data []byte, withheld []string, held []byte) ([]byte, error) {
-	if len(withheld) == 0 || len(held) == 0 {
-		return data, nil
-	}
-	doc, err := Parse(data)
-	if err != nil {
-		return nil, err
-	}
-	old, err := Parse(held)
-	if err != nil {
-		return data, nil
-	}
-	changed := false
-	for _, path := range withheld {
-		if value := old.Get(path); value != "" && doc.Get(path) == "" && doc.Set(path, value) {
-			changed = true
-		}
-	}
-	if !changed {
-		return data, nil
-	}
-	return doc.Bytes()
+	return restore(data, held, withheld, nil)
 }
 
-// Keep puts back into incoming data the secret values its sender did not send, from held data.
-//
-// A path the sender listed as withheld always takes the held value: the sender said the absence is
-// its choice. When hidden (the sender may not read secrets and was never handed them) an empty
-// secret slot also takes it, but only where the held data had a secret there too; a slot the sender
-// made readable is not refilled with a value they were never shown.
+// Keep restores withheld values. For a sender without read access, it only restores
+// paths still marked secret and also considers previously stored secret paths.
 func Keep(data []byte, secrets, withheld []string, held []byte, heldSecrets []string, hidden bool) ([]byte, error) {
-	candidates := slices.Clone(withheld)
-	if hidden {
-		candidates = append(candidates, secrets...)
+	if !hidden {
+		return Restore(data, withheld, held)
 	}
-	if len(candidates) == 0 || len(held) == 0 {
+	return restore(data, held, slices.Concat(withheld, secrets), func(path string) bool {
+		return slices.Contains(secrets, path) && (slices.Contains(withheld, path) || slices.Contains(heldSecrets, path))
+	})
+}
+
+func restore(data, held []byte, paths []string, allowed func(string) bool) ([]byte, error) {
+	if len(paths) == 0 || len(held) == 0 {
 		return data, nil
 	}
 	doc, err := Parse(data)
@@ -188,19 +174,11 @@ func Keep(data []byte, secrets, withheld []string, held []byte, heldSecrets []st
 		return data, nil
 	}
 	changed := false
-	for _, path := range candidates {
-		value := old.Get(path)
-		if value == "" || doc.Get(path) != "" {
+	for _, path := range paths {
+		if allowed != nil && !allowed(path) {
 			continue
 		}
-		flagged := slices.Contains(withheld, path)
-		secretNow := slices.Contains(secrets, path)
-		heldSecret := slices.Contains(heldSecrets, path)
-		carry := flagged || (hidden && heldSecret)
-		if hidden && !secretNow {
-			carry = false
-		}
-		if carry && doc.Set(path, value) {
+		if value := old.Get(path); value != "" && doc.Get(path) == "" && doc.Set(path, value) {
 			changed = true
 		}
 	}

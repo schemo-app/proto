@@ -153,8 +153,6 @@ export const WorkspaceKindSchema = /*@__PURE__*/
   enumDesc(file_workspace_v1_workspace, 0);
 
 /**
- * WorkspaceKind is what a workspace is for.
- *
  * @generated from enum workspace.v1.WorkspaceKind
  */
 export const WorkspaceKind = /*@__PURE__*/
@@ -167,20 +165,12 @@ export const WorkspaceVisibilitySchema = /*@__PURE__*/
   enumDesc(file_workspace_v1_workspace, 1);
 
 /**
- * WorkspaceVisibility is who in the org can see a workspace.
- *
  * @generated from enum workspace.v1.WorkspaceVisibility
  */
 export const WorkspaceVisibility = /*@__PURE__*/
   tsEnum(WorkspaceVisibilitySchema);
 
 /**
- * WorkspaceService manages workspaces as things: created, named, coloured, deleted, listed. Who is
- * in a workspace is managed by `WorkspaceMembershipService`.
- *
- * A workspace's content (collections, requests, environments, variables) is written only through
- * `sync/v1`. This service reports counts and status.
- *
  * @generated from service workspace.v1.WorkspaceService
  */
 export const WorkspaceService = /*@__PURE__*/

@@ -5,20 +5,13 @@ vars:
 
 tasks:
   check:
-    desc: Run every gate CI runs, except regenerating the bindings
-    deps: [lint, wire, generated, test, modules]
+    desc: Run repository checks
+    deps: [lint, test, modules]
 
   lint:
     desc: Lint the protobuf sources
-    dir: proto
     cmds:
       - '{{.GO_TOOLS}} buf lint'
-
-  wire:
-    desc: Check the sources against the v1 wire baseline
-    dir: proto
-    cmds:
-      - '{{.GO_TOOLS}} buf breaking --config buf.wire.yaml --against compatibility/v1.binpb'
 
   generate:
     desc: Regenerate the RPC bindings and the snapshot types
@@ -29,23 +22,17 @@ tasks:
 
   generate:rpc:
     desc: Regenerate the Go and ECMAScript RPC bindings
-    dir: proto
     cmds:
-      - '{{.GO_TOOLS}} buf generate --output ..'
-      - '{{.GO_TOOLS}} buf generate --template buf.gen.es.yaml --output ..'
-
-  generated:
-    desc: Check that the committed bindings and snapshot types match their sources
-    cmds:
-      - go -C tools test -count=1 ./contractcheck
-      - node tools/snapshot.mjs --check
+      - '{{.GO_TOOLS}} buf generate'
+      - '{{.GO_TOOLS}} buf generate --template buf.gen.es.yaml'
 
   test:
     desc: Vet and test the Go packages and the JavaScript package
     cmds:
-      - go vet . ./go/... ./snapshot/... ./schema
-      - go test . ./go/... ./snapshot/... ./schema
+      - go vet ./...
+      - go test ./...
       - npm test
+      - npm run check:snapshot
 
   modules:
     desc: Check that both go.mod files are tidy

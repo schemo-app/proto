@@ -21,7 +21,6 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// RoleRef names a role without carrying its permissions; `role.v1.RoleService` reads the role itself.
 type RoleRef struct {
 	state           protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Id   string                 `protobuf:"bytes,1,opt,name=id,proto3"`
@@ -80,8 +79,7 @@ func (x *RoleRef) SetName(v string) {
 type RoleRef_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Id string
-	// The role's display name, e.g. "Editor".
+	Id   string
 	Name string
 }
 
@@ -94,7 +92,6 @@ func (b0 RoleRef_builder) Build() *RoleRef {
 	return m0
 }
 
-// Person is a user as a members list shows them.
 type Person struct {
 	state              protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_UserId  string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3"`
@@ -195,7 +192,6 @@ func (b0 Person_builder) Build() *Person {
 	return m0
 }
 
-// Member is a person's place in an org or a workspace.
 type Member struct {
 	state               protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Person   *Person                `protobuf:"bytes,1,opt,name=person,proto3"`

@@ -159,8 +159,6 @@ export const RecordSourceSchema = /*@__PURE__*/
   enumDesc(file_history_v1_history, 0);
 
 /**
- * RecordSource is where a record came from.
- *
  * @generated from enum history.v1.RecordSource
  */
 export const RecordSource = /*@__PURE__*/
@@ -173,8 +171,6 @@ export const BodySideSchema = /*@__PURE__*/
   enumDesc(file_history_v1_history, 1);
 
 /**
- * BodySide says which half of the exchange a body belongs to.
- *
  * @generated from enum history.v1.BodySide
  */
 export const BodySide = /*@__PURE__*/
@@ -187,21 +183,12 @@ export const AppendRefusalSchema = /*@__PURE__*/
   enumDesc(file_history_v1_history, 2);
 
 /**
- * AppendRefusal is why one record or run of a batch was not taken.
- *
  * @generated from enum history.v1.AppendRefusal
  */
 export const AppendRefusal = /*@__PURE__*/
   tsEnum(AppendRefusalSchema);
 
 /**
- * HistoryService keeps the requests a workspace has sent, what came back, and what the scripts
- * around them reported. It is an append-only log that devices read from a sequence number.
- *
- * Records and runs are JSON documents the server stores as they came. It reads the few fields it
- * filters and orders by, which travel beside the document, and the secret paths of a record, which
- * it withholds from readers who may not see secrets (see `sync.v1.SyncEntity` for the path form).
- *
  * @generated from service history.v1.HistoryService
  */
 export const HistoryService = /*@__PURE__*/

@@ -43,13 +43,10 @@ const (
 
 // SyncServiceClient is a client for the sync.v1.SyncService service.
 type SyncServiceClient interface {
-	// Push submits a batch of entity mutations to one workspace. Each entity is judged on its own and
-	// answered in its own result, so one refusal does not cost the rest of the batch.
+	// Each mutation has its own result.
 	Push(context.Context, *v1.PushRequest) (*v1.PushResponse, error)
-	// Pull returns the entity changes above a sequence number.
 	Pull(context.Context, *v1.PullRequest) (*v1.PullResponse, error)
-	// Connect opens a long-lived stream that tells the device when a workspace it follows has moved,
-	// so that it pulls at once instead of waiting for its timer.
+	// Streams workspace changes as notifications. Fetch the data with Pull.
 	Connect(context.Context, *v1.ConnectRequest) (*connect.ServerStreamForClient[v1.ConnectResponse], error)
 }
 
@@ -117,13 +114,10 @@ func (c *syncServiceClient) Connect(ctx context.Context, req *v1.ConnectRequest)
 
 // SyncServiceHandler is an implementation of the sync.v1.SyncService service.
 type SyncServiceHandler interface {
-	// Push submits a batch of entity mutations to one workspace. Each entity is judged on its own and
-	// answered in its own result, so one refusal does not cost the rest of the batch.
+	// Each mutation has its own result.
 	Push(context.Context, *v1.PushRequest) (*v1.PushResponse, error)
-	// Pull returns the entity changes above a sequence number.
 	Pull(context.Context, *v1.PullRequest) (*v1.PullResponse, error)
-	// Connect opens a long-lived stream that tells the device when a workspace it follows has moved,
-	// so that it pulls at once instead of waiting for its timer.
+	// Streams workspace changes as notifications. Fetch the data with Pull.
 	Connect(context.Context, *v1.ConnectRequest, *connect.ServerStream[v1.ConnectResponse]) error
 }
 

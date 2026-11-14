@@ -41,9 +41,7 @@ const (
 
 // AuditServiceClient is a client for the audit.v1.AuditService service.
 type AuditServiceClient interface {
-	// List returns journal entries, newest first, one page at a time.
 	List(context.Context, *v1.ListRequest) (*v1.ListResponse, error)
-	// Export streams the entries that match as chunked CSV, for reporting and archiving.
 	Export(context.Context, *v1.ExportRequest) (*connect.ServerStreamForClient[v1.ExportResponse], error)
 }
 
@@ -95,9 +93,7 @@ func (c *auditServiceClient) Export(ctx context.Context, req *v1.ExportRequest) 
 
 // AuditServiceHandler is an implementation of the audit.v1.AuditService service.
 type AuditServiceHandler interface {
-	// List returns journal entries, newest first, one page at a time.
 	List(context.Context, *v1.ListRequest) (*v1.ListResponse, error)
-	// Export streams the entries that match as chunked CSV, for reporting and archiving.
 	Export(context.Context, *v1.ExportRequest, *connect.ServerStream[v1.ExportResponse]) error
 }
 

@@ -29,16 +29,8 @@ const (
 // RoleServiceClient is the client API for RoleService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-//
-// RoleService manages the roles of an org and its workspaces.
-//
-// A role is a named set of permissions, stored as data rather than compiled into the software: an
-// org uses the built-in roles or adds its own. Built-in roles are immutable, since their names are
-// quoted by every audit entry that ever referenced them.
 type RoleServiceClient interface {
-	// GetRole reads one role by id.
 	GetRole(ctx context.Context, in *GetRoleRequest, opts ...grpc.CallOption) (*GetRoleResponse, error)
-	// ListRoles returns the roles of an org, optionally of one scope.
 	ListRoles(ctx context.Context, in *ListRolesRequest, opts ...grpc.CallOption) (*ListRolesResponse, error)
 	// CreateRole adds a custom role to an org. A caller may only grant permissions they hold
 	// themselves.
@@ -111,16 +103,8 @@ func (c *roleServiceClient) DeleteRole(ctx context.Context, in *DeleteRoleReques
 // RoleServiceServer is the server API for RoleService service.
 // All implementations must embed UnimplementedRoleServiceServer
 // for forward compatibility.
-//
-// RoleService manages the roles of an org and its workspaces.
-//
-// A role is a named set of permissions, stored as data rather than compiled into the software: an
-// org uses the built-in roles or adds its own. Built-in roles are immutable, since their names are
-// quoted by every audit entry that ever referenced them.
 type RoleServiceServer interface {
-	// GetRole reads one role by id.
 	GetRole(context.Context, *GetRoleRequest) (*GetRoleResponse, error)
-	// ListRoles returns the roles of an org, optionally of one scope.
 	ListRoles(context.Context, *ListRolesRequest) (*ListRolesResponse, error)
 	// CreateRole adds a custom role to an org. A caller may only grant permissions they hold
 	// themselves.

@@ -63,26 +63,19 @@ const (
 
 // BillingServiceClient is a client for the billing.v1.BillingService service.
 type BillingServiceClient interface {
-	// Subscribe starts a subscription purchase and returns where to confirm the payment. Idempotent:
-	// repeating a request with the same `idempotency_key` returns the active transaction.
+	// Reusing an idempotency key returns the active transaction.
 	Subscribe(context.Context, *v1.SubscribeRequest) (*v1.SubscribeResponse, error)
-	// GetPaymentStatus reads the state of a payment, which a client polls until it settles.
 	GetPaymentStatus(context.Context, *v1.GetPaymentStatusRequest) (*v1.GetPaymentStatusResponse, error)
-	// GetSubscription reads the org's current or latest subscription.
 	GetSubscription(context.Context, *v1.GetSubscriptionRequest) (*v1.GetSubscriptionResponse, error)
-	// RenewNow charges at once to extend the current subscription period.
 	RenewNow(context.Context, *v1.RenewNowRequest) (*v1.RenewNowResponse, error)
 	// CancelSubscription stops auto-renewal. The subscription stays active until the period ends.
 	CancelSubscription(context.Context, *v1.CancelSubscriptionRequest) (*v1.CancelSubscriptionResponse, error)
-	// ListPayments returns the org's charges, newest first.
 	ListPayments(context.Context, *v1.ListPaymentsRequest) (*v1.ListPaymentsResponse, error)
 	// ListOffers returns the price list to any signed-in caller. With an org id the offers are quoted
 	// for that org's current membership.
 	ListOffers(context.Context, *v1.ListOffersRequest) (*v1.ListOffersResponse, error)
-	// GetPortal returns the provider's customer portal, where payment methods are managed.
 	GetPortal(context.Context, *v1.GetPortalRequest) (*v1.GetPortalResponse, error)
-	// CompleteSandboxPayment settles or refuses a pending payment by hand. Only the sandbox provider
-	// takes it; with a real provider it is refused with `noProvider`.
+	// Available only with the sandbox provider.
 	CompleteSandboxPayment(context.Context, *v1.CompleteSandboxPaymentRequest) (*v1.CompleteSandboxPaymentResponse, error)
 }
 
@@ -250,26 +243,19 @@ func (c *billingServiceClient) CompleteSandboxPayment(ctx context.Context, req *
 
 // BillingServiceHandler is an implementation of the billing.v1.BillingService service.
 type BillingServiceHandler interface {
-	// Subscribe starts a subscription purchase and returns where to confirm the payment. Idempotent:
-	// repeating a request with the same `idempotency_key` returns the active transaction.
+	// Reusing an idempotency key returns the active transaction.
 	Subscribe(context.Context, *v1.SubscribeRequest) (*v1.SubscribeResponse, error)
-	// GetPaymentStatus reads the state of a payment, which a client polls until it settles.
 	GetPaymentStatus(context.Context, *v1.GetPaymentStatusRequest) (*v1.GetPaymentStatusResponse, error)
-	// GetSubscription reads the org's current or latest subscription.
 	GetSubscription(context.Context, *v1.GetSubscriptionRequest) (*v1.GetSubscriptionResponse, error)
-	// RenewNow charges at once to extend the current subscription period.
 	RenewNow(context.Context, *v1.RenewNowRequest) (*v1.RenewNowResponse, error)
 	// CancelSubscription stops auto-renewal. The subscription stays active until the period ends.
 	CancelSubscription(context.Context, *v1.CancelSubscriptionRequest) (*v1.CancelSubscriptionResponse, error)
-	// ListPayments returns the org's charges, newest first.
 	ListPayments(context.Context, *v1.ListPaymentsRequest) (*v1.ListPaymentsResponse, error)
 	// ListOffers returns the price list to any signed-in caller. With an org id the offers are quoted
 	// for that org's current membership.
 	ListOffers(context.Context, *v1.ListOffersRequest) (*v1.ListOffersResponse, error)
-	// GetPortal returns the provider's customer portal, where payment methods are managed.
 	GetPortal(context.Context, *v1.GetPortalRequest) (*v1.GetPortalResponse, error)
-	// CompleteSandboxPayment settles or refuses a pending payment by hand. Only the sandbox provider
-	// takes it; with a real provider it is refused with `noProvider`.
+	// Available only with the sandbox provider.
 	CompleteSandboxPayment(context.Context, *v1.CompleteSandboxPaymentRequest) (*v1.CompleteSandboxPaymentResponse, error)
 }
 

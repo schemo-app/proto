@@ -3,14 +3,12 @@
     "$id": "https://raw.githubusercontent.com/schemo-app/proto/main/schema/snapshot.v1.json",
     "title": "Snapshot",
     "description": "Current v1 writer model. Readers preserve compatibility with earlier v1 documents by applying zero defaults for omitted fields. Arrays may be null in Go JSON output.",
-    "x-format": "schemo.collection-snapshot",
-    "x-version": 1,
     "type": "object",
     "additionalProperties": false,
     "required": ["format", "version", "generator", "locale", "collection", "environment", "environments", "prose", "changes", "options"],
     "properties": {
-        "format": { "type": "string" },
-        "version": { "type": "integer" },
+        "format": { "type": "string", "const": "schemo.collection-snapshot" },
+        "version": { "type": "integer", "const": 1 },
         "generator": { "$ref": "#/definitions/Generator" },
         "locale": { "type": "string" },
         "collection": { "$ref": "#/definitions/Collection" },
@@ -59,7 +57,10 @@
                 "method": { "type": "string" }, "path": { "type": "string" }, "description": { "type": "string" },
                 "parameters": { "type": ["array", "null"], "items": { "$ref": "#/definitions/Parameter" } },
                 "body": { "anyOf": [{ "$ref": "#/definitions/Body" }, { "type": "null" }] },
-                "responses": { "type": ["array", "null"], "items": { "$ref": "#/definitions/Response" } }
+                "responses": { "type": ["array", "null"], "items": { "$ref": "#/definitions/Response" } },
+                "protocol": { "type": "string", "enum": ["gql", "grpc", "ws", "sse"] },
+                "operation": { "type": "string" },
+                "variables": { "type": "string" }
             }
         },
         "Parameter": {

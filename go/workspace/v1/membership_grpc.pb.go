@@ -29,17 +29,10 @@ const (
 // WorkspaceMembershipServiceClient is the client API for WorkspaceMembershipService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-//
-// WorkspaceMembershipService manages the people in one workspace. Membership of a workspace is
-// separate from membership of the org above it: an org member may be in none of its workspaces,
-// but a workspace member always belongs to the org.
 type WorkspaceMembershipServiceClient interface {
-	// ListMembers returns the people in a workspace.
 	ListMembers(ctx context.Context, in *ListMembersRequest, opts ...grpc.CallOption) (*ListMembersResponse, error)
 	// AddMember adds an existing org member to the workspace.
 	AddMember(ctx context.Context, in *AddMemberRequest, opts ...grpc.CallOption) (*AddMemberResponse, error)
-	// ChangeMemberRole assigns another role within this workspace only; the member's org role is
-	// untouched.
 	ChangeMemberRole(ctx context.Context, in *ChangeMemberRoleRequest, opts ...grpc.CallOption) (*ChangeMemberRoleResponse, error)
 	// RemoveMember removes a person from the workspace and stops their devices syncing it. They stay
 	// in the org.
@@ -110,17 +103,10 @@ func (c *workspaceMembershipServiceClient) Leave(ctx context.Context, in *LeaveR
 // WorkspaceMembershipServiceServer is the server API for WorkspaceMembershipService service.
 // All implementations must embed UnimplementedWorkspaceMembershipServiceServer
 // for forward compatibility.
-//
-// WorkspaceMembershipService manages the people in one workspace. Membership of a workspace is
-// separate from membership of the org above it: an org member may be in none of its workspaces,
-// but a workspace member always belongs to the org.
 type WorkspaceMembershipServiceServer interface {
-	// ListMembers returns the people in a workspace.
 	ListMembers(context.Context, *ListMembersRequest) (*ListMembersResponse, error)
 	// AddMember adds an existing org member to the workspace.
 	AddMember(context.Context, *AddMemberRequest) (*AddMemberResponse, error)
-	// ChangeMemberRole assigns another role within this workspace only; the member's org role is
-	// untouched.
 	ChangeMemberRole(context.Context, *ChangeMemberRoleRequest) (*ChangeMemberRoleResponse, error)
 	// RemoveMember removes a person from the workspace and stops their devices syncing it. They stay
 	// in the org.

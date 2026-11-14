@@ -14,9 +14,6 @@ import type { RoleScope } from "../../role/v1/role_pb.js";
 export declare const file_invite_v1_invite: GenFile;
 
 /**
- * Invite is an invitation link. The token itself never appears here: only in the response that
- * created it and in the URL of whoever opened it.
- *
  * @generated from message invite.v1.Invite
  */
 export declare type Invite = Message<"invite.v1.Invite"> & {
@@ -31,9 +28,6 @@ export declare type Invite = Message<"invite.v1.Invite"> & {
   orgId: string;
 
   /**
-   * Empty for an invitation to the org itself; set when the link also grants access to one
-   * workspace.
-   *
    * @generated from field: string workspace_id = 3;
    */
   workspaceId: string;
@@ -44,8 +38,6 @@ export declare type Invite = Message<"invite.v1.Invite"> & {
   role?: RoleRef | undefined;
 
   /**
-   * The address this invitation was sent to. Empty for a shareable link.
-   *
    * @generated from field: string email = 5;
    */
   email: string;
@@ -88,8 +80,6 @@ export declare type Invite = Message<"invite.v1.Invite"> & {
   expiresAt?: Timestamp | undefined;
 
   /**
-   * Unset while the link has not been revoked.
-   *
    * @generated from field: google.protobuf.Timestamp revoked_at = 13;
    */
   revokedAt?: Timestamp | undefined;
@@ -178,8 +168,6 @@ export declare type CreateInviteResponse = Message<"invite.v1.CreateInviteRespon
   token: string;
 
   /**
-   * The full URL, ready to copy or send.
-   *
    * @generated from field: string invite_url = 3;
    */
   inviteUrl: string;
@@ -245,15 +233,11 @@ export declare type ListInvitesRequest = Message<"invite.v1.ListInvitesRequest">
   status: InviteStatus;
 
   /**
-   * Maximum items to return. 0 uses the server's default.
-   *
    * @generated from field: int32 page_size = 3;
    */
   pageSize: number;
 
   /**
-   * Opaque cursor from the previous response's `next_page_token`. Empty starts at the first page.
-   *
    * @generated from field: string page_token = 4;
    */
   pageToken: string;
@@ -275,8 +259,6 @@ export declare type ListInvitesResponse = Message<"invite.v1.ListInvitesResponse
   invites: Invite[];
 
   /**
-   * Opaque cursor for the next page. Empty when there are no more results.
-   *
    * @generated from field: string next_page_token = 2;
    */
   nextPageToken: string;
@@ -305,15 +287,12 @@ export declare type PreviewInviteRequest = Message<"invite.v1.PreviewInviteReque
 export declare const PreviewInviteRequestSchema: GenMessage<PreviewInviteRequest>;
 
 /**
- * PreviewInviteResponse is everything a landing page may know before sign-in. Deliberately small,
- * since anyone holding the token can read it: it names the org but not its contents.
+ * Preview returned before sign-in.
  *
  * @generated from message invite.v1.PreviewInviteResponse
  */
 export declare type PreviewInviteResponse = Message<"invite.v1.PreviewInviteResponse"> & {
   /**
-   * PENDING when the link can be used; otherwise why it cannot.
-   *
    * @generated from field: invite.v1.InviteStatus status = 1;
    */
   status: InviteStatus;
@@ -341,15 +320,11 @@ export declare type PreviewInviteResponse = Message<"invite.v1.PreviewInviteResp
   role?: RoleRef | undefined;
 
   /**
-   * The scope of the role the invitation grants.
-   *
    * @generated from field: role.v1.RoleScope role_scope = 6;
    */
   roleScope: RoleScope;
 
   /**
-   * Whether the signing-in address must match the one this invitation was sent to.
-   *
    * @generated from field: bool email_bound = 7;
    */
   emailBound: boolean;
@@ -427,8 +402,6 @@ export declare type AcceptInviteResponse = Message<"invite.v1.AcceptInviteRespon
 export declare const AcceptInviteResponseSchema: GenMessage<AcceptInviteResponse>;
 
 /**
- * InviteStatus is where an invitation link stands.
- *
  * @generated from enum invite.v1.InviteStatus
  */
 export enum InviteStatus {
@@ -438,8 +411,6 @@ export enum InviteStatus {
   UNSPECIFIED = 0,
 
   /**
-   * Usable.
-   *
    * @generated from enum value: INVITE_STATUS_PENDING = 1;
    */
   PENDING = 1,
@@ -450,8 +421,6 @@ export enum InviteStatus {
   EXPIRED = 2,
 
   /**
-   * Used as many times as it allows.
-   *
    * @generated from enum value: INVITE_STATUS_EXHAUSTED = 3;
    */
   EXHAUSTED = 3,
@@ -482,15 +451,10 @@ export enum InviteStatus {
 export declare const InviteStatusSchema: GenEnum<InviteStatus>;
 
 /**
- * InviteService creates, lists, revokes, and accepts invitation links.
- *
  * @generated from service invite.v1.InviteService
  */
 export declare const InviteService: GenService<{
   /**
-   * CreateInvite creates an invitation. The returned token is shown once and never again: only its
-   * hash is stored.
-   *
    * @generated from rpc invite.v1.InviteService.CreateInvite
    */
   createInvite: {
@@ -499,8 +463,6 @@ export declare const InviteService: GenService<{
     output: typeof CreateInviteResponseSchema;
   },
   /**
-   * RevokeInvite invalidates a link that has not been used up.
-   *
    * @generated from rpc invite.v1.InviteService.RevokeInvite
    */
   revokeInvite: {
@@ -509,8 +471,6 @@ export declare const InviteService: GenService<{
     output: typeof RevokeInviteResponseSchema;
   },
   /**
-   * ListInvites returns the links an org has created, with their current status.
-   *
    * @generated from rpc invite.v1.InviteService.ListInvites
    */
   listInvites: {
@@ -519,8 +479,7 @@ export declare const InviteService: GenService<{
     output: typeof ListInvitesResponseSchema;
   },
   /**
-   * PreviewInvite reports whether a link is still usable and whose it is, without requiring a
-   * session. A dead link is reported as a status in the body, not as a transport error.
+   * An anonymous preview omits the invitee address.
    *
    * @generated from rpc invite.v1.InviteService.PreviewInvite
    */
@@ -530,8 +489,6 @@ export declare const InviteService: GenService<{
     output: typeof PreviewInviteResponseSchema;
   },
   /**
-   * AcceptInvite redeems a link for the signed-in caller. Holding the token is the permission.
-   *
    * @generated from rpc invite.v1.InviteService.AcceptInvite
    */
   acceptInvite: {

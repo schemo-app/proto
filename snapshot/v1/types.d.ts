@@ -54,6 +54,9 @@ export interface Endpoint {
     parameters:  Parameter[] | null;
     body:        Body | null;
     responses:   Response[] | null;
+    protocol?:   Protocol;
+    operation?:  string;
+    variables?:  string;
 }
 
 export interface Body {
@@ -76,6 +79,8 @@ export interface Parameter {
     description: string;
     example:     string;
 }
+
+export type Protocol = "gql" | "grpc" | "ws" | "sse";
 
 export interface Response {
     status: number;

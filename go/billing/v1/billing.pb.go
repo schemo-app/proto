@@ -22,7 +22,6 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// BillingPeriod is how often a subscription renews.
 type BillingPeriod int32
 
 const (
@@ -67,7 +66,6 @@ func (x BillingPeriod) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// SubscriptionStatus is where a paid subscription stands.
 type SubscriptionStatus int32
 
 const (
@@ -120,14 +118,12 @@ func (x SubscriptionStatus) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// PaymentKind says why a charge was made.
 type PaymentKind int32
 
 const (
 	PaymentKind_PAYMENT_KIND_UNSPECIFIED PaymentKind = 0
-	// The first charge of a subscription, or a change of tier or seats.
-	PaymentKind_PAYMENT_KIND_INITIAL PaymentKind = 1
-	PaymentKind_PAYMENT_KIND_RENEWAL PaymentKind = 2
+	PaymentKind_PAYMENT_KIND_INITIAL     PaymentKind = 1
+	PaymentKind_PAYMENT_KIND_RENEWAL     PaymentKind = 2
 )
 
 // Enum value maps for PaymentKind.
@@ -166,21 +162,17 @@ func (x PaymentKind) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// PaymentStatus is where a payment stands.
 type PaymentStatus int32
 
 const (
 	PaymentStatus_PAYMENT_STATUS_UNSPECIFIED PaymentStatus = 0
-	// Recorded here; the provider has not acknowledged it yet.
-	PaymentStatus_PAYMENT_STATUS_CREATING PaymentStatus = 1
-	// Waiting for the customer to confirm, or for the bank to answer.
-	PaymentStatus_PAYMENT_STATUS_PENDING PaymentStatus = 2
+	PaymentStatus_PAYMENT_STATUS_CREATING    PaymentStatus = 1
+	PaymentStatus_PAYMENT_STATUS_PENDING     PaymentStatus = 2
 	// The provider needs the customer to act again, e.g. to confirm with their bank. The
 	// confirmation URL still works.
 	PaymentStatus_PAYMENT_STATUS_NEEDS_ATTENTION PaymentStatus = 3
 	PaymentStatus_PAYMENT_STATUS_SUCCEEDED       PaymentStatus = 4
-	// Refused or abandoned. `Payment.cancel_reason` says why.
-	PaymentStatus_PAYMENT_STATUS_CANCELED PaymentStatus = 5
+	PaymentStatus_PAYMENT_STATUS_CANCELED        PaymentStatus = 5
 )
 
 // Enum value maps for PaymentStatus.
@@ -225,7 +217,6 @@ func (x PaymentStatus) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Money is an amount in the smallest unit of a currency.
 type Money struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_AmountMinor int64                  `protobuf:"varint,1,opt,name=amount_minor,json=amountMinor,proto3"`
@@ -299,7 +290,6 @@ func (b0 Money_builder) Build() *Money {
 	return m0
 }
 
-// Subscription is an org's paid plan, with the price locked in when it was bought.
 type Subscription struct {
 	state                         protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Id                 string                 `protobuf:"bytes,1,opt,name=id,proto3"`
@@ -498,8 +488,7 @@ func (x *Subscription) ClearAmount() {
 type Subscription_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Id string
-	// The plan's tier; see `plan.v1.Plan.tier`.
+	Id               string
 	Tier             string
 	Period           BillingPeriod
 	Seats            int32
@@ -508,8 +497,7 @@ type Subscription_builder struct {
 	NextChargeAt     *timestamppb.Timestamp
 	CanceledAt       *timestamppb.Timestamp
 	// The renewal price. It does not change when the public price list does.
-	Amount *Money
-	// A masked description of the payment method, e.g. "Visa •••• 4242".
+	Amount             *Money
 	PaymentMethodTitle string
 }
 
@@ -530,7 +518,6 @@ func (b0 Subscription_builder) Build() *Subscription {
 	return m0
 }
 
-// Payment is one charge.
 type Payment struct {
 	state                    protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Id            string                 `protobuf:"bytes,1,opt,name=id,proto3"`
@@ -718,18 +705,16 @@ func (x *Payment) ClearPaidPeriodEnd() {
 type Payment_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Id        string
-	Kind      PaymentKind
-	Status    PaymentStatus
-	Tier      string
-	Period    BillingPeriod
-	Seats     int32
-	Amount    *Money
-	CreatedAt *timestamppb.Timestamp
-	// The end of the period this payment paid for.
+	Id            string
+	Kind          PaymentKind
+	Status        PaymentStatus
+	Tier          string
+	Period        BillingPeriod
+	Seats         int32
+	Amount        *Money
+	CreatedAt     *timestamppb.Timestamp
 	PaidPeriodEnd *timestamppb.Timestamp
-	// Why a canceled payment was canceled.
-	CancelReason string
+	CancelReason  string
 }
 
 func (b0 Payment_builder) Build() *Payment {
@@ -749,7 +734,6 @@ func (b0 Payment_builder) Build() *Payment {
 	return m0
 }
 
-// Offer is one entry of the price list.
 type Offer struct {
 	state                      protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Tier            string                 `protobuf:"bytes,1,opt,name=tier,proto3"`
@@ -916,8 +900,7 @@ type Offer_builder struct {
 	Tier   string
 	Period BillingPeriod
 	Amount *Money
-	// Seats the amount includes.
-	Seats int32
+	Seats  int32
 	// The price of each seat beyond the included ones, per period. Unset when seats are not sold
 	// separately.
 	SeatAmount *Money
@@ -1026,11 +1009,10 @@ func (x *SubscribeRequest) SetIdempotencyKey(v string) {
 type SubscribeRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	OrgId string
-	// The tier to buy; see `plan.v1.Plan.tier`.
+	OrgId  string
 	Tier   string
 	Period BillingPeriod
-	// A client-generated UUID that makes the purchase safe to retry.
+	// Client-generated UUID for purchase retries.
 	IdempotencyKey string
 }
 
@@ -1475,10 +1457,8 @@ func (x *GetSubscriptionResponse) ClearSubscription() {
 type GetSubscriptionResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// Unset if the org has never bought a subscription.
 	Subscription *Subscription
-	// True when this server takes payments through the sandbox provider.
-	Sandbox bool
+	Sandbox      bool
 }
 
 func (b0 GetSubscriptionResponse_builder) Build() *GetSubscriptionResponse {
@@ -1642,8 +1622,7 @@ func (x *RenewNowResponse) ClearSubscription() {
 type RenewNowResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	PaymentId string
-	// The provider's confirmation page, when the charge needs 3-D Secure or another confirmation.
+	PaymentId       string
 	ConfirmationUrl string
 	Subscription    *Subscription
 }
@@ -1853,10 +1832,8 @@ func (x *ListPaymentsRequest) SetPageToken(v string) {
 type ListPaymentsRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	OrgId string
-	// Maximum items to return. 0 uses the server's default.
-	PageSize int32
-	// Opaque cursor from the previous response's `next_page_token`. Empty starts at the first page.
+	OrgId     string
+	PageSize  int32
 	PageToken string
 }
 
@@ -1930,8 +1907,7 @@ func (x *ListPaymentsResponse) SetNextPageToken(v string) {
 type ListPaymentsResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Payments []*Payment
-	// Opaque cursor for the next page. Empty when there are no more results.
+	Payments      []*Payment
 	NextPageToken string
 }
 
@@ -2179,7 +2155,6 @@ func (x *GetPortalResponse) SetPortalUrl(v string) {
 type GetPortalResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The provider's billing portal. Empty if the provider has none.
 	PortalUrl string
 }
 

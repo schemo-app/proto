@@ -90,10 +90,6 @@ export const LeaveResponseSchema = /*@__PURE__*/
   messageDesc(file_workspace_v1_membership, 10);
 
 /**
- * WorkspaceMembershipService manages the people in one workspace. Membership of a workspace is
- * separate from membership of the org above it: an org member may be in none of its workspaces,
- * but a workspace member always belongs to the org.
- *
  * @generated from service workspace.v1.WorkspaceMembershipService
  */
 export const WorkspaceMembershipService = /*@__PURE__*/

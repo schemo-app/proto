@@ -29,7 +29,6 @@ const (
 // PlatformService describes the server deployment itself: identity, features and limits. Clients
 // call it before signing in, to decide what to offer.
 type PlatformServiceClient interface {
-	// GetInfo returns the server's identity, version, features and limits.
 	GetInfo(ctx context.Context, in *GetInfoRequest, opts ...grpc.CallOption) (*GetInfoResponse, error)
 }
 
@@ -58,7 +57,6 @@ func (c *platformServiceClient) GetInfo(ctx context.Context, in *GetInfoRequest,
 // PlatformService describes the server deployment itself: identity, features and limits. Clients
 // call it before signing in, to decide what to offer.
 type PlatformServiceServer interface {
-	// GetInfo returns the server's identity, version, features and limits.
 	GetInfo(context.Context, *GetInfoRequest) (*GetInfoResponse, error)
 	mustEmbedUnimplementedPlatformServiceServer()
 }

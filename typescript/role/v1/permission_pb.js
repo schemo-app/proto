@@ -40,17 +40,12 @@ export const PermissionGroupSchema = /*@__PURE__*/
   enumDesc(file_role_v1_permission, 0);
 
 /**
- * PermissionGroup is the heading a permission is listed under.
- *
  * @generated from enum role.v1.PermissionGroup
  */
 export const PermissionGroup = /*@__PURE__*/
   tsEnum(PermissionGroupSchema);
 
 /**
- * PermissionService is the read-only catalogue of permissions a role may grant. Nothing is added
- * to it at runtime: a permission exists because the software enforces something with it.
- *
  * @generated from service role.v1.PermissionService
  */
 export const PermissionService = /*@__PURE__*/

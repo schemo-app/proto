@@ -13,8 +13,6 @@ import type { Feature } from "../../common/v1/feature_pb.js";
 export declare const file_platform_v1_platform: GenFile;
 
 /**
- * ServerInfo describes the deployment, not any tenant or org.
- *
  * @generated from message platform.v1.ServerInfo
  */
 export declare type ServerInfo = Message<"platform.v1.ServerInfo"> & {
@@ -27,15 +25,11 @@ export declare type ServerInfo = Message<"platform.v1.ServerInfo"> & {
   name: string;
 
   /**
-   * Semantic version of the software, e.g. "1.4.0-rc.1".
-   *
    * @generated from field: string version = 2;
    */
   version: string;
 
   /**
-   * The commit the binary was built from.
-   *
    * @generated from field: string commit = 3;
    */
   commit: string;
@@ -53,8 +47,6 @@ export declare type ServerInfo = Message<"platform.v1.ServerInfo"> & {
   features: Feature[];
 
   /**
-   * Limits a client must respect.
-   *
    * @generated from field: platform.v1.Limits limits = 6;
    */
   limits?: Limits | undefined;
@@ -72,8 +64,6 @@ export declare type ServerInfo = Message<"platform.v1.ServerInfo"> & {
 export declare const ServerInfoSchema: GenMessage<ServerInfo>;
 
 /**
- * Limits are thresholds the server enforces.
- *
  * @generated from message platform.v1.Limits
  */
 export declare type Limits = Message<"platform.v1.Limits"> & {
@@ -85,8 +75,6 @@ export declare type Limits = Message<"platform.v1.Limits"> & {
   maxBodyBytes: bigint;
 
   /**
-   * The largest request, in bytes, a sync push may carry.
-   *
    * @generated from field: int64 max_push_bytes = 2;
    */
   maxPushBytes: bigint;
@@ -134,8 +122,6 @@ export declare type GetInfoResponse = Message<"platform.v1.GetInfoResponse"> & {
 export declare const GetInfoResponseSchema: GenMessage<GetInfoResponse>;
 
 /**
- * RegistrationMode says who may create an account on this server.
- *
  * @generated from enum platform.v1.RegistrationMode
  */
 export enum RegistrationMode {
@@ -145,15 +131,11 @@ export enum RegistrationMode {
   UNSPECIFIED = 0,
 
   /**
-   * Anyone may sign up.
-   *
    * @generated from enum value: REGISTRATION_MODE_OPEN = 1;
    */
   OPEN = 1,
 
   /**
-   * Signing up needs a valid token from an invitation link.
-   *
    * @generated from enum value: REGISTRATION_MODE_INVITE_ONLY = 2;
    */
   INVITE_ONLY = 2,
@@ -172,8 +154,6 @@ export declare const RegistrationModeSchema: GenEnum<RegistrationMode>;
  */
 export declare const PlatformService: GenService<{
   /**
-   * GetInfo returns the server's identity, version, features and limits.
-   *
    * @generated from rpc platform.v1.PlatformService.GetInfo
    */
   getInfo: {

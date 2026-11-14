@@ -13,8 +13,6 @@ import type { Timestamp } from "@bufbuild/protobuf/wkt";
 export declare const file_workspace_v1_workspace: GenFile;
 
 /**
- * Workspace is a workspace and the caller's place in it.
- *
  * @generated from message workspace.v1.Workspace
  */
 export declare type Workspace = Message<"workspace.v1.Workspace"> & {
@@ -51,8 +49,6 @@ export declare type Workspace = Message<"workspace.v1.Workspace"> & {
   visibility: WorkspaceVisibility;
 
   /**
-   * The role the caller holds in the workspace, and its permission keys.
-   *
    * @generated from field: common.v1.RoleRef role = 7;
    */
   role?: RoleRef | undefined;
@@ -63,9 +59,6 @@ export declare type Workspace = Message<"workspace.v1.Workspace"> & {
   permissions: string[];
 
   /**
-   * What the caller may do with the workspace, decided here so that no client names a permission
-   * key.
-   *
    * @generated from field: workspace.v1.WorkspaceCan can = 9;
    */
   can?: WorkspaceCan | undefined;
@@ -83,8 +76,6 @@ export declare type Workspace = Message<"workspace.v1.Workspace"> & {
   counts?: WorkspaceCounts | undefined;
 
   /**
-   * When a device last wrote to the workspace.
-   *
    * @generated from field: google.protobuf.Timestamp last_sync_at = 12;
    */
   lastSyncAt?: Timestamp | undefined;
@@ -97,8 +88,6 @@ export declare type Workspace = Message<"workspace.v1.Workspace"> & {
   lastSyncSeq: bigint;
 
   /**
-   * Raised by every change to the workspace's own row.
-   *
    * @generated from field: int64 version = 14;
    */
   version: bigint;
@@ -114,8 +103,6 @@ export declare type Workspace = Message<"workspace.v1.Workspace"> & {
   updatedAt?: Timestamp | undefined;
 
   /**
-   * When the workspace was deleted. Unset for one that is not.
-   *
    * @generated from field: google.protobuf.Timestamp deleted_at = 17;
    */
   deletedAt?: Timestamp | undefined;
@@ -135,8 +122,6 @@ export declare type Workspace = Message<"workspace.v1.Workspace"> & {
 export declare const WorkspaceSchema: GenMessage<Workspace>;
 
 /**
- * WorkspaceCan is what the caller may do with one workspace.
- *
  * @generated from message workspace.v1.WorkspaceCan
  */
 export declare type WorkspaceCan = Message<"workspace.v1.WorkspaceCan"> & {
@@ -163,8 +148,6 @@ export declare type WorkspaceCan = Message<"workspace.v1.WorkspaceCan"> & {
 export declare const WorkspaceCanSchema: GenMessage<WorkspaceCan>;
 
 /**
- * WorkspaceCounts is how much a workspace holds.
- *
  * @generated from message workspace.v1.WorkspaceCounts
  */
 export declare type WorkspaceCounts = Message<"workspace.v1.WorkspaceCounts"> & {
@@ -189,8 +172,6 @@ export declare type WorkspaceCounts = Message<"workspace.v1.WorkspaceCounts"> & 
   variables: number;
 
   /**
-   * Members, i.e. people with access.
-   *
    * @generated from field: int32 members = 5;
    */
   members: number;
@@ -302,8 +283,6 @@ export declare type UpdateRequest = Message<"workspace.v1.UpdateRequest"> & {
   visibility?: WorkspaceVisibility | undefined;
 
   /**
-   * Changing a workspace between personal and team.
-   *
    * @generated from field: optional workspace.v1.WorkspaceKind kind = 5;
    */
   kind?: WorkspaceKind | undefined;
@@ -401,15 +380,11 @@ export declare type ListRequest = Message<"workspace.v1.ListRequest"> & {
   orgId: string;
 
   /**
-   * Maximum items to return. 0 uses the server's default.
-   *
    * @generated from field: int32 page_size = 2;
    */
   pageSize: number;
 
   /**
-   * Opaque cursor from the previous response's `next_page_token`. Empty starts at the first page.
-   *
    * @generated from field: string page_token = 3;
    */
   pageToken: string;
@@ -431,15 +406,11 @@ export declare type ListResponse = Message<"workspace.v1.ListResponse"> & {
   workspaces: Workspace[];
 
   /**
-   * Opaque cursor for the next page. Empty when there are no more results.
-   *
    * @generated from field: string next_page_token = 2;
    */
   nextPageToken: string;
 
   /**
-   * The id of the org that belongs to the caller alone.
-   *
    * @generated from field: string own_org_id = 3;
    */
   ownOrgId: string;
@@ -547,8 +518,6 @@ export declare type PurgeResponse = Message<"workspace.v1.PurgeResponse"> & {
 export declare const PurgeResponseSchema: GenMessage<PurgeResponse>;
 
 /**
- * WorkspaceKind is what a workspace is for.
- *
  * @generated from enum workspace.v1.WorkspaceKind
  */
 export enum WorkspaceKind {
@@ -578,8 +547,6 @@ export enum WorkspaceKind {
 export declare const WorkspaceKindSchema: GenEnum<WorkspaceKind>;
 
 /**
- * WorkspaceVisibility is who in the org can see a workspace.
- *
  * @generated from enum workspace.v1.WorkspaceVisibility
  */
 export enum WorkspaceVisibility {
@@ -589,15 +556,11 @@ export enum WorkspaceVisibility {
   UNSPECIFIED = 0,
 
   /**
-   * Only its members.
-   *
    * @generated from enum value: WORKSPACE_VISIBILITY_PRIVATE = 1;
    */
   PRIVATE = 1,
 
   /**
-   * Every member of the org.
-   *
    * @generated from enum value: WORKSPACE_VISIBILITY_INTERNAL = 2;
    */
   INTERNAL = 2,
@@ -609,18 +572,10 @@ export enum WorkspaceVisibility {
 export declare const WorkspaceVisibilitySchema: GenEnum<WorkspaceVisibility>;
 
 /**
- * WorkspaceService manages workspaces as things: created, named, coloured, deleted, listed. Who is
- * in a workspace is managed by `WorkspaceMembershipService`.
- *
- * A workspace's content (collections, requests, environments, variables) is written only through
- * `sync/v1`. This service reports counts and status.
- *
  * @generated from service workspace.v1.WorkspaceService
  */
 export declare const WorkspaceService: GenService<{
   /**
-   * Create creates a workspace in an org, with the caller as its first member.
-   *
    * @generated from rpc workspace.v1.WorkspaceService.Create
    */
   create: {
@@ -629,8 +584,6 @@ export declare const WorkspaceService: GenService<{
     output: typeof CreateResponseSchema;
   },
   /**
-   * Update changes a workspace's name, color, visibility or kind.
-   *
    * @generated from rpc workspace.v1.WorkspaceService.Update
    */
   update: {
@@ -649,8 +602,6 @@ export declare const WorkspaceService: GenService<{
     output: typeof DeleteResponseSchema;
   },
   /**
-   * Get reads one workspace's metadata.
-   *
    * @generated from rpc workspace.v1.WorkspaceService.Get
    */
   get: {
@@ -659,8 +610,6 @@ export declare const WorkspaceService: GenService<{
     output: typeof GetResponseSchema;
   },
   /**
-   * List returns the workspaces of an org that are visible to the caller.
-   *
    * @generated from rpc workspace.v1.WorkspaceService.List
    */
   list: {
@@ -680,8 +629,6 @@ export declare const WorkspaceService: GenService<{
     output: typeof ListDeletedResponseSchema;
   },
   /**
-   * Restore brings a deleted workspace back before its retention runs out.
-   *
    * @generated from rpc workspace.v1.WorkspaceService.Restore
    */
   restore: {
@@ -690,8 +637,6 @@ export declare const WorkspaceService: GenService<{
     output: typeof RestoreResponseSchema;
   },
   /**
-   * Purge removes a deleted workspace for good, before its retention runs out.
-   *
    * @generated from rpc workspace.v1.WorkspaceService.Purge
    */
   purge: {

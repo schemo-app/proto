@@ -40,8 +40,6 @@ const (
 
 // PermissionServiceClient is a client for the role.v1.PermissionService service.
 type PermissionServiceClient interface {
-	// ListPermissions returns every permission this server knows. It describes what the software can
-	// do, not what the caller is allowed to do.
 	ListPermissions(context.Context, *v1.ListPermissionsRequest) (*v1.ListPermissionsResponse, error)
 }
 
@@ -81,8 +79,6 @@ func (c *permissionServiceClient) ListPermissions(ctx context.Context, req *v1.L
 
 // PermissionServiceHandler is an implementation of the role.v1.PermissionService service.
 type PermissionServiceHandler interface {
-	// ListPermissions returns every permission this server knows. It describes what the software can
-	// do, not what the caller is allowed to do.
 	ListPermissions(context.Context, *v1.ListPermissionsRequest) (*v1.ListPermissionsResponse, error)
 }
 

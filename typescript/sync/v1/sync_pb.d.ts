@@ -12,12 +12,7 @@ import type { Timestamp } from "@bufbuild/protobuf/wkt";
 export declare const file_sync_v1_sync: GenFile;
 
 /**
- * SyncEntity is one row of a workspace. The envelope is what the server reads; `data` is the row's
- * content as a JSON object, which the server stores as it came and never interprets, except at the
- * paths named in `secrets`.
- *
- * A path is a JSON pointer (RFC 6901) with one addition: a segment `@<id>` names the element of an
- * array whose "id" is <id>, so a secret inside a list survives the list being reordered.
+ * Secret paths are JSON pointers. An array segment @<id> selects the element with that id.
  *
  * @generated from message sync.v1.SyncEntity
  */
@@ -33,7 +28,7 @@ export declare type SyncEntity = Message<"sync.v1.SyncEntity"> & {
   id: string;
 
   /**
-   * Identifies one client edit, so a retried push is answered DUPLICATE instead of applied twice.
+   * Client mutation ID used for deduplication.
    *
    * @generated from field: string operation_id = 3;
    */
@@ -62,8 +57,7 @@ export declare type SyncEntity = Message<"sync.v1.SyncEntity"> & {
   updatedAt?: Timestamp | undefined;
 
   /**
-   * The row this one hangs from: a collection for a collection or request, an environment for a
-   * variable (empty for a global), a domain for a cookie. Empty at the top.
+   * Parent collection, variable environment or cookie domain. Empty at the top level.
    *
    * @generated from field: string parent_id = 8;
    */
@@ -80,22 +74,19 @@ export declare type SyncEntity = Message<"sync.v1.SyncEntity"> & {
   position: bigint;
 
   /**
-   * The row's content, a JSON object. Empty for a tombstone.
+   * JSON document, empty for tombstones.
    *
    * @generated from field: bytes data = 11;
    */
   data: Uint8Array;
 
   /**
-   * Paths in `data` that hold a secret. A reader who may not see secrets gets them withheld.
-   *
    * @generated from field: repeated string secrets = 12;
    */
   secrets: string[];
 
   /**
-   * Secret paths whose value is not in `data`: the server withheld it from this reader, or the
-   * device keeps it at home. Pushed back, a withheld path keeps the value the server holds.
+   * Values omitted by the sender. On push, the server preserves the stored values.
    *
    * @generated from field: repeated string withheld = 13;
    */
@@ -109,14 +100,10 @@ export declare type SyncEntity = Message<"sync.v1.SyncEntity"> & {
 export declare const SyncEntitySchema: GenMessage<SyncEntity>;
 
 /**
- * SyncChange is one entry of a workspace's log.
- *
  * @generated from message sync.v1.SyncChange
  */
 export declare type SyncChange = Message<"sync.v1.SyncChange"> & {
   /**
-   * The entry's place in the workspace's sequence.
-   *
    * @generated from field: int64 seq = 1;
    */
   seq: bigint;
@@ -134,8 +121,6 @@ export declare type SyncChange = Message<"sync.v1.SyncChange"> & {
 export declare const SyncChangeSchema: GenMessage<SyncChange>;
 
 /**
- * PushResult is how one pushed entity went.
- *
  * @generated from message sync.v1.PushResult
  */
 export declare type PushResult = Message<"sync.v1.PushResult"> & {
@@ -150,22 +135,16 @@ export declare type PushResult = Message<"sync.v1.PushResult"> & {
   status: PushStatus;
 
   /**
-   * The entity's version after the push.
-   *
    * @generated from field: int64 new_version = 3;
    */
   newVersion: bigint;
 
   /**
-   * The row that stands, for CONFLICT_RESOLVED.
-   *
    * @generated from field: sync.v1.SyncEntity winner = 4;
    */
   winner?: SyncEntity | undefined;
 
   /**
-   * Why the entity was refused, for REJECTED.
-   *
    * @generated from field: sync.v1.PushRejectReason reject_reason = 5;
    */
   rejectReason: PushRejectReason;
@@ -178,8 +157,6 @@ export declare type PushResult = Message<"sync.v1.PushResult"> & {
 export declare const PushResultSchema: GenMessage<PushResult>;
 
 /**
- * WorkspaceCursor is how far a device has read one workspace.
- *
  * @generated from message sync.v1.WorkspaceCursor
  */
 export declare type WorkspaceCursor = Message<"sync.v1.WorkspaceCursor"> & {
@@ -189,8 +166,6 @@ export declare type WorkspaceCursor = Message<"sync.v1.WorkspaceCursor"> & {
   workspaceId: string;
 
   /**
-   * The last entity-log sequence number the device has.
-   *
    * @generated from field: int64 sync_seq = 2;
    */
   syncSeq: bigint;
@@ -210,8 +185,6 @@ export declare type WorkspaceCursor = Message<"sync.v1.WorkspaceCursor"> & {
 export declare const WorkspaceCursorSchema: GenMessage<WorkspaceCursor>;
 
 /**
- * Poke says a workspace has moved past the device's cursor.
- *
  * @generated from message sync.v1.Poke
  */
 export declare type Poke = Message<"sync.v1.Poke"> & {
@@ -221,8 +194,6 @@ export declare type Poke = Message<"sync.v1.Poke"> & {
   workspaceId: string;
 
   /**
-   * The workspace's current sequence numbers.
-   *
    * @generated from field: int64 sync_seq = 2;
    */
   syncSeq: bigint;
@@ -255,8 +226,6 @@ export declare type WorkspacesChanged = Message<"sync.v1.WorkspacesChanged"> & {
 export declare const WorkspacesChangedSchema: GenMessage<WorkspacesChanged>;
 
 /**
- * Heartbeat keeps an idle stream from being closed.
- *
  * @generated from message sync.v1.Heartbeat
  */
 export declare type Heartbeat = Message<"sync.v1.Heartbeat"> & {
@@ -315,14 +284,12 @@ export declare type PullRequest = Message<"sync.v1.PullRequest"> & {
   workspaceId: string;
 
   /**
-   * Read the changes above this sequence number.
-   *
    * @generated from field: int64 after_seq = 2;
    */
   afterSeq: bigint;
 
   /**
-   * Maximum changes to return. A log read is not a page: it continues from `next_seq`.
+   * Maximum changes to return.
    *
    * @generated from field: int32 limit = 3;
    */
@@ -352,8 +319,6 @@ export declare type PullResponse = Message<"sync.v1.PullResponse"> & {
   nextSeq: bigint;
 
   /**
-   * Whether more changes are waiting above `next_seq`.
-   *
    * @generated from field: bool has_more = 3;
    */
   hasMore: boolean;
@@ -378,8 +343,7 @@ export declare const PullResponseSchema: GenMessage<PullResponse>;
  */
 export declare type ConnectRequest = Message<"sync.v1.ConnectRequest"> & {
   /**
-   * The workspaces to follow, each with the cursor the device has reached. The server tells the
-   * device at once about any that are already ahead.
+   * Workspaces to follow with their last read cursors.
    *
    * @generated from field: repeated sync.v1.WorkspaceCursor workspaces = 1;
    */
@@ -427,8 +391,6 @@ export declare type ConnectResponse = Message<"sync.v1.ConnectResponse"> & {
 export declare const ConnectResponseSchema: GenMessage<ConnectResponse>;
 
 /**
- * EntityType is the kind of row an entity is.
- *
  * @generated from enum sync.v1.EntityType
  */
 export enum EntityType {
@@ -479,8 +441,6 @@ export enum EntityType {
 export declare const EntityTypeSchema: GenEnum<EntityType>;
 
 /**
- * PushStatus is how the server judged one pushed entity.
- *
  * @generated from enum sync.v1.PushStatus
  */
 export enum PushStatus {
@@ -497,8 +457,7 @@ export enum PushStatus {
   ACCEPTED = 1,
 
   /**
-   * Another device's newer edit stands. `winner` carries the row that does, and the pushed edit is
-   * not applied.
+   * The existing row wins and is returned in winner.
    *
    * @generated from enum value: PUSH_STATUS_CONFLICT_RESOLVED = 2;
    */
@@ -525,8 +484,6 @@ export enum PushStatus {
 export declare const PushStatusSchema: GenEnum<PushStatus>;
 
 /**
- * PushRejectReason is why an entity was REJECTED.
- *
  * @generated from enum sync.v1.PushRejectReason
  */
 export enum PushRejectReason {
@@ -543,29 +500,23 @@ export enum PushRejectReason {
   PARENT_NOT_FOUND = 1,
 
   /**
-   * The org's plan has no room for it.
-   *
    * @generated from enum value: PUSH_REJECT_REASON_QUOTA_EXCEEDED = 2;
    */
   QUOTA_EXCEEDED = 2,
 
   /**
-   * `data` is not a JSON object, or a secret path does not name a string in it.
+   * Invalid JSON object or secret path.
    *
    * @generated from enum value: PUSH_REJECT_REASON_INVALID_DATA = 3;
    */
   INVALID_DATA = 3,
 
   /**
-   * The caller's role may not make this change.
-   *
    * @generated from enum value: PUSH_REJECT_REASON_FORBIDDEN = 4;
    */
   FORBIDDEN = 4,
 
   /**
-   * Larger than the server's limits (see `platform.v1.Limits`). It will not fit next time either.
-   *
    * @generated from enum value: PUSH_REJECT_REASON_TOO_LARGE = 5;
    */
   TOO_LARGE = 5,
@@ -577,16 +528,11 @@ export enum PushRejectReason {
 export declare const PushRejectReasonSchema: GenEnum<PushRejectReason>;
 
 /**
- * SyncService keeps a workspace's content the same on every device that works in it. Devices push
- * the mutations they made and pull the ones others made; the server numbers every accepted
- * mutation, per workspace, in one sequence.
- *
  * @generated from service sync.v1.SyncService
  */
 export declare const SyncService: GenService<{
   /**
-   * Push submits a batch of entity mutations to one workspace. Each entity is judged on its own and
-   * answered in its own result, so one refusal does not cost the rest of the batch.
+   * Each mutation has its own result.
    *
    * @generated from rpc sync.v1.SyncService.Push
    */
@@ -596,8 +542,6 @@ export declare const SyncService: GenService<{
     output: typeof PushResponseSchema;
   },
   /**
-   * Pull returns the entity changes above a sequence number.
-   *
    * @generated from rpc sync.v1.SyncService.Pull
    */
   pull: {
@@ -606,8 +550,7 @@ export declare const SyncService: GenService<{
     output: typeof PullResponseSchema;
   },
   /**
-   * Connect opens a long-lived stream that tells the device when a workspace it follows has moved,
-   * so that it pulls at once instead of waiting for its timer.
+   * Streams workspace changes as notifications. Fetch the data with Pull.
    *
    * @generated from rpc sync.v1.SyncService.Connect
    */

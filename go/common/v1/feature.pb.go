@@ -26,19 +26,13 @@ const (
 type Feature int32
 
 const (
-	Feature_FEATURE_UNSPECIFIED Feature = 0
-	// Syncing workspaces between devices through `sync/v1`.
-	Feature_FEATURE_SYNC Feature = 1
-	// Team workspaces, which more than one person can work in.
+	Feature_FEATURE_UNSPECIFIED       Feature = 0
+	Feature_FEATURE_SYNC              Feature = 1
 	Feature_FEATURE_SHARED_WORKSPACES Feature = 2
-	// Reading and managing the org's roles, `role/v1`.
-	Feature_FEATURE_ROLES Feature = 3
-	// Execution history kept on the server, `history/v1`.
-	Feature_FEATURE_HISTORY Feature = 4
-	// The org's audit journal, `audit/v1`.
-	Feature_FEATURE_AUDIT Feature = 5
-	// Publishing a collection at a public address, `publication/v1`.
-	Feature_FEATURE_SHARE_LINKS Feature = 6
+	Feature_FEATURE_ROLES             Feature = 3
+	Feature_FEATURE_HISTORY           Feature = 4
+	Feature_FEATURE_AUDIT             Feature = 5
+	Feature_FEATURE_SHARE_LINKS       Feature = 6
 	// Secret variable values stored and resolved on the server. Server-wide: no plan gates it.
 	Feature_FEATURE_SECRETS Feature = 7
 	// Subscriptions and payments, `billing/v1`. Server-wide: no plan gates it.

@@ -40,8 +40,6 @@ export declare type ListPermissionsResponse = Message<"role.v1.ListPermissionsRe
 export declare const ListPermissionsResponseSchema: GenMessage<ListPermissionsResponse>;
 
 /**
- * Permission is one thing a role may grant.
- *
  * @generated from message role.v1.Permission
  */
 export declare type Permission = Message<"role.v1.Permission"> & {
@@ -54,8 +52,6 @@ export declare type Permission = Message<"role.v1.Permission"> & {
   key: string;
 
   /**
-   * The scope a role must have to hold this permission.
-   *
    * @generated from field: role.v1.RoleScope scope = 2;
    */
   scope: RoleScope;
@@ -66,8 +62,6 @@ export declare type Permission = Message<"role.v1.Permission"> & {
   group: PermissionGroup;
 
   /**
-   * Human-readable description shown next to the permission.
-   *
    * @generated from field: string description = 4;
    */
   description: string;
@@ -87,8 +81,6 @@ export declare type Permission = Message<"role.v1.Permission"> & {
 export declare const PermissionSchema: GenMessage<Permission>;
 
 /**
- * PermissionGroup is the heading a permission is listed under.
- *
  * @generated from enum role.v1.PermissionGroup
  */
 export enum PermissionGroup {
@@ -124,16 +116,10 @@ export enum PermissionGroup {
 export declare const PermissionGroupSchema: GenEnum<PermissionGroup>;
 
 /**
- * PermissionService is the read-only catalogue of permissions a role may grant. Nothing is added
- * to it at runtime: a permission exists because the software enforces something with it.
- *
  * @generated from service role.v1.PermissionService
  */
 export declare const PermissionService: GenService<{
   /**
-   * ListPermissions returns every permission this server knows. It describes what the software can
-   * do, not what the caller is allowed to do.
-   *
    * @generated from rpc role.v1.PermissionService.ListPermissions
    */
   listPermissions: {

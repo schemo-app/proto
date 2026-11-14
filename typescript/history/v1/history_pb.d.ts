@@ -12,8 +12,6 @@ import type { Timestamp } from "@bufbuild/protobuf/wkt";
 export declare const file_history_v1_history: GenFile;
 
 /**
- * Record is one request that was sent, with how it went.
- *
  * @generated from message history.v1.Record
  */
 export declare type Record = Message<"history.v1.Record"> & {
@@ -47,23 +45,19 @@ export declare type Record = Message<"history.v1.Record"> & {
   startedAt?: Timestamp | undefined;
 
   /**
-   * Everything else about the exchange — method, URL, headers, the answer, timings, cookie writes,
-   * the browser tab — as a JSON object.
+   * Exchange data as a JSON object.
    *
    * @generated from field: bytes data = 6;
    */
   data: Uint8Array;
 
   /**
-   * Paths in `data` that hold a secret.
-   *
    * @generated from field: repeated string secrets = 7;
    */
   secrets: string[];
 
   /**
-   * Secret paths whose value is not in `data`. Sent again, a withheld path keeps the value the
-   * server holds.
+   * Withheld values are omitted from data and preserved on push.
    *
    * @generated from field: repeated string withheld = 8;
    */
@@ -77,8 +71,6 @@ export declare type Record = Message<"history.v1.Record"> & {
 export declare const RecordSchema: GenMessage<Record>;
 
 /**
- * RecordBody is one body of a record.
- *
  * @generated from message history.v1.RecordBody
  */
 export declare type RecordBody = Message<"history.v1.RecordBody"> & {
@@ -112,9 +104,6 @@ export declare type RecordBody = Message<"history.v1.RecordBody"> & {
 export declare const RecordBodySchema: GenMessage<RecordBody>;
 
 /**
- * Run is a collection run. It is a document of its own, kept once by its id however many records the
- * run produced, and it follows the same log the records do.
- *
  * @generated from message history.v1.Run
  */
 export declare type Run = Message<"history.v1.Run"> & {
@@ -148,8 +137,6 @@ export declare type Run = Message<"history.v1.Run"> & {
 export declare const RunSchema: GenMessage<Run>;
 
 /**
- * RecordEntry is a record with its bodies and the reports of the scripts around it.
- *
  * @generated from message history.v1.RecordEntry
  */
 export declare type RecordEntry = Message<"history.v1.RecordEntry"> & {
@@ -178,14 +165,10 @@ export declare type RecordEntry = Message<"history.v1.RecordEntry"> & {
 export declare const RecordEntrySchema: GenMessage<RecordEntry>;
 
 /**
- * AppendResult is how one record or run of a batch went.
- *
  * @generated from message history.v1.AppendResult
  */
 export declare type AppendResult = Message<"history.v1.AppendResult"> & {
   /**
-   * The id of the record or the run.
-   *
    * @generated from field: string id = 1;
    */
   id: string;
@@ -205,15 +188,10 @@ export declare type AppendResult = Message<"history.v1.AppendResult"> & {
 export declare const AppendResultSchema: GenMessage<AppendResult>;
 
 /**
- * RecordChange is one entry of the log: a record written or completed, a record deleted, or a run
- * written.
- *
  * @generated from message history.v1.RecordChange
  */
 export declare type RecordChange = Message<"history.v1.RecordChange"> & {
   /**
-   * The entry's place in the log.
-   *
    * @generated from field: int64 seq = 1;
    */
   seq: bigint;
@@ -229,8 +207,6 @@ export declare type RecordChange = Message<"history.v1.RecordChange"> & {
     case: "record";
   } | {
     /**
-     * The id of a record that was deleted. Nothing else is left of it.
-     *
      * @generated from field: string deleted_record_id = 3;
      */
     value: string;
@@ -415,15 +391,11 @@ export declare type ListRequest = Message<"history.v1.ListRequest"> & {
   to?: Timestamp | undefined;
 
   /**
-   * Maximum items to return. 0 uses the server's default.
-   *
    * @generated from field: int32 page_size = 6;
    */
   pageSize: number;
 
   /**
-   * Opaque cursor from the previous response's `next_page_token`. Empty starts at the first page.
-   *
    * @generated from field: string page_token = 7;
    */
   pageToken: string;
@@ -445,15 +417,11 @@ export declare type ListResponse = Message<"history.v1.ListResponse"> & {
   records: Record[];
 
   /**
-   * Opaque cursor for the next page. Empty when there are no more results.
-   *
    * @generated from field: string next_page_token = 2;
    */
   nextPageToken: string;
 
   /**
-   * The workspace's log sequence number at the time of the read.
-   *
    * @generated from field: int64 head_seq = 3;
    */
   headSeq: bigint;
@@ -475,14 +443,12 @@ export declare type PullRecordsRequest = Message<"history.v1.PullRecordsRequest"
   workspaceId: string;
 
   /**
-   * Read the changes above this sequence number.
-   *
    * @generated from field: int64 after_seq = 2;
    */
   afterSeq: bigint;
 
   /**
-   * Maximum changes to return. A log read is not a page: it continues from `next_seq`.
+   * Maximum changes to return.
    *
    * @generated from field: int32 limit = 3;
    */
@@ -512,23 +478,18 @@ export declare type PullRecordsResponse = Message<"history.v1.PullRecordsRespons
   nextSeq: bigint;
 
   /**
-   * Whether more changes are waiting above `next_seq`.
-   *
    * @generated from field: bool has_more = 3;
    */
   hasMore: boolean;
 
   /**
-   * The lowest sequence number the log still holds: retention removed everything below it, and a
-   * read from a lower number starts here.
+   * Reads below this sequence resume at the retention floor.
    *
    * @generated from field: int64 floor_seq = 4;
    */
   floorSeq: bigint;
 
   /**
-   * The highest sequence number in the log.
-   *
    * @generated from field: int64 head_seq = 5;
    */
   headSeq: bigint;
@@ -632,8 +593,6 @@ export declare type GetRunResponse = Message<"history.v1.GetRunResponse"> & {
 export declare const GetRunResponseSchema: GenMessage<GetRunResponse>;
 
 /**
- * RecordSource is where a record came from.
- *
  * @generated from enum history.v1.RecordSource
  */
 export enum RecordSource {
@@ -643,15 +602,11 @@ export enum RecordSource {
   UNSPECIFIED = 0,
 
   /**
-   * Sent from the app.
-   *
    * @generated from enum value: RECORD_SOURCE_MANUAL = 1;
    */
   MANUAL = 1,
 
   /**
-   * Captured from a browser by the extension.
-   *
    * @generated from enum value: RECORD_SOURCE_BROWSER = 2;
    */
   BROWSER = 2,
@@ -663,8 +618,6 @@ export enum RecordSource {
 export declare const RecordSourceSchema: GenEnum<RecordSource>;
 
 /**
- * BodySide says which half of the exchange a body belongs to.
- *
  * @generated from enum history.v1.BodySide
  */
 export enum BodySide {
@@ -690,8 +643,6 @@ export enum BodySide {
 export declare const BodySideSchema: GenEnum<BodySide>;
 
 /**
- * AppendRefusal is why one record or run of a batch was not taken.
- *
  * @generated from enum history.v1.AppendRefusal
  */
 export enum AppendRefusal {
@@ -703,15 +654,11 @@ export enum AppendRefusal {
   UNSPECIFIED = 0,
 
   /**
-   * Larger than the server's limits (see `platform.v1.Limits`). It will not fit next time either.
-   *
    * @generated from enum value: APPEND_REFUSAL_TOO_LARGE = 1;
    */
   TOO_LARGE = 1,
 
   /**
-   * The caller may not write to the workspace.
-   *
    * @generated from enum value: APPEND_REFUSAL_FORBIDDEN = 2;
    */
   FORBIDDEN = 2,
@@ -730,20 +677,11 @@ export enum AppendRefusal {
 export declare const AppendRefusalSchema: GenEnum<AppendRefusal>;
 
 /**
- * HistoryService keeps the requests a workspace has sent, what came back, and what the scripts
- * around them reported. It is an append-only log that devices read from a sequence number.
- *
- * Records and runs are JSON documents the server stores as they came. It reads the few fields it
- * filters and orders by, which travel beside the document, and the secret paths of a record, which
- * it withholds from readers who may not see secrets (see `sync.v1.SyncEntity` for the path form).
- *
  * @generated from service history.v1.HistoryService
  */
 export declare const HistoryService: GenService<{
   /**
-   * Append submits a batch of records and runs. A record the server already holds is completed
-   * rather than refused: its document is replaced, the bodies it had not been given are added, and
-   * it takes a new place in the log so followers read it again.
+   * Appending an existing record replaces its document, adds missing bodies and advances its sequence.
    *
    * @generated from rpc history.v1.HistoryService.Append
    */
@@ -753,8 +691,6 @@ export declare const HistoryService: GenService<{
     output: typeof AppendResponseSchema;
   },
   /**
-   * Amend replaces a record's document, as when the person undoes some of its cookie writes.
-   *
    * @generated from rpc history.v1.HistoryService.Amend
    */
   amend: {
@@ -763,8 +699,6 @@ export declare const HistoryService: GenService<{
     output: typeof AmendResponseSchema;
   },
   /**
-   * Delete removes records by id.
-   *
    * @generated from rpc history.v1.HistoryService.Delete
    */
   delete: {
@@ -783,8 +717,6 @@ export declare const HistoryService: GenService<{
     output: typeof ListResponseSchema;
   },
   /**
-   * PullRecords reads the log of changes above a sequence number, for a device that follows it.
-   *
    * @generated from rpc history.v1.HistoryService.PullRecords
    */
   pullRecords: {
@@ -793,8 +725,6 @@ export declare const HistoryService: GenService<{
     output: typeof PullRecordsResponseSchema;
   },
   /**
-   * Get reads one record with its script reports and, on request, its bodies.
-   *
    * @generated from rpc history.v1.HistoryService.Get
    */
   get: {
@@ -803,8 +733,6 @@ export declare const HistoryService: GenService<{
     output: typeof GetResponseSchema;
   },
   /**
-   * GetRun reads one collection run.
-   *
    * @generated from rpc history.v1.HistoryService.GetRun
    */
   getRun: {

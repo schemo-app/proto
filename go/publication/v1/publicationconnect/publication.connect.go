@@ -55,20 +55,15 @@ const (
 
 // PublicationServiceClient is a client for the publication.v1.PublicationService service.
 type PublicationServiceClient interface {
-	// Publish puts a collection on the web, or replaces the document of one already there.
 	Publish(context.Context, *v1.PublishRequest) (*v1.PublishResponse, error)
-	// Unpublish takes a page down. The address stays taken: a link that was handed out once must
-	// never come to mean something else.
+	// A revoked page keeps its address.
 	Unpublish(context.Context, *v1.UnpublishRequest) (*v1.UnpublishResponse, error)
 	// GetPublications answers the state of the named collections. A collection that was never
 	// published, or that sits in a workspace the caller is not in, is absent from the answer.
 	GetPublications(context.Context, *v1.GetPublicationsRequest) (*v1.GetPublicationsResponse, error)
-	// ListPublications answers the pages of one workspace, newest first.
 	ListPublications(context.Context, *v1.ListPublicationsRequest) (*v1.ListPublicationsResponse, error)
-	// GetPublicationDetails answers a page's statistics and its published versions.
 	GetPublicationDetails(context.Context, *v1.GetPublicationDetailsRequest) (*v1.GetPublicationDetailsResponse, error)
-	// RestorePublication publishes an earlier revision of an active page again, as a new revision,
-	// and returns the document now published so the author's device can take it back.
+	// Restores a previous document as a new revision.
 	RestorePublication(context.Context, *v1.RestorePublicationRequest) (*v1.RestorePublicationResponse, error)
 }
 
@@ -188,20 +183,15 @@ func (c *publicationServiceClient) RestorePublication(ctx context.Context, req *
 
 // PublicationServiceHandler is an implementation of the publication.v1.PublicationService service.
 type PublicationServiceHandler interface {
-	// Publish puts a collection on the web, or replaces the document of one already there.
 	Publish(context.Context, *v1.PublishRequest) (*v1.PublishResponse, error)
-	// Unpublish takes a page down. The address stays taken: a link that was handed out once must
-	// never come to mean something else.
+	// A revoked page keeps its address.
 	Unpublish(context.Context, *v1.UnpublishRequest) (*v1.UnpublishResponse, error)
 	// GetPublications answers the state of the named collections. A collection that was never
 	// published, or that sits in a workspace the caller is not in, is absent from the answer.
 	GetPublications(context.Context, *v1.GetPublicationsRequest) (*v1.GetPublicationsResponse, error)
-	// ListPublications answers the pages of one workspace, newest first.
 	ListPublications(context.Context, *v1.ListPublicationsRequest) (*v1.ListPublicationsResponse, error)
-	// GetPublicationDetails answers a page's statistics and its published versions.
 	GetPublicationDetails(context.Context, *v1.GetPublicationDetailsRequest) (*v1.GetPublicationDetailsResponse, error)
-	// RestorePublication publishes an earlier revision of an active page again, as a new revision,
-	// and returns the document now published so the author's device can take it back.
+	// Restores a previous document as a new revision.
 	RestorePublication(context.Context, *v1.RestorePublicationRequest) (*v1.RestorePublicationResponse, error)
 }
 

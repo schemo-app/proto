@@ -22,14 +22,11 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// RegistrationMode says who may create an account on this server.
 type RegistrationMode int32
 
 const (
 	RegistrationMode_REGISTRATION_MODE_UNSPECIFIED RegistrationMode = 0
-	// Anyone may sign up.
-	RegistrationMode_REGISTRATION_MODE_OPEN RegistrationMode = 1
-	// Signing up needs a valid token from an invitation link.
+	RegistrationMode_REGISTRATION_MODE_OPEN        RegistrationMode = 1
 	RegistrationMode_REGISTRATION_MODE_INVITE_ONLY RegistrationMode = 2
 )
 
@@ -69,7 +66,6 @@ func (x RegistrationMode) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// ServerInfo describes the deployment, not any tenant or org.
 type ServerInfo struct {
 	state                   protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Name         string                 `protobuf:"bytes,1,opt,name=name,proto3"`
@@ -212,15 +208,12 @@ type ServerInfo_builder struct {
 
 	// The operator's display name for the deployment, e.g. "Internal Dev Cluster". Empty uses the
 	// product's name.
-	Name string
-	// Semantic version of the software, e.g. "1.4.0-rc.1".
+	Name    string
 	Version string
-	// The commit the binary was built from.
 	Commit  string
 	BuiltAt *timestamppb.Timestamp
 	// The features this deployment can serve. A plan may include fewer; see `plan.v1`.
-	Features []v1.Feature
-	// Limits a client must respect.
+	Features     []v1.Feature
 	Limits       *Limits
 	Registration RegistrationMode
 }
@@ -239,7 +232,6 @@ func (b0 ServerInfo_builder) Build() *ServerInfo {
 	return m0
 }
 
-// Limits are thresholds the server enforces.
 type Limits struct {
 	state                           protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_MaxBodyBytes         int64                  `protobuf:"varint,1,opt,name=max_body_bytes,json=maxBodyBytes,proto3"`
@@ -327,7 +319,6 @@ type Limits_builder struct {
 
 	// The largest body, in bytes, stored for a history record.
 	MaxBodyBytes int64
-	// The largest request, in bytes, a sync push may carry.
 	MaxPushBytes int64
 	// How many days history is kept. Unset keeps it for ever.
 	HistoryRetentionDays *int32

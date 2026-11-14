@@ -29,17 +29,12 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// PanelService serves the browser panel: signing in with an emailed link, and confirming a desktop
-// app that asked to sign in. It is called from the panel's own browser session, not with a bearer
-// token.
+// Uses the browser session for email sign-in and desktop authorization.
 type PanelServiceClient interface {
 	// RequestLink emails a sign-in link. Delivery limits apply before it is sent.
 	RequestLink(ctx context.Context, in *RequestLinkRequest, opts ...grpc.CallOption) (*RequestLinkResponse, error)
-	// GetPendingDevice reads what the program waiting for confirmation says about itself.
 	GetPendingDevice(ctx context.Context, in *GetPendingDeviceRequest, opts ...grpc.CallOption) (*GetPendingDeviceResponse, error)
-	// AnswerDevice lets the program in as the signed-in person, or refuses it.
 	AnswerDevice(ctx context.Context, in *AnswerDeviceRequest, opts ...grpc.CallOption) (*AnswerDeviceResponse, error)
-	// SignOut ends this browser's session.
 	SignOut(ctx context.Context, in *SignOutRequest, opts ...grpc.CallOption) (*SignOutResponse, error)
 }
 
@@ -95,17 +90,12 @@ func (c *panelServiceClient) SignOut(ctx context.Context, in *SignOutRequest, op
 // All implementations must embed UnimplementedPanelServiceServer
 // for forward compatibility.
 //
-// PanelService serves the browser panel: signing in with an emailed link, and confirming a desktop
-// app that asked to sign in. It is called from the panel's own browser session, not with a bearer
-// token.
+// Uses the browser session for email sign-in and desktop authorization.
 type PanelServiceServer interface {
 	// RequestLink emails a sign-in link. Delivery limits apply before it is sent.
 	RequestLink(context.Context, *RequestLinkRequest) (*RequestLinkResponse, error)
-	// GetPendingDevice reads what the program waiting for confirmation says about itself.
 	GetPendingDevice(context.Context, *GetPendingDeviceRequest) (*GetPendingDeviceResponse, error)
-	// AnswerDevice lets the program in as the signed-in person, or refuses it.
 	AnswerDevice(context.Context, *AnswerDeviceRequest) (*AnswerDeviceResponse, error)
-	// SignOut ends this browser's session.
 	SignOut(context.Context, *SignOutRequest) (*SignOutResponse, error)
 	mustEmbedUnimplementedPanelServiceServer()
 }

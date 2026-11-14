@@ -7,21 +7,12 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/schemo-app/proto/go/publication/v1;publication";
 
-// PublicationService puts a collection on the open web, and takes it down again.
-//
-// A publication is a *document* the author's device builds and this server stores unread:
-// `PublishRequest.document` is compressed JSON in one shape for every caller, and the server checks
-// the envelope, keeps the bytes and answers what the page is at. Nothing here returns a document
-// except `RestorePublication`, which hands the restored one back to its author: a page is read over
-// plain HTTP, without a token, at the address the publication carries.
 service PublicationService {
-  // Publish puts a collection on the web, or replaces the document of one already there.
   rpc Publish(PublishRequest) returns (PublishResponse) {
     option (common.v1.access) = ACCESS_WORKSPACE_WRITE;
   }
 
-  // Unpublish takes a page down. The address stays taken: a link that was handed out once must
-  // never come to mean something else.
+  // A revoked page keeps its address.
   rpc Unpublish(UnpublishRequest) returns (UnpublishResponse) {
     option (common.v1.access) = ACCESS_WORKSPACE_WRITE;
   }
@@ -32,28 +23,23 @@ service PublicationService {
     option (common.v1.access) = ACCESS_WORKSPACE_READ;
   }
 
-  // ListPublications answers the pages of one workspace, newest first.
   rpc ListPublications(ListPublicationsRequest) returns (ListPublicationsResponse) {
     option (common.v1.access) = ACCESS_WORKSPACE_READ;
   }
 
-  // GetPublicationDetails answers a page's statistics and its published versions.
   rpc GetPublicationDetails(GetPublicationDetailsRequest) returns (GetPublicationDetailsResponse) {
     option (common.v1.access) = ACCESS_WORKSPACE_READ;
   }
 
-  // RestorePublication publishes an earlier revision of an active page again, as a new revision,
-  // and returns the document now published so the author's device can take it back.
+  // Restores a previous document as a new revision.
   rpc RestorePublication(RestorePublicationRequest) returns (RestorePublicationResponse) {
     option (common.v1.access) = ACCESS_WORKSPACE_WRITE;
   }
 }
 
-// Visibility is who a page is for.
 enum Visibility {
   VISIBILITY_UNSPECIFIED = 0;
 
-  // Listable and searchable: the page names its collection to anyone.
   VISIBILITY_PUBLIC = 1;
 
   // Reachable at its address and nowhere else. This is the default.
@@ -64,31 +50,25 @@ enum Visibility {
   VISIBILITY_PASSWORD = 3;
 }
 
-// PublicationStatus is whether a page answers at all.
 enum PublicationStatus {
   PUBLICATION_STATUS_UNSPECIFIED = 0;
   PUBLICATION_STATUS_ACTIVE = 1;
 
-  // Taken down by its author. The row stays, and so does the address.
   PUBLICATION_STATUS_REVOKED = 2;
 }
 
-// Publication is one page as its owner sees it.
 message Publication {
   string id = 1;
 
-  // The last segment of the page's address. Issued once and never again: not by the author, and not
-  // by a later publish of the same collection.
+  // URL slug reserved for this page, even after revocation.
   string slug = 2;
 
-  // The address to hand out, absolute.
   string public_url = 3;
 
   string collection_id = 4;
   string workspace_id = 5;
   string workspace_name = 6;
 
-  // What the page is titled, as it was at the last publish.
   string title = 7;
 
   Visibility visibility = 8;
@@ -98,29 +78,22 @@ message Publication {
   // it alone.
   int64 revision = 10;
 
-  // The digest of the published document, as the device computed it. A device compares this with
-  // the digest of what it would publish now to say whether the page is behind.
   string content_hash = 11;
 
-  // The environment whose base address the page shows, by name.
   string environment_name = 12;
 
   google.protobuf.Timestamp published_at = 13;
   google.protobuf.Timestamp updated_at = 14;
 
-  // Whether this caller may publish over it or take it down.
   bool can_manage = 15;
 }
 
-// PublicationVersion is one revision a page has had.
 message PublicationVersion {
   int64 revision = 1;
   google.protobuf.Timestamp published_at = 2;
 
-  // The environment the version was published with, by name.
   string environment_name = 3;
 
-  // How many requests the version documents.
   int64 request_count = 4;
 
   // The revision this one restored. Zero for a version that was published, not restored.
@@ -134,20 +107,16 @@ message PublishRequest {
   // UNSPECIFIED publishes as UNLISTED.
   Visibility visibility = 3;
 
-  // The page's document, gzipped. The server stores these bytes and never rewrites them, so nothing
-  // about the page arrives beside them: the title, language and environment are read out of the
-  // document itself, and a page and its summary cannot come to disagree.
+  // Gzipped snapshot JSON containing the title, locale and environment.
   bytes document = 4;
 
-  // The digest of the uncompressed document, as the device computed it. The server recomputes it,
-  // and refuses bytes whose digest is not the one they arrived under.
+  // Digest of the uncompressed snapshot, verified by the server.
   string content_hash = 5;
 
-  // The author has been told the page will answer to anyone. Required for VISIBILITY_PUBLIC.
+  // Required for public visibility.
   bool confirmed = 6;
 
-  // The password a page published with VISIBILITY_PASSWORD answers to. Required there, and cleared
-  // by a publish of any other visibility: the server keeps a hash, and never the password.
+  // Required for password visibility. The server stores a hash.
   string password = 7;
 }
 
@@ -180,17 +149,14 @@ message ListPublicationsRequest {
   // Only the pages in this status. UNSPECIFIED returns every one of them.
   PublicationStatus status = 2;
 
-  // Maximum items to return. 0 uses the server's default.
   int32 page_size = 3;
 
-  // Opaque cursor from the previous response's `next_page_token`. Empty starts at the first page.
   string page_token = 4;
 }
 
 message ListPublicationsResponse {
   repeated Publication publications = 1;
 
-  // Opaque cursor for the next page. Empty when there are no more results.
   string next_page_token = 2;
 }
 
@@ -199,20 +165,16 @@ message GetPublicationDetailsRequest {
 }
 
 message GetPublicationDetailsResponse {
-  // How many times the page has been viewed.
   int64 views = 1;
 
-  // How many times a reader has imported the collection from the page.
   int64 imports = 2;
 
-  // The page's versions, newest first.
   repeated PublicationVersion versions = 3;
 }
 
 message RestorePublicationRequest {
   string publication_id = 1;
 
-  // The revision to make current again.
   int64 revision = 2;
 }
 

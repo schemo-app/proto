@@ -110,8 +110,6 @@ export const EntityTypeSchema = /*@__PURE__*/
   enumDesc(file_sync_v1_sync, 0);
 
 /**
- * EntityType is the kind of row an entity is.
- *
  * @generated from enum sync.v1.EntityType
  */
 export const EntityType = /*@__PURE__*/
@@ -124,8 +122,6 @@ export const PushStatusSchema = /*@__PURE__*/
   enumDesc(file_sync_v1_sync, 1);
 
 /**
- * PushStatus is how the server judged one pushed entity.
- *
  * @generated from enum sync.v1.PushStatus
  */
 export const PushStatus = /*@__PURE__*/
@@ -138,18 +134,12 @@ export const PushRejectReasonSchema = /*@__PURE__*/
   enumDesc(file_sync_v1_sync, 2);
 
 /**
- * PushRejectReason is why an entity was REJECTED.
- *
  * @generated from enum sync.v1.PushRejectReason
  */
 export const PushRejectReason = /*@__PURE__*/
   tsEnum(PushRejectReasonSchema);
 
 /**
- * SyncService keeps a workspace's content the same on every device that works in it. Devices push
- * the mutations they made and pull the ones others made; the server numbers every accepted
- * mutation, per workspace, in one sequence.
- *
  * @generated from service sync.v1.SyncService
  */
 export const SyncService = /*@__PURE__*/

@@ -12,8 +12,6 @@ import type { Timestamp } from "@bufbuild/protobuf/wkt";
 export declare const file_publication_v1_publication: GenFile;
 
 /**
- * Publication is one page as its owner sees it.
- *
  * @generated from message publication.v1.Publication
  */
 export declare type Publication = Message<"publication.v1.Publication"> & {
@@ -23,16 +21,13 @@ export declare type Publication = Message<"publication.v1.Publication"> & {
   id: string;
 
   /**
-   * The last segment of the page's address. Issued once and never again: not by the author, and not
-   * by a later publish of the same collection.
+   * URL slug reserved for this page, even after revocation.
    *
    * @generated from field: string slug = 2;
    */
   slug: string;
 
   /**
-   * The address to hand out, absolute.
-   *
    * @generated from field: string public_url = 3;
    */
   publicUrl: string;
@@ -53,8 +48,6 @@ export declare type Publication = Message<"publication.v1.Publication"> & {
   workspaceName: string;
 
   /**
-   * What the page is titled, as it was at the last publish.
-   *
    * @generated from field: string title = 7;
    */
   title: string;
@@ -78,16 +71,11 @@ export declare type Publication = Message<"publication.v1.Publication"> & {
   revision: bigint;
 
   /**
-   * The digest of the published document, as the device computed it. A device compares this with
-   * the digest of what it would publish now to say whether the page is behind.
-   *
    * @generated from field: string content_hash = 11;
    */
   contentHash: string;
 
   /**
-   * The environment whose base address the page shows, by name.
-   *
    * @generated from field: string environment_name = 12;
    */
   environmentName: string;
@@ -103,8 +91,6 @@ export declare type Publication = Message<"publication.v1.Publication"> & {
   updatedAt?: Timestamp | undefined;
 
   /**
-   * Whether this caller may publish over it or take it down.
-   *
    * @generated from field: bool can_manage = 15;
    */
   canManage: boolean;
@@ -117,8 +103,6 @@ export declare type Publication = Message<"publication.v1.Publication"> & {
 export declare const PublicationSchema: GenMessage<Publication>;
 
 /**
- * PublicationVersion is one revision a page has had.
- *
  * @generated from message publication.v1.PublicationVersion
  */
 export declare type PublicationVersion = Message<"publication.v1.PublicationVersion"> & {
@@ -133,15 +117,11 @@ export declare type PublicationVersion = Message<"publication.v1.PublicationVers
   publishedAt?: Timestamp | undefined;
 
   /**
-   * The environment the version was published with, by name.
-   *
    * @generated from field: string environment_name = 3;
    */
   environmentName: string;
 
   /**
-   * How many requests the version documents.
-   *
    * @generated from field: int64 request_count = 4;
    */
   requestCount: bigint;
@@ -182,32 +162,28 @@ export declare type PublishRequest = Message<"publication.v1.PublishRequest"> & 
   visibility: Visibility;
 
   /**
-   * The page's document, gzipped. The server stores these bytes and never rewrites them, so nothing
-   * about the page arrives beside them: the title, language and environment are read out of the
-   * document itself, and a page and its summary cannot come to disagree.
+   * Gzipped snapshot JSON containing the title, locale and environment.
    *
    * @generated from field: bytes document = 4;
    */
   document: Uint8Array;
 
   /**
-   * The digest of the uncompressed document, as the device computed it. The server recomputes it,
-   * and refuses bytes whose digest is not the one they arrived under.
+   * Digest of the uncompressed snapshot, verified by the server.
    *
    * @generated from field: string content_hash = 5;
    */
   contentHash: string;
 
   /**
-   * The author has been told the page will answer to anyone. Required for VISIBILITY_PUBLIC.
+   * Required for public visibility.
    *
    * @generated from field: bool confirmed = 6;
    */
   confirmed: boolean;
 
   /**
-   * The password a page published with VISIBILITY_PASSWORD answers to. Required there, and cleared
-   * by a publish of any other visibility: the server keeps a hash, and never the password.
+   * Required for password visibility. The server stores a hash.
    *
    * @generated from field: string password = 7;
    */
@@ -322,15 +298,11 @@ export declare type ListPublicationsRequest = Message<"publication.v1.ListPublic
   status: PublicationStatus;
 
   /**
-   * Maximum items to return. 0 uses the server's default.
-   *
    * @generated from field: int32 page_size = 3;
    */
   pageSize: number;
 
   /**
-   * Opaque cursor from the previous response's `next_page_token`. Empty starts at the first page.
-   *
    * @generated from field: string page_token = 4;
    */
   pageToken: string;
@@ -352,8 +324,6 @@ export declare type ListPublicationsResponse = Message<"publication.v1.ListPubli
   publications: Publication[];
 
   /**
-   * Opaque cursor for the next page. Empty when there are no more results.
-   *
    * @generated from field: string next_page_token = 2;
    */
   nextPageToken: string;
@@ -386,22 +356,16 @@ export declare const GetPublicationDetailsRequestSchema: GenMessage<GetPublicati
  */
 export declare type GetPublicationDetailsResponse = Message<"publication.v1.GetPublicationDetailsResponse"> & {
   /**
-   * How many times the page has been viewed.
-   *
    * @generated from field: int64 views = 1;
    */
   views: bigint;
 
   /**
-   * How many times a reader has imported the collection from the page.
-   *
    * @generated from field: int64 imports = 2;
    */
   imports: bigint;
 
   /**
-   * The page's versions, newest first.
-   *
    * @generated from field: repeated publication.v1.PublicationVersion versions = 3;
    */
   versions: PublicationVersion[];
@@ -423,8 +387,6 @@ export declare type RestorePublicationRequest = Message<"publication.v1.RestoreP
   publicationId: string;
 
   /**
-   * The revision to make current again.
-   *
    * @generated from field: int64 revision = 2;
    */
   revision: bigint;
@@ -460,8 +422,6 @@ export declare type RestorePublicationResponse = Message<"publication.v1.Restore
 export declare const RestorePublicationResponseSchema: GenMessage<RestorePublicationResponse>;
 
 /**
- * Visibility is who a page is for.
- *
  * @generated from enum publication.v1.Visibility
  */
 export enum Visibility {
@@ -471,8 +431,6 @@ export enum Visibility {
   UNSPECIFIED = 0,
 
   /**
-   * Listable and searchable: the page names its collection to anyone.
-   *
    * @generated from enum value: VISIBILITY_PUBLIC = 1;
    */
   PUBLIC = 1,
@@ -499,8 +457,6 @@ export enum Visibility {
 export declare const VisibilitySchema: GenEnum<Visibility>;
 
 /**
- * PublicationStatus is whether a page answers at all.
- *
  * @generated from enum publication.v1.PublicationStatus
  */
 export enum PublicationStatus {
@@ -515,8 +471,6 @@ export enum PublicationStatus {
   ACTIVE = 1,
 
   /**
-   * Taken down by its author. The row stays, and so does the address.
-   *
    * @generated from enum value: PUBLICATION_STATUS_REVOKED = 2;
    */
   REVOKED = 2,
@@ -528,20 +482,10 @@ export enum PublicationStatus {
 export declare const PublicationStatusSchema: GenEnum<PublicationStatus>;
 
 /**
- * PublicationService puts a collection on the open web, and takes it down again.
- *
- * A publication is a *document* the author's device builds and this server stores unread:
- * `PublishRequest.document` is compressed JSON in one shape for every caller, and the server checks
- * the envelope, keeps the bytes and answers what the page is at. Nothing here returns a document
- * except `RestorePublication`, which hands the restored one back to its author: a page is read over
- * plain HTTP, without a token, at the address the publication carries.
- *
  * @generated from service publication.v1.PublicationService
  */
 export declare const PublicationService: GenService<{
   /**
-   * Publish puts a collection on the web, or replaces the document of one already there.
-   *
    * @generated from rpc publication.v1.PublicationService.Publish
    */
   publish: {
@@ -550,8 +494,7 @@ export declare const PublicationService: GenService<{
     output: typeof PublishResponseSchema;
   },
   /**
-   * Unpublish takes a page down. The address stays taken: a link that was handed out once must
-   * never come to mean something else.
+   * A revoked page keeps its address.
    *
    * @generated from rpc publication.v1.PublicationService.Unpublish
    */
@@ -572,8 +515,6 @@ export declare const PublicationService: GenService<{
     output: typeof GetPublicationsResponseSchema;
   },
   /**
-   * ListPublications answers the pages of one workspace, newest first.
-   *
    * @generated from rpc publication.v1.PublicationService.ListPublications
    */
   listPublications: {
@@ -582,8 +523,6 @@ export declare const PublicationService: GenService<{
     output: typeof ListPublicationsResponseSchema;
   },
   /**
-   * GetPublicationDetails answers a page's statistics and its published versions.
-   *
    * @generated from rpc publication.v1.PublicationService.GetPublicationDetails
    */
   getPublicationDetails: {
@@ -592,8 +531,7 @@ export declare const PublicationService: GenService<{
     output: typeof GetPublicationDetailsResponseSchema;
   },
   /**
-   * RestorePublication publishes an earlier revision of an active page again, as a new revision,
-   * and returns the document now published so the author's device can take it back.
+   * Restores a previous document as a new revision.
    *
    * @generated from rpc publication.v1.PublicationService.RestorePublication
    */

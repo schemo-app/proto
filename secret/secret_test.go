@@ -50,6 +50,18 @@ func TestAPathOutsideTheDocumentIsNotValid(t *testing.T) {
 	}
 }
 
+func TestParseRejectsTrailingData(t *testing.T) {
+	t.Parallel()
+	for _, input := range []string{`{} {}`, `{}x`} {
+		if _, err := Parse([]byte(input)); err == nil {
+			t.Errorf("Parse(%q) accepted trailing data", input)
+		}
+	}
+	if _, err := Parse([]byte("{} \n\t")); err != nil {
+		t.Errorf("Parse rejected trailing whitespace: %v", err)
+	}
+}
+
 func TestNumbersSurviveARoundTrip(t *testing.T) {
 	out, _, err := Withhold([]byte(`{"expiresAt":1767225600123,"value":"x"}`), []string{"/value"})
 	if err != nil {
@@ -80,5 +92,8 @@ func TestKeepPutsBackOnlyWhatWasNotGiven(t *testing.T) {
 	}
 	if got, _ := Keep(in, nil, nil, held, secrets, true); value(got) != "" {
 		t.Errorf("a slot made readable was refilled with the secret: %s", got)
+	}
+	if got, _ := Keep(in, nil, secrets, held, secrets, true); value(got) != "" {
+		t.Errorf("a withheld path no longer marked secret was refilled: %s", got)
 	}
 }

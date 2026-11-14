@@ -50,15 +50,11 @@ type OrgServiceClient interface {
 	// Create creates an org and makes the caller its owner. Any signed-in caller may create one,
 	// subject to server-level limits.
 	Create(context.Context, *v1.CreateRequest) (*v1.CreateResponse, error)
-	// Update changes an org's name, description, slug, or settings.
 	Update(context.Context, *v1.UpdateRequest) (*v1.UpdateResponse, error)
 	// Delete removes an org and everything it holds: workspaces, content, history, memberships. Every
 	// device with one of its workspaces stops syncing it. The caller must name the org to confirm.
 	Delete(context.Context, *v1.DeleteRequest) (*v1.DeleteResponse, error)
-	// Get reads one org.
 	Get(context.Context, *v1.GetRequest) (*v1.GetResponse, error)
-	// ListMine returns every org the caller belongs to, with the role held in each. Clients call it
-	// right after sign-in to learn which workspaces to expect.
 	ListMine(context.Context, *v1.ListMineRequest) (*v1.ListMineResponse, error)
 }
 
@@ -165,15 +161,11 @@ type OrgServiceHandler interface {
 	// Create creates an org and makes the caller its owner. Any signed-in caller may create one,
 	// subject to server-level limits.
 	Create(context.Context, *v1.CreateRequest) (*v1.CreateResponse, error)
-	// Update changes an org's name, description, slug, or settings.
 	Update(context.Context, *v1.UpdateRequest) (*v1.UpdateResponse, error)
 	// Delete removes an org and everything it holds: workspaces, content, history, memberships. Every
 	// device with one of its workspaces stops syncing it. The caller must name the org to confirm.
 	Delete(context.Context, *v1.DeleteRequest) (*v1.DeleteResponse, error)
-	// Get reads one org.
 	Get(context.Context, *v1.GetRequest) (*v1.GetResponse, error)
-	// ListMine returns every org the caller belongs to, with the role held in each. Clients call it
-	// right after sign-in to learn which workspaces to expect.
 	ListMine(context.Context, *v1.ListMineRequest) (*v1.ListMineResponse, error)
 }
 

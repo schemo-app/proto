@@ -7,11 +7,7 @@ import "common/v1/people.proto";
 
 option go_package = "github.com/schemo-app/proto/go/workspace/v1;workspace";
 
-// WorkspaceMembershipService manages the people in one workspace. Membership of a workspace is
-// separate from membership of the org above it: an org member may be in none of its workspaces,
-// but a workspace member always belongs to the org.
 service WorkspaceMembershipService {
-  // ListMembers returns the people in a workspace.
   rpc ListMembers(ListMembersRequest) returns (ListMembersResponse) {
     option (common.v1.access) = ACCESS_WORKSPACE_READ;
   }
@@ -21,8 +17,6 @@ service WorkspaceMembershipService {
     option (common.v1.access) = ACCESS_WORKSPACE_MANAGE_MEMBERS;
   }
 
-  // ChangeMemberRole assigns another role within this workspace only; the member's org role is
-  // untouched.
   rpc ChangeMemberRole(ChangeMemberRoleRequest) returns (ChangeMemberRoleResponse) {
     option (common.v1.access) = ACCESS_WORKSPACE_MANAGE_MEMBERS;
   }
@@ -40,7 +34,6 @@ service WorkspaceMembershipService {
   }
 }
 
-// WorkspaceMember is a person's place in one workspace.
 message WorkspaceMember {
   common.v1.Member member = 1;
 
@@ -51,17 +44,14 @@ message WorkspaceMember {
 message ListMembersRequest {
   string workspace_id = 1;
 
-  // Maximum items to return. 0 uses the server's default.
   int32 page_size = 2;
 
-  // Opaque cursor from the previous response's `next_page_token`. Empty starts at the first page.
   string page_token = 3;
 }
 
 message ListMembersResponse {
   repeated WorkspaceMember members = 1;
 
-  // Opaque cursor for the next page. Empty when there are no more results.
   string next_page_token = 2;
 }
 

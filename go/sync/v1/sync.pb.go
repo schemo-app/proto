@@ -22,7 +22,6 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// EntityType is the kind of row an entity is.
 type EntityType int32
 
 const (
@@ -82,15 +81,13 @@ func (x EntityType) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// PushStatus is how the server judged one pushed entity.
 type PushStatus int32
 
 const (
 	PushStatus_PUSH_STATUS_UNSPECIFIED PushStatus = 0
 	// Stored as sent, at the version in `new_version`.
 	PushStatus_PUSH_STATUS_ACCEPTED PushStatus = 1
-	// Another device's newer edit stands. `winner` carries the row that does, and the pushed edit is
-	// not applied.
+	// The existing row wins and is returned in winner.
 	PushStatus_PUSH_STATUS_CONFLICT_RESOLVED PushStatus = 2
 	// Not stored. `reject_reason` says why.
 	PushStatus_PUSH_STATUS_REJECTED PushStatus = 3
@@ -138,21 +135,17 @@ func (x PushStatus) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// PushRejectReason is why an entity was REJECTED.
 type PushRejectReason int32
 
 const (
 	PushRejectReason_PUSH_REJECT_REASON_UNSPECIFIED PushRejectReason = 0
 	// The row's parent has not arrived. Push the parent first.
 	PushRejectReason_PUSH_REJECT_REASON_PARENT_NOT_FOUND PushRejectReason = 1
-	// The org's plan has no room for it.
-	PushRejectReason_PUSH_REJECT_REASON_QUOTA_EXCEEDED PushRejectReason = 2
-	// `data` is not a JSON object, or a secret path does not name a string in it.
+	PushRejectReason_PUSH_REJECT_REASON_QUOTA_EXCEEDED   PushRejectReason = 2
+	// Invalid JSON object or secret path.
 	PushRejectReason_PUSH_REJECT_REASON_INVALID_DATA PushRejectReason = 3
-	// The caller's role may not make this change.
-	PushRejectReason_PUSH_REJECT_REASON_FORBIDDEN PushRejectReason = 4
-	// Larger than the server's limits (see `platform.v1.Limits`). It will not fit next time either.
-	PushRejectReason_PUSH_REJECT_REASON_TOO_LARGE PushRejectReason = 5
+	PushRejectReason_PUSH_REJECT_REASON_FORBIDDEN    PushRejectReason = 4
+	PushRejectReason_PUSH_REJECT_REASON_TOO_LARGE    PushRejectReason = 5
 )
 
 // Enum value maps for PushRejectReason.
@@ -197,12 +190,7 @@ func (x PushRejectReason) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// SyncEntity is one row of a workspace. The envelope is what the server reads; `data` is the row's
-// content as a JSON object, which the server stores as it came and never interprets, except at the
-// paths named in `secrets`.
-//
-// A path is a JSON pointer (RFC 6901) with one addition: a segment `@<id>` names the element of an
-// array whose "id" is <id>, so a secret inside a list survives the list being reordered.
+// Secret paths are JSON pointers. An array segment @<id> selects the element with that id.
 type SyncEntity struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Kind        EntityType             `protobuf:"varint,1,opt,name=kind,proto3,enum=sync.v1.EntityType"`
@@ -420,24 +408,21 @@ type SyncEntity_builder struct {
 
 	Kind EntityType
 	Id   string
-	// Identifies one client edit, so a retried push is answered DUPLICATE instead of applied twice.
+	// Client mutation ID used for deduplication.
 	OperationId string
 	// The version the edit was made on; the server's answer carries the next one.
 	Version   int64
 	Deleted   bool
 	CreatedAt *timestamppb.Timestamp
 	UpdatedAt *timestamppb.Timestamp
-	// The row this one hangs from: a collection for a collection or request, an environment for a
-	// variable (empty for a global), a domain for a cookie. Empty at the top.
+	// Parent collection, variable environment or cookie domain. Empty at the top level.
 	ParentId string
 	Name     string
 	Position int64
-	// The row's content, a JSON object. Empty for a tombstone.
-	Data []byte
-	// Paths in `data` that hold a secret. A reader who may not see secrets gets them withheld.
+	// JSON document, empty for tombstones.
+	Data    []byte
 	Secrets []string
-	// Secret paths whose value is not in `data`: the server withheld it from this reader, or the
-	// device keeps it at home. Pushed back, a withheld path keeps the value the server holds.
+	// Values omitted by the sender. On push, the server preserves the stored values.
 	Withheld []string
 }
 
@@ -461,7 +446,6 @@ func (b0 SyncEntity_builder) Build() *SyncEntity {
 	return m0
 }
 
-// SyncChange is one entry of a workspace's log.
 type SyncChange struct {
 	state             protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Seq    int64                  `protobuf:"varint,1,opt,name=seq,proto3"`
@@ -531,7 +515,6 @@ func (x *SyncChange) ClearEntity() {
 type SyncChange_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The entry's place in the workspace's sequence.
 	Seq    int64
 	Entity *SyncEntity
 }
@@ -545,7 +528,6 @@ func (b0 SyncChange_builder) Build() *SyncChange {
 	return m0
 }
 
-// PushResult is how one pushed entity went.
 type PushResult struct {
 	state                   protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_EntityId     string                 `protobuf:"bytes,1,opt,name=entity_id,json=entityId,proto3"`
@@ -651,13 +633,10 @@ func (x *PushResult) ClearWinner() {
 type PushResult_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	EntityId string
-	Status   PushStatus
-	// The entity's version after the push.
-	NewVersion int64
-	// The row that stands, for CONFLICT_RESOLVED.
-	Winner *SyncEntity
-	// Why the entity was refused, for REJECTED.
+	EntityId     string
+	Status       PushStatus
+	NewVersion   int64
+	Winner       *SyncEntity
 	RejectReason PushRejectReason
 }
 
@@ -673,7 +652,6 @@ func (b0 PushResult_builder) Build() *PushResult {
 	return m0
 }
 
-// WorkspaceCursor is how far a device has read one workspace.
 type WorkspaceCursor struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_WorkspaceId string                 `protobuf:"bytes,1,opt,name=workspace_id,json=workspaceId,proto3"`
@@ -745,8 +723,7 @@ type WorkspaceCursor_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	WorkspaceId string
-	// The last entity-log sequence number the device has.
-	SyncSeq int64
+	SyncSeq     int64
 	// The last history-log sequence number the device has; see `history/v1`.
 	HistorySeq int64
 }
@@ -761,7 +738,6 @@ func (b0 WorkspaceCursor_builder) Build() *WorkspaceCursor {
 	return m0
 }
 
-// Poke says a workspace has moved past the device's cursor.
 type Poke struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_WorkspaceId string                 `protobuf:"bytes,1,opt,name=workspace_id,json=workspaceId,proto3"`
@@ -833,9 +809,8 @@ type Poke_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	WorkspaceId string
-	// The workspace's current sequence numbers.
-	SyncSeq    int64
-	HistorySeq int64
+	SyncSeq     int64
+	HistorySeq  int64
 }
 
 func (b0 Poke_builder) Build() *Poke {
@@ -893,7 +868,6 @@ func (b0 WorkspacesChanged_builder) Build() *WorkspacesChanged {
 	return m0
 }
 
-// Heartbeat keeps an idle stream from being closed.
 type Heartbeat struct {
 	state         protoimpl.MessageState `protogen:"opaque.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -1140,9 +1114,8 @@ type PullRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	WorkspaceId string
-	// Read the changes above this sequence number.
-	AfterSeq int64
-	// Maximum changes to return. A log read is not a page: it continues from `next_seq`.
+	AfterSeq    int64
+	// Maximum changes to return.
 	Limit int32
 }
 
@@ -1243,7 +1216,6 @@ type PullResponse_builder struct {
 	Changes []*SyncChange
 	// Pass this as `after_seq` to continue.
 	NextSeq int64
-	// Whether more changes are waiting above `next_seq`.
 	HasMore bool
 	// True when the server cannot answer from the device's cursor: the workspace was reset, or the
 	// device is so far behind that the changes it missed are gone. The device starts over.
@@ -1309,8 +1281,7 @@ func (x *ConnectRequest) SetWorkspaces(v []*WorkspaceCursor) {
 type ConnectRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The workspaces to follow, each with the cursor the device has reached. The server tells the
-	// device at once about any that are already ahead.
+	// Workspaces to follow with their last read cursors.
 	Workspaces []*WorkspaceCursor
 }
 

@@ -112,9 +112,6 @@ export const ListMineResponseSchema = /*@__PURE__*/
   messageDesc(file_org_v1_org, 13);
 
 /**
- * OrgService manages an org's identity and configuration. The people in it are managed by
- * `OrgMembershipService`.
- *
  * @generated from service org.v1.OrgService
  */
 export const OrgService = /*@__PURE__*/

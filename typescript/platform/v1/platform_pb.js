@@ -48,8 +48,6 @@ export const RegistrationModeSchema = /*@__PURE__*/
   enumDesc(file_platform_v1_platform, 0);
 
 /**
- * RegistrationMode says who may create an account on this server.
- *
  * @generated from enum platform.v1.RegistrationMode
  */
 export const RegistrationMode = /*@__PURE__*/

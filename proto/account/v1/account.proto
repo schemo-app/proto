@@ -8,35 +8,27 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/schemo-app/proto/go/account/v1;account";
 
-// AccountService manages the account associated with the caller's credentials.
-// Every method operates strictly on the authenticated entity identified by the bearer token.
 service AccountService {
-  // Me returns identity and state for the current account and caller session.
   rpc Me(MeRequest) returns (MeResponse) {
     option (common.v1.access) = ACCESS_AUTHENTICATED;
   }
 
-  // ListSessions returns all active sessions for this account.
   rpc ListSessions(ListSessionsRequest) returns (ListSessionsResponse) {
     option (common.v1.access) = ACCESS_AUTHENTICATED;
   }
 
-  // EndSession terminates a specific session by ID.
   rpc EndSession(EndSessionRequest) returns (EndSessionResponse) {
     option (common.v1.access) = ACCESS_AUTHENTICATED;
   }
 
-  // EndOtherSessions terminates all active sessions for this account except the calling one.
   rpc EndOtherSessions(EndOtherSessionsRequest) returns (EndOtherSessionsResponse) {
     option (common.v1.access) = ACCESS_AUTHENTICATED;
   }
 
-  // SignOut terminates the current calling session.
   rpc SignOut(SignOutRequest) returns (SignOutResponse) {
     option (common.v1.access) = ACCESS_AUTHENTICATED;
   }
 
-  // DeleteAccount permanently purges the account and terminates all associated sessions.
   rpc DeleteAccount(DeleteAccountRequest) returns (DeleteAccountResponse) {
     option (common.v1.access) = ACCESS_AUTHENTICATED;
   }
@@ -46,14 +38,11 @@ service AccountService {
     option (common.v1.access) = ACCESS_AUTHENTICATED;
   }
 
-  // SetLanguage sets the language the person reads. Letters about them that are not about a page
-  // they are on (a new device, a payment) are written in it.
   rpc SetLanguage(SetLanguageRequest) returns (SetLanguageResponse) {
     option (common.v1.access) = ACCESS_AUTHENTICATED;
   }
 }
 
-// Account is the person behind the credentials.
 message Account {
   string id = 1;
   string email = 2;
@@ -64,18 +53,15 @@ message Account {
   string language_code = 5;
 }
 
-// Session is an active device authorization.
 message Session {
   string id = 1;
   common.v1.Device device = 2;
 
-  // IP address recorded during initial authentication.
   string ip = 3;
 
   google.protobuf.Timestamp created_at = 4;
   google.protobuf.Timestamp last_seen_at = 5;
 
-  // True if this session corresponds to the bearer token used in the API request.
   bool is_current = 6;
 }
 
@@ -84,8 +70,6 @@ message MeRequest {}
 message MeResponse {
   Account account = 1;
 
-  // The id of the session the bearer token of this request belongs to. Use it to mark "this
-  // device" in the sessions list.
   string session_id = 2;
 }
 
@@ -100,14 +84,12 @@ message EndSessionRequest {
 }
 
 message EndSessionResponse {
-  // The sessions that remain active.
   repeated Session sessions = 1;
 }
 
 message EndOtherSessionsRequest {}
 
 message EndOtherSessionsResponse {
-  // The sessions that remain active: only the calling one.
   repeated Session sessions = 1;
 }
 

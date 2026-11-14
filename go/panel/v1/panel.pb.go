@@ -25,15 +25,13 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Theme is the colour scheme the panel is drawn in.
 type Theme int32
 
 const (
 	Theme_THEME_UNSPECIFIED Theme = 0
 	Theme_THEME_LIGHT       Theme = 1
 	Theme_THEME_DARK        Theme = 2
-	// Follow the browser.
-	Theme_THEME_SYSTEM Theme = 3
+	Theme_THEME_SYSTEM      Theme = 3
 )
 
 // Enum value maps for Theme.
@@ -74,7 +72,6 @@ func (x Theme) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// NoticeState is one of the states the status screen shows.
 type NoticeState int32
 
 const (
@@ -149,8 +146,6 @@ func (x NoticeState) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// PendingDevice is a program waiting to be let in: what it says about itself, and how long the code
-// it showed has left.
 type PendingDevice struct {
 	state                protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_UserCode  string                 `protobuf:"bytes,1,opt,name=user_code,json=userCode,proto3"`
@@ -258,9 +253,6 @@ func (b0 PendingDevice_builder) Build() *PendingDevice {
 	return m0
 }
 
-// Notice is what the status screen is about to say. The server writes it into the session when it
-// is the one that learned something (a link was followed, a code was answered), so a reload
-// repeats the screen instead of losing it.
 type Notice struct {
 	state               protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_State    NoticeState            `protobuf:"varint,1,opt,name=state,proto3,enum=panel.v1.NoticeState"`
@@ -367,11 +359,9 @@ type Notice_builder struct {
 
 	State NoticeState
 	// The address the letter went to, for SENT. Kept in the session, never in the address bar.
-	Email string
-	// How long a link or a code lives, so the sentence carries the server's own number.
+	Email    string
 	ValidFor *durationpb.Duration
-	// The program that asked, for DONE.
-	Device *v1.Device
+	Device   *v1.Device
 }
 
 func (b0 Notice_builder) Build() *Notice {
@@ -385,8 +375,7 @@ func (b0 Notice_builder) Build() *Notice {
 	return m0
 }
 
-// PanelState is what every screen of the panel starts from, signed in or not. It is not asked for:
-// the server writes it into the document it serves, so the first frame is drawn from it.
+// Initial state embedded in the panel document.
 type PanelState struct {
 	state                      protoimpl.MessageState  `protogen:"opaque.v1"`
 	xxx_hidden_LanguageCode    string                  `protobuf:"bytes,1,opt,name=language_code,json=languageCode,proto3"`
@@ -645,28 +634,22 @@ func (x *PanelState) ClearBrowserSession() {
 type PanelState_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	LanguageCode string
-	Theme        Theme
-	SignedIn     bool
-	// Who it is, when it is anybody.
-	Account *SignedInAccount
-	// Whether the person arrived here from a program asking to sign in.
-	FromDevice bool
-	// What the server has to say about the last thing that happened, handed over once.
-	Notice *Notice
-	Server *Server
-	// The lifetimes the sentences quote: the letter's link, and a program's code.
+	LanguageCode  string
+	Theme         Theme
+	SignedIn      bool
+	Account       *SignedInAccount
+	FromDevice    bool
+	Notice        *Notice
+	Server        *Server
 	LinkTtl       *durationpb.Duration
 	DeviceCodeTtl *durationpb.Duration
 	// This browser's own session, when it is signed in: it is not one of the account's devices.
 	BrowserSession *BrowserSession
-	// What a workspace may be for, as this server has it: the choices the screens offer.
 	WorkspaceKinds []*WorkspaceKindOption
 	// The words a workspace may be coloured with, the first being the default. The panel draws each
 	// its own way; the server only knows the words.
 	WorkspaceColors []string
-	// What a role may be written for, in the order the screens list them.
-	RoleScopes []v11.RoleScope
+	RoleScopes      []v11.RoleScope
 }
 
 func (b0 PanelState_builder) Build() *PanelState {
@@ -689,8 +672,6 @@ func (b0 PanelState_builder) Build() *PanelState {
 	return m0
 }
 
-// WorkspaceKindOption is one thing a workspace may be for, and what the server lets it do. The
-// panel offers these and names none of them itself.
 type WorkspaceKindOption struct {
 	state                   protoimpl.MessageState    `protogen:"opaque.v1"`
 	xxx_hidden_Kind         v12.WorkspaceKind         `protobuf:"varint,1,opt,name=kind,proto3,enum=workspace.v1.WorkspaceKind"`
@@ -777,8 +758,7 @@ type WorkspaceKindOption_builder struct {
 	// The feature an org's plan needs to have a workspace of this kind. UNSPECIFIED when any plan
 	// does.
 	Feature v1.Feature
-	// Whether people beside the one who made it may be put in it.
-	Shared bool
+	Shared  bool
 	// How far the org may see it, the first being the default. One entry is no choice.
 	Visibilities []v12.WorkspaceVisibility
 }
@@ -865,7 +845,6 @@ func (b0 SignedInAccount_builder) Build() *SignedInAccount {
 	return m0
 }
 
-// Server is the deployment as the panel presents it.
 type Server struct {
 	state              protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Product string                 `protobuf:"bytes,1,opt,name=product,proto3"`
@@ -936,9 +915,7 @@ func (x *Server) SetVersion(v string) {
 type Server_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The product's name.
 	Product string
-	// The public address of the server.
 	Address string
 	Version string
 }
@@ -953,7 +930,6 @@ func (b0 Server_builder) Build() *Server {
 	return m0
 }
 
-// BrowserSession is when and from where this browser signed in, as its session recorded it.
 type BrowserSession struct {
 	state                 protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_SignedInAt *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=signed_in_at,json=signedInAt,proto3"`
@@ -1094,8 +1070,7 @@ func (x *RequestLinkRequest) SetLanguageCode(v string) {
 type RequestLinkRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Email string
-	// The language of the sign-in email.
+	Email        string
 	LanguageCode string
 }
 
@@ -1178,8 +1153,7 @@ type RequestLinkResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	// The recipient address, normalized.
-	Email string
-	// How long the link inside the letter lives.
+	Email   string
 	LinkTtl *durationpb.Duration
 }
 
@@ -1473,7 +1447,6 @@ func (x *AnswerDeviceResponse) ClearNotice() {
 type AnswerDeviceResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// What the screen after this one draws.
 	Notice *Notice
 }
 

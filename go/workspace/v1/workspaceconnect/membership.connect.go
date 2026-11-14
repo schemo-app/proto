@@ -54,12 +54,9 @@ const (
 // WorkspaceMembershipServiceClient is a client for the workspace.v1.WorkspaceMembershipService
 // service.
 type WorkspaceMembershipServiceClient interface {
-	// ListMembers returns the people in a workspace.
 	ListMembers(context.Context, *v1.ListMembersRequest) (*v1.ListMembersResponse, error)
 	// AddMember adds an existing org member to the workspace.
 	AddMember(context.Context, *v1.AddMemberRequest) (*v1.AddMemberResponse, error)
-	// ChangeMemberRole assigns another role within this workspace only; the member's org role is
-	// untouched.
 	ChangeMemberRole(context.Context, *v1.ChangeMemberRoleRequest) (*v1.ChangeMemberRoleResponse, error)
 	// RemoveMember removes a person from the workspace and stops their devices syncing it. They stay
 	// in the org.
@@ -170,12 +167,9 @@ func (c *workspaceMembershipServiceClient) Leave(ctx context.Context, req *v1.Le
 // WorkspaceMembershipServiceHandler is an implementation of the
 // workspace.v1.WorkspaceMembershipService service.
 type WorkspaceMembershipServiceHandler interface {
-	// ListMembers returns the people in a workspace.
 	ListMembers(context.Context, *v1.ListMembersRequest) (*v1.ListMembersResponse, error)
 	// AddMember adds an existing org member to the workspace.
 	AddMember(context.Context, *v1.AddMemberRequest) (*v1.AddMemberResponse, error)
-	// ChangeMemberRole assigns another role within this workspace only; the member's org role is
-	// untouched.
 	ChangeMemberRole(context.Context, *v1.ChangeMemberRoleRequest) (*v1.ChangeMemberRoleResponse, error)
 	// RemoveMember removes a person from the workspace and stops their devices syncing it. They stay
 	// in the org.

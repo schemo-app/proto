@@ -75,16 +75,12 @@ export const ActorTypeSchema = /*@__PURE__*/
   enumDesc(file_audit_v1_audit, 1);
 
 /**
- * ActorType says who did what an entry records.
- *
  * @generated from enum audit.v1.ActorType
  */
 export const ActorType = /*@__PURE__*/
   tsEnum(ActorTypeSchema);
 
 /**
- * AuditService provides read-only access to the org's append-only audit journal.
- *
  * @generated from service audit.v1.AuditService
  */
 export const AuditService = /*@__PURE__*/

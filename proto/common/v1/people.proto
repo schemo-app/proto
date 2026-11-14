@@ -6,15 +6,12 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/schemo-app/proto/go/common/v1;common";
 
-// RoleRef names a role without carrying its permissions; `role.v1.RoleService` reads the role itself.
 message RoleRef {
   string id = 1;
 
-  // The role's display name, e.g. "Editor".
   string name = 2;
 }
 
-// Person is a user as a members list shows them.
 message Person {
   string user_id = 1;
   string email = 2;
@@ -24,7 +21,6 @@ message Person {
   bool deleted = 4;
 }
 
-// Member is a person's place in an org or a workspace.
 message Member {
   Person person = 1;
   RoleRef role = 2;

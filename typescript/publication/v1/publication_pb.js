@@ -117,8 +117,6 @@ export const VisibilitySchema = /*@__PURE__*/
   enumDesc(file_publication_v1_publication, 0);
 
 /**
- * Visibility is who a page is for.
- *
  * @generated from enum publication.v1.Visibility
  */
 export const Visibility = /*@__PURE__*/
@@ -131,22 +129,12 @@ export const PublicationStatusSchema = /*@__PURE__*/
   enumDesc(file_publication_v1_publication, 1);
 
 /**
- * PublicationStatus is whether a page answers at all.
- *
  * @generated from enum publication.v1.PublicationStatus
  */
 export const PublicationStatus = /*@__PURE__*/
   tsEnum(PublicationStatusSchema);
 
 /**
- * PublicationService puts a collection on the open web, and takes it down again.
- *
- * A publication is a *document* the author's device builds and this server stores unread:
- * `PublishRequest.document` is compressed JSON in one shape for every caller, and the server checks
- * the envelope, keeps the bytes and answers what the page is at. Nothing here returns a document
- * except `RestorePublication`, which hands the restored one back to its author: a page is read over
- * plain HTTP, without a token, at the address the publication carries.
- *
  * @generated from service publication.v1.PublicationService
  */
 export const PublicationService = /*@__PURE__*/

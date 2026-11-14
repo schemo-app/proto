@@ -22,7 +22,6 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// WorkspaceKind is what a workspace is for.
 type WorkspaceKind int32
 
 const (
@@ -69,15 +68,12 @@ func (x WorkspaceKind) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// WorkspaceVisibility is who in the org can see a workspace.
 type WorkspaceVisibility int32
 
 const (
 	WorkspaceVisibility_WORKSPACE_VISIBILITY_UNSPECIFIED WorkspaceVisibility = 0
-	// Only its members.
-	WorkspaceVisibility_WORKSPACE_VISIBILITY_PRIVATE WorkspaceVisibility = 1
-	// Every member of the org.
-	WorkspaceVisibility_WORKSPACE_VISIBILITY_INTERNAL WorkspaceVisibility = 2
+	WorkspaceVisibility_WORKSPACE_VISIBILITY_PRIVATE     WorkspaceVisibility = 1
+	WorkspaceVisibility_WORKSPACE_VISIBILITY_INTERNAL    WorkspaceVisibility = 2
 )
 
 // Enum value maps for WorkspaceVisibility.
@@ -116,7 +112,6 @@ func (x WorkspaceVisibility) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Workspace is a workspace and the caller's place in it.
 type Workspace struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Id          string                 `protobuf:"bytes,1,opt,name=id,proto3"`
@@ -459,28 +454,22 @@ type Workspace_builder struct {
 	OrgId string
 	Name  string
 	// A word of the palette (see `panel.v1.PanelState.workspace_colors`) or a hex code.
-	Color      string
-	Kind       WorkspaceKind
-	Visibility WorkspaceVisibility
-	// The role the caller holds in the workspace, and its permission keys.
+	Color       string
+	Kind        WorkspaceKind
+	Visibility  WorkspaceVisibility
 	Role        *v1.RoleRef
 	Permissions []string
-	// What the caller may do with the workspace, decided here so that no client names a permission
-	// key.
-	Can *WorkspaceCan
+	Can         *WorkspaceCan
 	// True when the caller is a member of the workspace rather than seeing it through the org.
-	IsMember bool
-	Counts   *WorkspaceCounts
-	// When a device last wrote to the workspace.
+	IsMember   bool
+	Counts     *WorkspaceCounts
 	LastSyncAt *timestamppb.Timestamp
 	// The workspace's current sync sequence number; see `sync/v1`.
 	LastSyncSeq int64
-	// Raised by every change to the workspace's own row.
-	Version   int64
-	CreatedAt *timestamppb.Timestamp
-	UpdatedAt *timestamppb.Timestamp
-	// When the workspace was deleted. Unset for one that is not.
-	DeletedAt *timestamppb.Timestamp
+	Version     int64
+	CreatedAt   *timestamppb.Timestamp
+	UpdatedAt   *timestamppb.Timestamp
+	DeletedAt   *timestamppb.Timestamp
 	// When a deleted workspace is removed for good. Unset for one that is not deleted.
 	PurgeAt *timestamppb.Timestamp
 }
@@ -510,7 +499,6 @@ func (b0 Workspace_builder) Build() *Workspace {
 	return m0
 }
 
-// WorkspaceCan is what the caller may do with one workspace.
 type WorkspaceCan struct {
 	state                    protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Update        bool                   `protobuf:"varint,1,opt,name=update,proto3"`
@@ -596,7 +584,6 @@ func (b0 WorkspaceCan_builder) Build() *WorkspaceCan {
 	return m0
 }
 
-// WorkspaceCounts is how much a workspace holds.
 type WorkspaceCounts struct {
 	state                   protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Collections  int32                  `protobuf:"varint,1,opt,name=collections,proto3"`
@@ -719,8 +706,7 @@ type WorkspaceCounts_builder struct {
 	Requests     int32
 	Environments int32
 	Variables    int32
-	// Members, i.e. people with access.
-	Members int32
+	Members      int32
 	// History records and their size, measured against the plan's quotas.
 	Records      int32
 	HistoryBytes int64
@@ -1100,8 +1086,7 @@ type UpdateRequest_builder struct {
 	Name        *string
 	Color       *string
 	Visibility  *WorkspaceVisibility
-	// Changing a workspace between personal and team.
-	Kind *WorkspaceKind
+	Kind        *WorkspaceKind
 }
 
 func (b0 UpdateRequest_builder) Build() *UpdateRequest {
@@ -1491,10 +1476,8 @@ func (x *ListRequest) SetPageToken(v string) {
 type ListRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	OrgId string
-	// Maximum items to return. 0 uses the server's default.
-	PageSize int32
-	// Opaque cursor from the previous response's `next_page_token`. Empty starts at the first page.
+	OrgId     string
+	PageSize  int32
 	PageToken string
 }
 
@@ -1580,11 +1563,9 @@ func (x *ListResponse) SetOwnOrgId(v string) {
 type ListResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Workspaces []*Workspace
-	// Opaque cursor for the next page. Empty when there are no more results.
+	Workspaces    []*Workspace
 	NextPageToken string
-	// The id of the org that belongs to the caller alone.
-	OwnOrgId string
+	OwnOrgId      string
 }
 
 func (b0 ListResponse_builder) Build() *ListResponse {

@@ -26,12 +26,8 @@ const (
 // AuditServiceClient is the client API for AuditService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-//
-// AuditService provides read-only access to the org's append-only audit journal.
 type AuditServiceClient interface {
-	// List returns journal entries, newest first, one page at a time.
 	List(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListResponse, error)
-	// Export streams the entries that match as chunked CSV, for reporting and archiving.
 	Export(ctx context.Context, in *ExportRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[ExportResponse], error)
 }
 
@@ -75,12 +71,8 @@ type AuditService_ExportClient = grpc.ServerStreamingClient[ExportResponse]
 // AuditServiceServer is the server API for AuditService service.
 // All implementations must embed UnimplementedAuditServiceServer
 // for forward compatibility.
-//
-// AuditService provides read-only access to the org's append-only audit journal.
 type AuditServiceServer interface {
-	// List returns journal entries, newest first, one page at a time.
 	List(context.Context, *ListRequest) (*ListResponse, error)
-	// Export streams the entries that match as chunked CSV, for reporting and archiving.
 	Export(*ExportRequest, grpc.ServerStreamingServer[ExportResponse]) error
 	mustEmbedUnimplementedAuditServiceServer()
 }

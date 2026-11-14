@@ -50,11 +50,8 @@ const (
 type PanelServiceClient interface {
 	// RequestLink emails a sign-in link. Delivery limits apply before it is sent.
 	RequestLink(context.Context, *v1.RequestLinkRequest) (*v1.RequestLinkResponse, error)
-	// GetPendingDevice reads what the program waiting for confirmation says about itself.
 	GetPendingDevice(context.Context, *v1.GetPendingDeviceRequest) (*v1.GetPendingDeviceResponse, error)
-	// AnswerDevice lets the program in as the signed-in person, or refuses it.
 	AnswerDevice(context.Context, *v1.AnswerDeviceRequest) (*v1.AnswerDeviceResponse, error)
-	// SignOut ends this browser's session.
 	SignOut(context.Context, *v1.SignOutRequest) (*v1.SignOutResponse, error)
 }
 
@@ -144,11 +141,8 @@ func (c *panelServiceClient) SignOut(ctx context.Context, req *v1.SignOutRequest
 type PanelServiceHandler interface {
 	// RequestLink emails a sign-in link. Delivery limits apply before it is sent.
 	RequestLink(context.Context, *v1.RequestLinkRequest) (*v1.RequestLinkResponse, error)
-	// GetPendingDevice reads what the program waiting for confirmation says about itself.
 	GetPendingDevice(context.Context, *v1.GetPendingDeviceRequest) (*v1.GetPendingDeviceResponse, error)
-	// AnswerDevice lets the program in as the signed-in person, or refuses it.
 	AnswerDevice(context.Context, *v1.AnswerDeviceRequest) (*v1.AnswerDeviceResponse, error)
-	// SignOut ends this browser's session.
 	SignOut(context.Context, *v1.SignOutRequest) (*v1.SignOutResponse, error)
 }
 

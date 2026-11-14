@@ -21,7 +21,6 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// WorkspaceMember is a person's place in one workspace.
 type WorkspaceMember struct {
 	state              protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Member  *v1.Member             `protobuf:"bytes,1,opt,name=member,proto3"`
@@ -176,10 +175,8 @@ type ListMembersRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	WorkspaceId string
-	// Maximum items to return. 0 uses the server's default.
-	PageSize int32
-	// Opaque cursor from the previous response's `next_page_token`. Empty starts at the first page.
-	PageToken string
+	PageSize    int32
+	PageToken   string
 }
 
 func (b0 ListMembersRequest_builder) Build() *ListMembersRequest {
@@ -252,8 +249,7 @@ func (x *ListMembersResponse) SetNextPageToken(v string) {
 type ListMembersResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Members []*WorkspaceMember
-	// Opaque cursor for the next page. Empty when there are no more results.
+	Members       []*WorkspaceMember
 	NextPageToken string
 }
 

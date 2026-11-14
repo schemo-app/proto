@@ -16,9 +16,6 @@ import type { Feature } from "../../common/v1/feature_pb.js";
 export declare const file_panel_v1_panel: GenFile;
 
 /**
- * PendingDevice is a program waiting to be let in: what it says about itself, and how long the code
- * it showed has left.
- *
  * @generated from message panel.v1.PendingDevice
  */
 export declare type PendingDevice = Message<"panel.v1.PendingDevice"> & {
@@ -45,10 +42,6 @@ export declare type PendingDevice = Message<"panel.v1.PendingDevice"> & {
 export declare const PendingDeviceSchema: GenMessage<PendingDevice>;
 
 /**
- * Notice is what the status screen is about to say. The server writes it into the session when it
- * is the one that learned something (a link was followed, a code was answered), so a reload
- * repeats the screen instead of losing it.
- *
  * @generated from message panel.v1.Notice
  */
 export declare type Notice = Message<"panel.v1.Notice"> & {
@@ -65,15 +58,11 @@ export declare type Notice = Message<"panel.v1.Notice"> & {
   email: string;
 
   /**
-   * How long a link or a code lives, so the sentence carries the server's own number.
-   *
    * @generated from field: google.protobuf.Duration valid_for = 5;
    */
   validFor?: Duration | undefined;
 
   /**
-   * The program that asked, for DONE.
-   *
    * @generated from field: common.v1.Device device = 4;
    */
   device?: Device | undefined;
@@ -86,8 +75,7 @@ export declare type Notice = Message<"panel.v1.Notice"> & {
 export declare const NoticeSchema: GenMessage<Notice>;
 
 /**
- * PanelState is what every screen of the panel starts from, signed in or not. It is not asked for:
- * the server writes it into the document it serves, so the first frame is drawn from it.
+ * Initial state embedded in the panel document.
  *
  * @generated from message panel.v1.PanelState
  */
@@ -108,22 +96,16 @@ export declare type PanelState = Message<"panel.v1.PanelState"> & {
   signedIn: boolean;
 
   /**
-   * Who it is, when it is anybody.
-   *
    * @generated from field: panel.v1.SignedInAccount account = 4;
    */
   account?: SignedInAccount | undefined;
 
   /**
-   * Whether the person arrived here from a program asking to sign in.
-   *
    * @generated from field: bool from_device = 5;
    */
   fromDevice: boolean;
 
   /**
-   * What the server has to say about the last thing that happened, handed over once.
-   *
    * @generated from field: panel.v1.Notice notice = 6;
    */
   notice?: Notice | undefined;
@@ -134,8 +116,6 @@ export declare type PanelState = Message<"panel.v1.PanelState"> & {
   server?: Server | undefined;
 
   /**
-   * The lifetimes the sentences quote: the letter's link, and a program's code.
-   *
    * @generated from field: google.protobuf.Duration link_ttl = 14;
    */
   linkTtl?: Duration | undefined;
@@ -153,8 +133,6 @@ export declare type PanelState = Message<"panel.v1.PanelState"> & {
   browserSession?: BrowserSession | undefined;
 
   /**
-   * What a workspace may be for, as this server has it: the choices the screens offer.
-   *
    * @generated from field: repeated panel.v1.WorkspaceKindOption workspace_kinds = 11;
    */
   workspaceKinds: WorkspaceKindOption[];
@@ -168,8 +146,6 @@ export declare type PanelState = Message<"panel.v1.PanelState"> & {
   workspaceColors: string[];
 
   /**
-   * What a role may be written for, in the order the screens list them.
-   *
    * @generated from field: repeated role.v1.RoleScope role_scopes = 13;
    */
   roleScopes: RoleScope[];
@@ -182,9 +158,6 @@ export declare type PanelState = Message<"panel.v1.PanelState"> & {
 export declare const PanelStateSchema: GenMessage<PanelState>;
 
 /**
- * WorkspaceKindOption is one thing a workspace may be for, and what the server lets it do. The
- * panel offers these and names none of them itself.
- *
  * @generated from message panel.v1.WorkspaceKindOption
  */
 export declare type WorkspaceKindOption = Message<"panel.v1.WorkspaceKindOption"> & {
@@ -202,8 +175,6 @@ export declare type WorkspaceKindOption = Message<"panel.v1.WorkspaceKindOption"
   feature: Feature;
 
   /**
-   * Whether people beside the one who made it may be put in it.
-   *
    * @generated from field: bool shared = 3;
    */
   shared: boolean;
@@ -244,21 +215,15 @@ export declare type SignedInAccount = Message<"panel.v1.SignedInAccount"> & {
 export declare const SignedInAccountSchema: GenMessage<SignedInAccount>;
 
 /**
- * Server is the deployment as the panel presents it.
- *
  * @generated from message panel.v1.Server
  */
 export declare type Server = Message<"panel.v1.Server"> & {
   /**
-   * The product's name.
-   *
    * @generated from field: string product = 1;
    */
   product: string;
 
   /**
-   * The public address of the server.
-   *
    * @generated from field: string address = 2;
    */
   address: string;
@@ -276,8 +241,6 @@ export declare type Server = Message<"panel.v1.Server"> & {
 export declare const ServerSchema: GenMessage<Server>;
 
 /**
- * BrowserSession is when and from where this browser signed in, as its session recorded it.
- *
  * @generated from message panel.v1.BrowserSession
  */
 export declare type BrowserSession = Message<"panel.v1.BrowserSession"> & {
@@ -308,8 +271,6 @@ export declare type RequestLinkRequest = Message<"panel.v1.RequestLinkRequest"> 
   email: string;
 
   /**
-   * The language of the sign-in email.
-   *
    * @generated from field: string language_code = 2;
    */
   languageCode: string;
@@ -333,8 +294,6 @@ export declare type RequestLinkResponse = Message<"panel.v1.RequestLinkResponse"
   email: string;
 
   /**
-   * How long the link inside the letter lives.
-   *
    * @generated from field: google.protobuf.Duration link_ttl = 3;
    */
   linkTtl?: Duration | undefined;
@@ -415,8 +374,6 @@ export declare const AnswerDeviceRequestSchema: GenMessage<AnswerDeviceRequest>;
  */
 export declare type AnswerDeviceResponse = Message<"panel.v1.AnswerDeviceResponse"> & {
   /**
-   * What the screen after this one draws.
-   *
    * @generated from field: panel.v1.Notice notice = 1;
    */
   notice?: Notice | undefined;
@@ -453,8 +410,6 @@ export declare type SignOutResponse = Message<"panel.v1.SignOutResponse"> & {
 export declare const SignOutResponseSchema: GenMessage<SignOutResponse>;
 
 /**
- * Theme is the colour scheme the panel is drawn in.
- *
  * @generated from enum panel.v1.Theme
  */
 export enum Theme {
@@ -474,8 +429,6 @@ export enum Theme {
   DARK = 2,
 
   /**
-   * Follow the browser.
-   *
    * @generated from enum value: THEME_SYSTEM = 3;
    */
   SYSTEM = 3,
@@ -487,8 +440,6 @@ export enum Theme {
 export declare const ThemeSchema: GenEnum<Theme>;
 
 /**
- * NoticeState is one of the states the status screen shows.
- *
  * @generated from enum panel.v1.NoticeState
  */
 export enum NoticeState {
@@ -567,9 +518,7 @@ export enum NoticeState {
 export declare const NoticeStateSchema: GenEnum<NoticeState>;
 
 /**
- * PanelService serves the browser panel: signing in with an emailed link, and confirming a desktop
- * app that asked to sign in. It is called from the panel's own browser session, not with a bearer
- * token.
+ * Uses the browser session for email sign-in and desktop authorization.
  *
  * @generated from service panel.v1.PanelService
  */
@@ -585,8 +534,6 @@ export declare const PanelService: GenService<{
     output: typeof RequestLinkResponseSchema;
   },
   /**
-   * GetPendingDevice reads what the program waiting for confirmation says about itself.
-   *
    * @generated from rpc panel.v1.PanelService.GetPendingDevice
    */
   getPendingDevice: {
@@ -595,8 +542,6 @@ export declare const PanelService: GenService<{
     output: typeof GetPendingDeviceResponseSchema;
   },
   /**
-   * AnswerDevice lets the program in as the signed-in person, or refuses it.
-   *
    * @generated from rpc panel.v1.PanelService.AnswerDevice
    */
   answerDevice: {
@@ -605,8 +550,6 @@ export declare const PanelService: GenService<{
     output: typeof AnswerDeviceResponseSchema;
   },
   /**
-   * SignOut ends this browser's session.
-   *
    * @generated from rpc panel.v1.PanelService.SignOut
    */
   signOut: {

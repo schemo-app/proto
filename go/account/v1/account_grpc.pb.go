@@ -32,26 +32,15 @@ const (
 // AccountServiceClient is the client API for AccountService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-//
-// AccountService manages the account associated with the caller's credentials.
-// Every method operates strictly on the authenticated entity identified by the bearer token.
 type AccountServiceClient interface {
-	// Me returns identity and state for the current account and caller session.
 	Me(ctx context.Context, in *MeRequest, opts ...grpc.CallOption) (*MeResponse, error)
-	// ListSessions returns all active sessions for this account.
 	ListSessions(ctx context.Context, in *ListSessionsRequest, opts ...grpc.CallOption) (*ListSessionsResponse, error)
-	// EndSession terminates a specific session by ID.
 	EndSession(ctx context.Context, in *EndSessionRequest, opts ...grpc.CallOption) (*EndSessionResponse, error)
-	// EndOtherSessions terminates all active sessions for this account except the calling one.
 	EndOtherSessions(ctx context.Context, in *EndOtherSessionsRequest, opts ...grpc.CallOption) (*EndOtherSessionsResponse, error)
-	// SignOut terminates the current calling session.
 	SignOut(ctx context.Context, in *SignOutRequest, opts ...grpc.CallOption) (*SignOutResponse, error)
-	// DeleteAccount permanently purges the account and terminates all associated sessions.
 	DeleteAccount(ctx context.Context, in *DeleteAccountRequest, opts ...grpc.CallOption) (*DeleteAccountResponse, error)
 	// Rename changes the name the account is shown under. An empty name clears it.
 	Rename(ctx context.Context, in *RenameRequest, opts ...grpc.CallOption) (*RenameResponse, error)
-	// SetLanguage sets the language the person reads. Letters about them that are not about a page
-	// they are on (a new device, a payment) are written in it.
 	SetLanguage(ctx context.Context, in *SetLanguageRequest, opts ...grpc.CallOption) (*SetLanguageResponse, error)
 }
 
@@ -146,26 +135,15 @@ func (c *accountServiceClient) SetLanguage(ctx context.Context, in *SetLanguageR
 // AccountServiceServer is the server API for AccountService service.
 // All implementations must embed UnimplementedAccountServiceServer
 // for forward compatibility.
-//
-// AccountService manages the account associated with the caller's credentials.
-// Every method operates strictly on the authenticated entity identified by the bearer token.
 type AccountServiceServer interface {
-	// Me returns identity and state for the current account and caller session.
 	Me(context.Context, *MeRequest) (*MeResponse, error)
-	// ListSessions returns all active sessions for this account.
 	ListSessions(context.Context, *ListSessionsRequest) (*ListSessionsResponse, error)
-	// EndSession terminates a specific session by ID.
 	EndSession(context.Context, *EndSessionRequest) (*EndSessionResponse, error)
-	// EndOtherSessions terminates all active sessions for this account except the calling one.
 	EndOtherSessions(context.Context, *EndOtherSessionsRequest) (*EndOtherSessionsResponse, error)
-	// SignOut terminates the current calling session.
 	SignOut(context.Context, *SignOutRequest) (*SignOutResponse, error)
-	// DeleteAccount permanently purges the account and terminates all associated sessions.
 	DeleteAccount(context.Context, *DeleteAccountRequest) (*DeleteAccountResponse, error)
 	// Rename changes the name the account is shown under. An empty name clears it.
 	Rename(context.Context, *RenameRequest) (*RenameResponse, error)
-	// SetLanguage sets the language the person reads. Letters about them that are not about a page
-	// they are on (a new device, a payment) are written in it.
 	SetLanguage(context.Context, *SetLanguageRequest) (*SetLanguageResponse, error)
 	mustEmbedUnimplementedAccountServiceServer()
 }

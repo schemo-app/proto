@@ -84,10 +84,6 @@ export const TransferOwnershipResponseSchema = /*@__PURE__*/
   messageDesc(file_org_v1_membership, 9);
 
 /**
- * OrgMembershipService manages the people in an org and their access level: listing them, role
- * changes, removal, voluntary leaving, and ownership transfer. Memberships of a workspace are
- * managed by `workspace.v1.WorkspaceMembershipService`.
- *
  * @generated from service org.v1.OrgMembershipService
  */
 export const OrgMembershipService = /*@__PURE__*/

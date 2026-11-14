@@ -22,7 +22,6 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Org is the tenant. Its members and workspaces are read through their own services.
 type Org struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Id          string                 `protobuf:"bytes,1,opt,name=id,proto3"`
@@ -215,15 +214,13 @@ type Org_builder struct {
 	// The address a person types, e.g. "acme". Lowercase and unique on the server.
 	Slug        string
 	Description string
-	// The owner's user id. It changes only by transferring ownership.
 	OwnerUserId string
 	// True for the org created for a person on first sign-in. It cannot be deleted.
 	IsPersonal bool
 	Settings   *OrgSettings
-	// Raised by every change to the org.
-	Version   int32
-	CreatedAt *timestamppb.Timestamp
-	UpdatedAt *timestamppb.Timestamp
+	Version    int32
+	CreatedAt  *timestamppb.Timestamp
+	UpdatedAt  *timestamppb.Timestamp
 }
 
 func (b0 Org_builder) Build() *Org {
@@ -243,7 +240,6 @@ func (b0 Org_builder) Build() *Org {
 	return m0
 }
 
-// OrgSettings holds what the owner decides for everyone in the org.
 type OrgSettings struct {
 	state                              protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_MembersCreateWorkspaces bool                   `protobuf:"varint,1,opt,name=members_create_workspaces,json=membersCreateWorkspaces,proto3"`
@@ -326,12 +322,9 @@ func (x *OrgSettings) SetAllowedEmailDomains(v []string) {
 type OrgSettings_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// Whether an ordinary member may create workspaces, or only an owner or admin may.
 	MembersCreateWorkspaces bool
-	// The role given to a new org member when none is named.
-	DefaultOrgRoleId string
-	// The role given to a member added to a workspace without naming one.
-	DefaultWorkspaceRoleId string
+	DefaultOrgRoleId        string
+	DefaultWorkspaceRoleId  string
 	// Mail domains the org may invite, lowercase and without "@", e.g. "acme.com". Empty means any
 	// domain.
 	AllowedEmailDomains []string
@@ -348,7 +341,6 @@ func (b0 OrgSettings_builder) Build() *OrgSettings {
 	return m0
 }
 
-// MyOrg is an org with what the caller is in it.
 type MyOrg struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Org         *Org                   `protobuf:"bytes,1,opt,name=org,proto3"`
@@ -476,15 +468,11 @@ func (x *MyOrg) ClearCan() {
 type MyOrg_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Org *Org
-	// The role the caller holds in the org.
-	Role *v1.RoleRef
-	// The permission keys of that role.
+	Org         *Org
+	Role        *v1.RoleRef
 	Permissions []string
-	// What the caller may do in the org, decided here so that no client names a permission key.
-	Can *OrgCan
-	// True for the org the caller is currently working in.
-	IsActive bool
+	Can         *OrgCan
+	IsActive    bool
 }
 
 func (b0 MyOrg_builder) Build() *MyOrg {
@@ -499,7 +487,6 @@ func (b0 MyOrg_builder) Build() *MyOrg {
 	return m0
 }
 
-// OrgCan is what the caller may do in one org.
 type OrgCan struct {
 	state                      protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_CreateWorkspace bool                   `protobuf:"varint,1,opt,name=create_workspace,json=createWorkspace,proto3"`
@@ -570,7 +557,6 @@ func (x *OrgCan) SetManageBilling(v bool) {
 type OrgCan_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// Whether the caller may make a workspace, which the org's own setting can withhold from members.
 	CreateWorkspace bool
 	ManageMembers   bool
 	ManageBilling   bool

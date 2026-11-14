@@ -23,43 +23,31 @@ export enum Feature {
   UNSPECIFIED = 0,
 
   /**
-   * Syncing workspaces between devices through `sync/v1`.
-   *
    * @generated from enum value: FEATURE_SYNC = 1;
    */
   SYNC = 1,
 
   /**
-   * Team workspaces, which more than one person can work in.
-   *
    * @generated from enum value: FEATURE_SHARED_WORKSPACES = 2;
    */
   SHARED_WORKSPACES = 2,
 
   /**
-   * Reading and managing the org's roles, `role/v1`.
-   *
    * @generated from enum value: FEATURE_ROLES = 3;
    */
   ROLES = 3,
 
   /**
-   * Execution history kept on the server, `history/v1`.
-   *
    * @generated from enum value: FEATURE_HISTORY = 4;
    */
   HISTORY = 4,
 
   /**
-   * The org's audit journal, `audit/v1`.
-   *
    * @generated from enum value: FEATURE_AUDIT = 5;
    */
   AUDIT = 5,
 
   /**
-   * Publishing a collection at a public address, `publication/v1`.
-   *
    * @generated from enum value: FEATURE_SHARE_LINKS = 6;
    */
   SHARE_LINKS = 6,

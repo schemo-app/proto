@@ -55,22 +55,16 @@ const (
 
 // WorkspaceServiceClient is a client for the workspace.v1.WorkspaceService service.
 type WorkspaceServiceClient interface {
-	// Create creates a workspace in an org, with the caller as its first member.
 	Create(context.Context, *v1.CreateRequest) (*v1.CreateResponse, error)
-	// Update changes a workspace's name, color, visibility or kind.
 	Update(context.Context, *v1.UpdateRequest) (*v1.UpdateResponse, error)
 	// Delete soft-deletes a workspace; every device syncing it stops.
 	Delete(context.Context, *v1.DeleteRequest) (*v1.DeleteResponse, error)
-	// Get reads one workspace's metadata.
 	Get(context.Context, *v1.GetRequest) (*v1.GetResponse, error)
-	// List returns the workspaces of an org that are visible to the caller.
 	List(context.Context, *v1.ListRequest) (*v1.ListResponse, error)
 	// ListDeleted returns the deleted workspaces the caller may restore, across every org they are
 	// in, newest deletion first.
 	ListDeleted(context.Context, *v1.ListDeletedRequest) (*v1.ListDeletedResponse, error)
-	// Restore brings a deleted workspace back before its retention runs out.
 	Restore(context.Context, *v1.RestoreRequest) (*v1.RestoreResponse, error)
-	// Purge removes a deleted workspace for good, before its retention runs out.
 	Purge(context.Context, *v1.PurgeRequest) (*v1.PurgeResponse, error)
 }
 
@@ -222,22 +216,16 @@ func (c *workspaceServiceClient) Purge(ctx context.Context, req *v1.PurgeRequest
 
 // WorkspaceServiceHandler is an implementation of the workspace.v1.WorkspaceService service.
 type WorkspaceServiceHandler interface {
-	// Create creates a workspace in an org, with the caller as its first member.
 	Create(context.Context, *v1.CreateRequest) (*v1.CreateResponse, error)
-	// Update changes a workspace's name, color, visibility or kind.
 	Update(context.Context, *v1.UpdateRequest) (*v1.UpdateResponse, error)
 	// Delete soft-deletes a workspace; every device syncing it stops.
 	Delete(context.Context, *v1.DeleteRequest) (*v1.DeleteResponse, error)
-	// Get reads one workspace's metadata.
 	Get(context.Context, *v1.GetRequest) (*v1.GetResponse, error)
-	// List returns the workspaces of an org that are visible to the caller.
 	List(context.Context, *v1.ListRequest) (*v1.ListResponse, error)
 	// ListDeleted returns the deleted workspaces the caller may restore, across every org they are
 	// in, newest deletion first.
 	ListDeleted(context.Context, *v1.ListDeletedRequest) (*v1.ListDeletedResponse, error)
-	// Restore brings a deleted workspace back before its retention runs out.
 	Restore(context.Context, *v1.RestoreRequest) (*v1.RestoreResponse, error)
-	// Purge removes a deleted workspace for good, before its retention runs out.
 	Purge(context.Context, *v1.PurgeRequest) (*v1.PurgeResponse, error)
 }
 

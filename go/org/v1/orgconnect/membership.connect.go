@@ -52,7 +52,6 @@ const (
 
 // OrgMembershipServiceClient is a client for the org.v1.OrgMembershipService service.
 type OrgMembershipServiceClient interface {
-	// ListMembers returns the people in an org, newest first.
 	ListMembers(context.Context, *v1.ListMembersRequest) (*v1.ListMembersResponse, error)
 	// ChangeRole assigns a new role to an existing org member. Callers cannot grant a role with
 	// permissions exceeding their own.
@@ -168,7 +167,6 @@ func (c *orgMembershipServiceClient) TransferOwnership(ctx context.Context, req 
 
 // OrgMembershipServiceHandler is an implementation of the org.v1.OrgMembershipService service.
 type OrgMembershipServiceHandler interface {
-	// ListMembers returns the people in an org, newest first.
 	ListMembers(context.Context, *v1.ListMembersRequest) (*v1.ListMembersResponse, error)
 	// ChangeRole assigns a new role to an existing org member. Callers cannot grant a role with
 	// permissions exceeding their own.

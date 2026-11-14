@@ -32,29 +32,17 @@ const (
 // WorkspaceServiceClient is the client API for WorkspaceService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-//
-// WorkspaceService manages workspaces as things: created, named, coloured, deleted, listed. Who is
-// in a workspace is managed by `WorkspaceMembershipService`.
-//
-// A workspace's content (collections, requests, environments, variables) is written only through
-// `sync/v1`. This service reports counts and status.
 type WorkspaceServiceClient interface {
-	// Create creates a workspace in an org, with the caller as its first member.
 	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
-	// Update changes a workspace's name, color, visibility or kind.
 	Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateResponse, error)
 	// Delete soft-deletes a workspace; every device syncing it stops.
 	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
-	// Get reads one workspace's metadata.
 	Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
-	// List returns the workspaces of an org that are visible to the caller.
 	List(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListResponse, error)
 	// ListDeleted returns the deleted workspaces the caller may restore, across every org they are
 	// in, newest deletion first.
 	ListDeleted(ctx context.Context, in *ListDeletedRequest, opts ...grpc.CallOption) (*ListDeletedResponse, error)
-	// Restore brings a deleted workspace back before its retention runs out.
 	Restore(ctx context.Context, in *RestoreRequest, opts ...grpc.CallOption) (*RestoreResponse, error)
-	// Purge removes a deleted workspace for good, before its retention runs out.
 	Purge(ctx context.Context, in *PurgeRequest, opts ...grpc.CallOption) (*PurgeResponse, error)
 }
 
@@ -149,29 +137,17 @@ func (c *workspaceServiceClient) Purge(ctx context.Context, in *PurgeRequest, op
 // WorkspaceServiceServer is the server API for WorkspaceService service.
 // All implementations must embed UnimplementedWorkspaceServiceServer
 // for forward compatibility.
-//
-// WorkspaceService manages workspaces as things: created, named, coloured, deleted, listed. Who is
-// in a workspace is managed by `WorkspaceMembershipService`.
-//
-// A workspace's content (collections, requests, environments, variables) is written only through
-// `sync/v1`. This service reports counts and status.
 type WorkspaceServiceServer interface {
-	// Create creates a workspace in an org, with the caller as its first member.
 	Create(context.Context, *CreateRequest) (*CreateResponse, error)
-	// Update changes a workspace's name, color, visibility or kind.
 	Update(context.Context, *UpdateRequest) (*UpdateResponse, error)
 	// Delete soft-deletes a workspace; every device syncing it stops.
 	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
-	// Get reads one workspace's metadata.
 	Get(context.Context, *GetRequest) (*GetResponse, error)
-	// List returns the workspaces of an org that are visible to the caller.
 	List(context.Context, *ListRequest) (*ListResponse, error)
 	// ListDeleted returns the deleted workspaces the caller may restore, across every org they are
 	// in, newest deletion first.
 	ListDeleted(context.Context, *ListDeletedRequest) (*ListDeletedResponse, error)
-	// Restore brings a deleted workspace back before its retention runs out.
 	Restore(context.Context, *RestoreRequest) (*RestoreResponse, error)
-	// Purge removes a deleted workspace for good, before its retention runs out.
 	Purge(context.Context, *PurgeRequest) (*PurgeResponse, error)
 	mustEmbedUnimplementedWorkspaceServiceServer()
 }

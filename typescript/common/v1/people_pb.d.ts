@@ -12,8 +12,6 @@ import type { Timestamp } from "@bufbuild/protobuf/wkt";
 export declare const file_common_v1_people: GenFile;
 
 /**
- * RoleRef names a role without carrying its permissions; `role.v1.RoleService` reads the role itself.
- *
  * @generated from message common.v1.RoleRef
  */
 export declare type RoleRef = Message<"common.v1.RoleRef"> & {
@@ -23,8 +21,6 @@ export declare type RoleRef = Message<"common.v1.RoleRef"> & {
   id: string;
 
   /**
-   * The role's display name, e.g. "Editor".
-   *
    * @generated from field: string name = 2;
    */
   name: string;
@@ -37,8 +33,6 @@ export declare type RoleRef = Message<"common.v1.RoleRef"> & {
 export declare const RoleRefSchema: GenMessage<RoleRef>;
 
 /**
- * Person is a user as a members list shows them.
- *
  * @generated from message common.v1.Person
  */
 export declare type Person = Message<"common.v1.Person"> & {
@@ -72,8 +66,6 @@ export declare type Person = Message<"common.v1.Person"> & {
 export declare const PersonSchema: GenMessage<Person>;
 
 /**
- * Member is a person's place in an org or a workspace.
- *
  * @generated from message common.v1.Member
  */
 export declare type Member = Message<"common.v1.Member"> & {

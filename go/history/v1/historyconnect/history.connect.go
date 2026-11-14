@@ -52,21 +52,14 @@ const (
 
 // HistoryServiceClient is a client for the history.v1.HistoryService service.
 type HistoryServiceClient interface {
-	// Append submits a batch of records and runs. A record the server already holds is completed
-	// rather than refused: its document is replaced, the bodies it had not been given are added, and
-	// it takes a new place in the log so followers read it again.
+	// Appending an existing record replaces its document, adds missing bodies and advances its sequence.
 	Append(context.Context, *v1.AppendRequest) (*v1.AppendResponse, error)
-	// Amend replaces a record's document, as when the person undoes some of its cookie writes.
 	Amend(context.Context, *v1.AmendRequest) (*v1.AmendResponse, error)
-	// Delete removes records by id.
 	Delete(context.Context, *v1.DeleteRequest) (*v1.DeleteResponse, error)
 	// List returns a page of records without their bodies.
 	List(context.Context, *v1.ListRequest) (*v1.ListResponse, error)
-	// PullRecords reads the log of changes above a sequence number, for a device that follows it.
 	PullRecords(context.Context, *v1.PullRecordsRequest) (*v1.PullRecordsResponse, error)
-	// Get reads one record with its script reports and, on request, its bodies.
 	Get(context.Context, *v1.GetRequest) (*v1.GetResponse, error)
-	// GetRun reads one collection run.
 	GetRun(context.Context, *v1.GetRunRequest) (*v1.GetRunResponse, error)
 }
 
@@ -202,21 +195,14 @@ func (c *historyServiceClient) GetRun(ctx context.Context, req *v1.GetRunRequest
 
 // HistoryServiceHandler is an implementation of the history.v1.HistoryService service.
 type HistoryServiceHandler interface {
-	// Append submits a batch of records and runs. A record the server already holds is completed
-	// rather than refused: its document is replaced, the bodies it had not been given are added, and
-	// it takes a new place in the log so followers read it again.
+	// Appending an existing record replaces its document, adds missing bodies and advances its sequence.
 	Append(context.Context, *v1.AppendRequest) (*v1.AppendResponse, error)
-	// Amend replaces a record's document, as when the person undoes some of its cookie writes.
 	Amend(context.Context, *v1.AmendRequest) (*v1.AmendResponse, error)
-	// Delete removes records by id.
 	Delete(context.Context, *v1.DeleteRequest) (*v1.DeleteResponse, error)
 	// List returns a page of records without their bodies.
 	List(context.Context, *v1.ListRequest) (*v1.ListResponse, error)
-	// PullRecords reads the log of changes above a sequence number, for a device that follows it.
 	PullRecords(context.Context, *v1.PullRecordsRequest) (*v1.PullRecordsResponse, error)
-	// Get reads one record with its script reports and, on request, its bodies.
 	Get(context.Context, *v1.GetRequest) (*v1.GetResponse, error)
-	// GetRun reads one collection run.
 	GetRun(context.Context, *v1.GetRunRequest) (*v1.GetRunResponse, error)
 }
 

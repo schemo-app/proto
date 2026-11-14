@@ -52,17 +52,11 @@ const (
 
 // InviteServiceClient is a client for the invite.v1.InviteService service.
 type InviteServiceClient interface {
-	// CreateInvite creates an invitation. The returned token is shown once and never again: only its
-	// hash is stored.
 	CreateInvite(context.Context, *v1.CreateInviteRequest) (*v1.CreateInviteResponse, error)
-	// RevokeInvite invalidates a link that has not been used up.
 	RevokeInvite(context.Context, *v1.RevokeInviteRequest) (*v1.RevokeInviteResponse, error)
-	// ListInvites returns the links an org has created, with their current status.
 	ListInvites(context.Context, *v1.ListInvitesRequest) (*v1.ListInvitesResponse, error)
-	// PreviewInvite reports whether a link is still usable and whose it is, without requiring a
-	// session. A dead link is reported as a status in the body, not as a transport error.
+	// An anonymous preview omits the invitee address.
 	PreviewInvite(context.Context, *v1.PreviewInviteRequest) (*v1.PreviewInviteResponse, error)
-	// AcceptInvite redeems a link for the signed-in caller. Holding the token is the permission.
 	AcceptInvite(context.Context, *v1.AcceptInviteRequest) (*v1.AcceptInviteResponse, error)
 }
 
@@ -166,17 +160,11 @@ func (c *inviteServiceClient) AcceptInvite(ctx context.Context, req *v1.AcceptIn
 
 // InviteServiceHandler is an implementation of the invite.v1.InviteService service.
 type InviteServiceHandler interface {
-	// CreateInvite creates an invitation. The returned token is shown once and never again: only its
-	// hash is stored.
 	CreateInvite(context.Context, *v1.CreateInviteRequest) (*v1.CreateInviteResponse, error)
-	// RevokeInvite invalidates a link that has not been used up.
 	RevokeInvite(context.Context, *v1.RevokeInviteRequest) (*v1.RevokeInviteResponse, error)
-	// ListInvites returns the links an org has created, with their current status.
 	ListInvites(context.Context, *v1.ListInvitesRequest) (*v1.ListInvitesResponse, error)
-	// PreviewInvite reports whether a link is still usable and whose it is, without requiring a
-	// session. A dead link is reported as a status in the body, not as a transport error.
+	// An anonymous preview omits the invitee address.
 	PreviewInvite(context.Context, *v1.PreviewInviteRequest) (*v1.PreviewInviteResponse, error)
-	// AcceptInvite redeems a link for the signed-in caller. Holding the token is the permission.
 	AcceptInvite(context.Context, *v1.AcceptInviteRequest) (*v1.AcceptInviteResponse, error)
 }
 

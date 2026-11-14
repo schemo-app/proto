@@ -25,9 +25,11 @@ test('packed JavaScript contracts work without a producer checkout or generators
         const packed = JSON.parse(npm(['pack', '--json', '--ignore-scripts', '--pack-destination', workDir], root))[0]
         const packedPaths = packed.files.map(file => file.path)
         assert.ok(packedPaths.includes('LICENSE'))
-        assert.ok(packedPaths.includes('LICENSES/Apache-2.0.txt'))
+        assert.ok(packedPaths.includes('LICENSE-APACHE'))
         assert.ok(packedPaths.includes('snapshot/v1/types.d.ts'))
-        assert.equal(packedPaths.some(path => /^(tools|go|node_modules)\//.test(path) || path.endsWith('.go')), false)
+        assert.ok(packedPaths.includes('schema/snapshot.v1.json'))
+        assert.ok(packedPaths.includes('schema/fixtures/v1.json'))
+        assert.equal(packedPaths.some(path => /^(tools|go|tests|node_modules)\//.test(path) || path.endsWith('.go')), false)
 
         const consumer = join(workDir, 'consumer')
         await mkdir(consumer)

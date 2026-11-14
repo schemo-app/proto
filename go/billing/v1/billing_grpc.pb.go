@@ -33,33 +33,20 @@ const (
 // BillingServiceClient is the client API for BillingService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-//
-// BillingService manages organization subscriptions, payments, and pricing offers.
-//
-// Org-scoped methods require `org:manage_billing`. If the server has no payment provider
-// configured, they are refused with a dedicated code: check for `FEATURE_BILLING` in
-// `platform.v1` first.
 type BillingServiceClient interface {
-	// Subscribe starts a subscription purchase and returns where to confirm the payment. Idempotent:
-	// repeating a request with the same `idempotency_key` returns the active transaction.
+	// Reusing an idempotency key returns the active transaction.
 	Subscribe(ctx context.Context, in *SubscribeRequest, opts ...grpc.CallOption) (*SubscribeResponse, error)
-	// GetPaymentStatus reads the state of a payment, which a client polls until it settles.
 	GetPaymentStatus(ctx context.Context, in *GetPaymentStatusRequest, opts ...grpc.CallOption) (*GetPaymentStatusResponse, error)
-	// GetSubscription reads the org's current or latest subscription.
 	GetSubscription(ctx context.Context, in *GetSubscriptionRequest, opts ...grpc.CallOption) (*GetSubscriptionResponse, error)
-	// RenewNow charges at once to extend the current subscription period.
 	RenewNow(ctx context.Context, in *RenewNowRequest, opts ...grpc.CallOption) (*RenewNowResponse, error)
 	// CancelSubscription stops auto-renewal. The subscription stays active until the period ends.
 	CancelSubscription(ctx context.Context, in *CancelSubscriptionRequest, opts ...grpc.CallOption) (*CancelSubscriptionResponse, error)
-	// ListPayments returns the org's charges, newest first.
 	ListPayments(ctx context.Context, in *ListPaymentsRequest, opts ...grpc.CallOption) (*ListPaymentsResponse, error)
 	// ListOffers returns the price list to any signed-in caller. With an org id the offers are quoted
 	// for that org's current membership.
 	ListOffers(ctx context.Context, in *ListOffersRequest, opts ...grpc.CallOption) (*ListOffersResponse, error)
-	// GetPortal returns the provider's customer portal, where payment methods are managed.
 	GetPortal(ctx context.Context, in *GetPortalRequest, opts ...grpc.CallOption) (*GetPortalResponse, error)
-	// CompleteSandboxPayment settles or refuses a pending payment by hand. Only the sandbox provider
-	// takes it; with a real provider it is refused with `noProvider`.
+	// Available only with the sandbox provider.
 	CompleteSandboxPayment(ctx context.Context, in *CompleteSandboxPaymentRequest, opts ...grpc.CallOption) (*CompleteSandboxPaymentResponse, error)
 }
 
@@ -164,33 +151,20 @@ func (c *billingServiceClient) CompleteSandboxPayment(ctx context.Context, in *C
 // BillingServiceServer is the server API for BillingService service.
 // All implementations must embed UnimplementedBillingServiceServer
 // for forward compatibility.
-//
-// BillingService manages organization subscriptions, payments, and pricing offers.
-//
-// Org-scoped methods require `org:manage_billing`. If the server has no payment provider
-// configured, they are refused with a dedicated code: check for `FEATURE_BILLING` in
-// `platform.v1` first.
 type BillingServiceServer interface {
-	// Subscribe starts a subscription purchase and returns where to confirm the payment. Idempotent:
-	// repeating a request with the same `idempotency_key` returns the active transaction.
+	// Reusing an idempotency key returns the active transaction.
 	Subscribe(context.Context, *SubscribeRequest) (*SubscribeResponse, error)
-	// GetPaymentStatus reads the state of a payment, which a client polls until it settles.
 	GetPaymentStatus(context.Context, *GetPaymentStatusRequest) (*GetPaymentStatusResponse, error)
-	// GetSubscription reads the org's current or latest subscription.
 	GetSubscription(context.Context, *GetSubscriptionRequest) (*GetSubscriptionResponse, error)
-	// RenewNow charges at once to extend the current subscription period.
 	RenewNow(context.Context, *RenewNowRequest) (*RenewNowResponse, error)
 	// CancelSubscription stops auto-renewal. The subscription stays active until the period ends.
 	CancelSubscription(context.Context, *CancelSubscriptionRequest) (*CancelSubscriptionResponse, error)
-	// ListPayments returns the org's charges, newest first.
 	ListPayments(context.Context, *ListPaymentsRequest) (*ListPaymentsResponse, error)
 	// ListOffers returns the price list to any signed-in caller. With an org id the offers are quoted
 	// for that org's current membership.
 	ListOffers(context.Context, *ListOffersRequest) (*ListOffersResponse, error)
-	// GetPortal returns the provider's customer portal, where payment methods are managed.
 	GetPortal(context.Context, *GetPortalRequest) (*GetPortalResponse, error)
-	// CompleteSandboxPayment settles or refuses a pending payment by hand. Only the sandbox provider
-	// takes it; with a real provider it is refused with `noProvider`.
+	// Available only with the sandbox provider.
 	CompleteSandboxPayment(context.Context, *CompleteSandboxPaymentRequest) (*CompleteSandboxPaymentResponse, error)
 	mustEmbedUnimplementedBillingServiceServer()
 }

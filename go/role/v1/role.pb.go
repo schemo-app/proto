@@ -22,15 +22,12 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// RoleScope names the level a role is written for.
 type RoleScope int32
 
 const (
 	RoleScope_ROLE_SCOPE_UNSPECIFIED RoleScope = 0
-	// Held in the org. Workspace roles are chosen from the org's roles.
-	RoleScope_ROLE_SCOPE_ORG RoleScope = 1
-	// Held in one workspace.
-	RoleScope_ROLE_SCOPE_WORKSPACE RoleScope = 2
+	RoleScope_ROLE_SCOPE_ORG         RoleScope = 1
+	RoleScope_ROLE_SCOPE_WORKSPACE   RoleScope = 2
 )
 
 // Enum value maps for RoleScope.
@@ -69,7 +66,6 @@ func (x RoleScope) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Role is a named set of permissions.
 type Role struct {
 	state                      protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Id              string                 `protobuf:"bytes,1,opt,name=id,proto3"`
@@ -289,9 +285,7 @@ type Role_builder struct {
 	// Display name, e.g. "Viewer", "Release engineer". Unique within an org and a scope.
 	Name        string
 	Description string
-	// Permission keys this role grants (see `PermissionService`). An unknown key is kept and ignored
-	// by a server that does not recognize it, so a client can carry a newer permission across a
-	// round trip.
+	// Unknown permission keys survive a round trip and are ignored by older servers.
 	Permissions []string
 	// True for a built-in role. It may be read and assigned, never edited or deleted.
 	IsBuiltIn bool
@@ -300,8 +294,7 @@ type Role_builder struct {
 	IsDefault bool
 	// False for a role that a role change does not hand out: the org's owner role, which passes only
 	// by transferring ownership.
-	Assignable bool
-	// Raised by every change to the role.
+	Assignable      bool
 	Version         int32
 	CreatedByUserId string
 	CreatedAt       *timestamppb.Timestamp
@@ -328,8 +321,7 @@ func (b0 Role_builder) Build() *Role {
 	return m0
 }
 
-// PermissionKeys is a set of permission keys, wrapped so that a request can tell "leave the
-// permissions alone" from "replace them with none".
+// A present empty set clears the permissions.
 type PermissionKeys struct {
 	state           protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Keys []string               `protobuf:"bytes,1,rep,name=keys,proto3"`
@@ -983,7 +975,6 @@ type UpdateRoleRequest_builder struct {
 	RoleId      string
 	Name        *string
 	Description *string
-	// When present, replaces the whole permission set.
 	Permissions *PermissionKeys
 }
 

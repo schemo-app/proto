@@ -21,7 +21,6 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// PermissionGroup is the heading a permission is listed under.
 type PermissionGroup int32
 
 const (
@@ -174,7 +173,6 @@ func (b0 ListPermissionsResponse_builder) Build() *ListPermissionsResponse {
 	return m0
 }
 
-// Permission is one thing a role may grant.
 type Permission struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Key         string                 `protobuf:"bytes,1,opt,name=key,proto3"`
@@ -271,11 +269,9 @@ type Permission_builder struct {
 
 	// The key a role stores, e.g. "workspace:write", "secrets:read". Stable: it is stored in rows and
 	// quoted in audit entries, so a key that changes silently breaks a permission.
-	Key string
-	// The scope a role must have to hold this permission.
-	Scope RoleScope
-	Group PermissionGroup
-	// Human-readable description shown next to the permission.
+	Key         string
+	Scope       RoleScope
+	Group       PermissionGroup
 	Description string
 	// Whether granting this permission requires the caller to already hold it themselves.
 	Guarded bool

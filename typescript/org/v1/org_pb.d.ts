@@ -13,8 +13,6 @@ import type { RoleRef } from "../../common/v1/people_pb.js";
 export declare const file_org_v1_org: GenFile;
 
 /**
- * Org is the tenant. Its members and workspaces are read through their own services.
- *
  * @generated from message org.v1.Org
  */
 export declare type Org = Message<"org.v1.Org"> & {
@@ -41,8 +39,6 @@ export declare type Org = Message<"org.v1.Org"> & {
   description: string;
 
   /**
-   * The owner's user id. It changes only by transferring ownership.
-   *
    * @generated from field: string owner_user_id = 5;
    */
   ownerUserId: string;
@@ -60,8 +56,6 @@ export declare type Org = Message<"org.v1.Org"> & {
   settings?: OrgSettings | undefined;
 
   /**
-   * Raised by every change to the org.
-   *
    * @generated from field: int32 version = 8;
    */
   version: number;
@@ -84,28 +78,20 @@ export declare type Org = Message<"org.v1.Org"> & {
 export declare const OrgSchema: GenMessage<Org>;
 
 /**
- * OrgSettings holds what the owner decides for everyone in the org.
- *
  * @generated from message org.v1.OrgSettings
  */
 export declare type OrgSettings = Message<"org.v1.OrgSettings"> & {
   /**
-   * Whether an ordinary member may create workspaces, or only an owner or admin may.
-   *
    * @generated from field: bool members_create_workspaces = 1;
    */
   membersCreateWorkspaces: boolean;
 
   /**
-   * The role given to a new org member when none is named.
-   *
    * @generated from field: string default_org_role_id = 2;
    */
   defaultOrgRoleId: string;
 
   /**
-   * The role given to a member added to a workspace without naming one.
-   *
    * @generated from field: string default_workspace_role_id = 3;
    */
   defaultWorkspaceRoleId: string;
@@ -126,8 +112,6 @@ export declare type OrgSettings = Message<"org.v1.OrgSettings"> & {
 export declare const OrgSettingsSchema: GenMessage<OrgSettings>;
 
 /**
- * MyOrg is an org with what the caller is in it.
- *
  * @generated from message org.v1.MyOrg
  */
 export declare type MyOrg = Message<"org.v1.MyOrg"> & {
@@ -137,29 +121,21 @@ export declare type MyOrg = Message<"org.v1.MyOrg"> & {
   org?: Org | undefined;
 
   /**
-   * The role the caller holds in the org.
-   *
    * @generated from field: common.v1.RoleRef role = 2;
    */
   role?: RoleRef | undefined;
 
   /**
-   * The permission keys of that role.
-   *
    * @generated from field: repeated string permissions = 3;
    */
   permissions: string[];
 
   /**
-   * What the caller may do in the org, decided here so that no client names a permission key.
-   *
    * @generated from field: org.v1.OrgCan can = 4;
    */
   can?: OrgCan | undefined;
 
   /**
-   * True for the org the caller is currently working in.
-   *
    * @generated from field: bool is_active = 5;
    */
   isActive: boolean;
@@ -172,14 +148,10 @@ export declare type MyOrg = Message<"org.v1.MyOrg"> & {
 export declare const MyOrgSchema: GenMessage<MyOrg>;
 
 /**
- * OrgCan is what the caller may do in one org.
- *
  * @generated from message org.v1.OrgCan
  */
 export declare type OrgCan = Message<"org.v1.OrgCan"> & {
   /**
-   * Whether the caller may make a workspace, which the org's own setting can withhold from members.
-   *
    * @generated from field: bool create_workspace = 1;
    */
   createWorkspace: boolean;
@@ -397,9 +369,6 @@ export declare type ListMineResponse = Message<"org.v1.ListMineResponse"> & {
 export declare const ListMineResponseSchema: GenMessage<ListMineResponse>;
 
 /**
- * OrgService manages an org's identity and configuration. The people in it are managed by
- * `OrgMembershipService`.
- *
  * @generated from service org.v1.OrgService
  */
 export declare const OrgService: GenService<{
@@ -415,8 +384,6 @@ export declare const OrgService: GenService<{
     output: typeof CreateResponseSchema;
   },
   /**
-   * Update changes an org's name, description, slug, or settings.
-   *
    * @generated from rpc org.v1.OrgService.Update
    */
   update: {
@@ -436,8 +403,6 @@ export declare const OrgService: GenService<{
     output: typeof DeleteResponseSchema;
   },
   /**
-   * Get reads one org.
-   *
    * @generated from rpc org.v1.OrgService.Get
    */
   get: {
@@ -446,9 +411,6 @@ export declare const OrgService: GenService<{
     output: typeof GetResponseSchema;
   },
   /**
-   * ListMine returns every org the caller belongs to, with the role held in each. Clients call it
-   * right after sign-in to learn which workspaces to expect.
-   *
    * @generated from rpc org.v1.OrgService.ListMine
    */
   listMine: {

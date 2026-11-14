@@ -27,18 +27,12 @@ const (
 type ActionKind int32
 
 const (
-	// As a filter: every kind.
 	ActionKind_ACTION_KIND_UNSPECIFIED ActionKind = 0
-	// Changes to workspaces and what they hold.
-	ActionKind_ACTION_KIND_CONTENT ActionKind = 1
-	// Changes to who may do what: orgs, members, roles, invitations, publications.
-	ActionKind_ACTION_KIND_ACCESS ActionKind = 2
-	// Subscriptions and payments.
-	ActionKind_ACTION_KIND_PLAN ActionKind = 3
-	// Sign-ins, sessions and the account itself.
-	ActionKind_ACTION_KIND_AUTH ActionKind = 4
-	// Reads of history.
-	ActionKind_ACTION_KIND_READ ActionKind = 5
+	ActionKind_ACTION_KIND_CONTENT     ActionKind = 1
+	ActionKind_ACTION_KIND_ACCESS      ActionKind = 2
+	ActionKind_ACTION_KIND_PLAN        ActionKind = 3
+	ActionKind_ACTION_KIND_AUTH        ActionKind = 4
+	ActionKind_ACTION_KIND_READ        ActionKind = 5
 )
 
 // Enum value maps for ActionKind.
@@ -83,15 +77,13 @@ func (x ActionKind) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// ActorType says who did what an entry records.
 type ActorType int32
 
 const (
 	ActorType_ACTOR_TYPE_UNSPECIFIED ActorType = 0
 	ActorType_ACTOR_TYPE_USER        ActorType = 1
 	ActorType_ACTOR_TYPE_SYSTEM      ActorType = 2
-	// A device syncing on a person's behalf.
-	ActorType_ACTOR_TYPE_SYNC ActorType = 3
+	ActorType_ACTOR_TYPE_SYNC        ActorType = 3
 )
 
 // Enum value maps for ActorType.
@@ -132,7 +124,7 @@ func (x ActorType) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// AuditFilter selects journal entries. Every field that is left empty matches everything.
+// Empty filter fields match all entries.
 type AuditFilter struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_WorkspaceId string                 `protobuf:"bytes,1,opt,name=workspace_id,json=workspaceId,proto3"`
@@ -273,15 +265,11 @@ func (x *AuditFilter) ClearTo() {
 type AuditFilter_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// Only entries of this workspace. Empty matches all workspaces of the org.
 	WorkspaceId string
-	// Only entries made by this user. Empty matches all actors, the system and sync included.
 	ActorUserId string
-	// Only entries of this exact action code, e.g. "org.update".
-	Action string
-	// Only entries about this target.
-	TargetId   string
-	ActionKind ActionKind
+	Action      string
+	TargetId    string
+	ActionKind  ActionKind
 	// Inclusive start of the time range.
 	From *timestamppb.Timestamp
 	// Exclusive end of the time range.
@@ -302,7 +290,6 @@ func (b0 AuditFilter_builder) Build() *AuditFilter {
 	return m0
 }
 
-// AuditEntry is one immutable event in the journal.
 type AuditEntry struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Id          string                 `protobuf:"bytes,1,opt,name=id,proto3"`
@@ -567,17 +554,14 @@ type AuditEntry_builder struct {
 	At *timestamppb.Timestamp
 	// Lower snake_case action code such as "auth.sign_in" or "workspace.create". An open set: a
 	// client shows a code it does not know as it is.
-	Action     string
-	ActionKind ActionKind
-	// True when what the entry records did not happen: a payment that was refused.
+	Action      string
+	ActionKind  ActionKind
 	Failed      bool
 	ActorType   ActorType
 	ActorUserId string
-	// The actor's display name at the time of the event.
 	ActorName   string
 	ActorIp     string
 	ActorDevice string
-	// True when the browser panel did it, whose device name says nothing to a person reading there.
 	FromPanel   bool
 	OrgId       string
 	WorkspaceId string
@@ -585,7 +569,6 @@ type AuditEntry_builder struct {
 	// set.
 	TargetType string
 	TargetId   string
-	// The target's display name at the time of the event.
 	TargetName string
 	// What is specific to the action. Its shape depends on `action`.
 	Metadata *structpb.Struct
@@ -708,11 +691,9 @@ func (x *ListRequest) ClearFilter() {
 type ListRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	OrgId  string
-	Filter *AuditFilter
-	// Maximum items to return. 0 uses the server's default; larger values are clamped to its limit.
-	PageSize int32
-	// Opaque cursor from the previous response's `next_page_token`. Empty starts at the first page.
+	OrgId     string
+	Filter    *AuditFilter
+	PageSize  int32
 	PageToken string
 }
 
@@ -787,8 +768,7 @@ func (x *ListResponse) SetNextPageToken(v string) {
 type ListResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Entries []*AuditEntry
-	// Opaque cursor for the next page. Empty when there are no more results.
+	Entries       []*AuditEntry
 	NextPageToken string
 }
 
@@ -985,8 +965,7 @@ type ExportResponse_builder struct {
 
 	// A chunk of CSV. The first chunk starts with the header row.
 	CsvChunk []byte
-	// Set on the last message of the stream.
-	IsLast bool
+	IsLast   bool
 	// Whether the export stopped at `max_rows` before it was complete.
 	Truncated bool
 	// Rows exported so far, the total on the last chunk.

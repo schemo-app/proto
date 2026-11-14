@@ -8,7 +8,6 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/schemo-app/proto/go/plan/v1;plan";
 
-// PlanService provides read-only access to what an org is entitled to and how much of it is used.
 service PlanService {
   // GetPlan returns the org's effective plan: its tier, features and quotas, with current usage.
   // An empty `org_id` means the org the caller currently works in.
@@ -17,24 +16,19 @@ service PlanService {
   }
 }
 
-// QuotaKind names something a plan limits.
 enum QuotaKind {
   QUOTA_KIND_UNSPECIFIED = 0;
 
-  // People in the org.
   QUOTA_KIND_ORG_MEMBERS = 1;
 
-  // Collections in one workspace.
   QUOTA_KIND_WORKSPACE_COLLECTIONS = 2;
 
   // Content stored by the org, in megabytes.
   QUOTA_KIND_ORG_STORAGE_MB = 3;
 
-  // How long history is kept, in days.
   QUOTA_KIND_HISTORY_RETENTION_DAYS = 4;
 }
 
-// QuotaLimit is the cap a plan puts on one kind of quota.
 message QuotaLimit {
   QuotaKind kind = 1;
 
@@ -42,7 +36,6 @@ message QuotaLimit {
   optional int64 limit = 2;
 }
 
-// Plan is what an org is entitled to.
 message Plan {
   // The tier's name. An open set, since the price list changes: currently "free", "pro", "team"
   // and "business".
@@ -51,14 +44,12 @@ message Plan {
   // When the current paid period ends. Unset for a plan that does not expire.
   google.protobuf.Timestamp expires_at = 2;
 
-  // The features the plan includes.
   repeated common.v1.Feature features = 3;
 
   // The plan's limits. A kind that is not listed is unlimited.
   repeated QuotaLimit quotas = 4;
 }
 
-// Usage is what the org has consumed, to compare with the plan's quotas.
 message Usage {
   int32 members = 1;
   int32 pending_invites = 2;

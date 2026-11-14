@@ -1,6 +1,6 @@
 {
     "name": "@schemo-app/proto",
-    "version": "0.5.0",
+    "version": "0.6.0",
     "description": "Schemo RPC and publication contracts",
     "license": "MIT",
     "type": "module",
@@ -14,7 +14,7 @@
         "schema/*.json",
         "schema/fixtures/*.json",
         "LICENSE",
-        "LICENSES",
+        "LICENSE-APACHE",
         "THIRD_PARTY_NOTICES.md",
         "README.md"
     ],

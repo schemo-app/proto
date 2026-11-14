@@ -29,12 +29,7 @@ const (
 // OrgMembershipServiceClient is the client API for OrgMembershipService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-//
-// OrgMembershipService manages the people in an org and their access level: listing them, role
-// changes, removal, voluntary leaving, and ownership transfer. Memberships of a workspace are
-// managed by `workspace.v1.WorkspaceMembershipService`.
 type OrgMembershipServiceClient interface {
-	// ListMembers returns the people in an org, newest first.
 	ListMembers(ctx context.Context, in *ListMembersRequest, opts ...grpc.CallOption) (*ListMembersResponse, error)
 	// ChangeRole assigns a new role to an existing org member. Callers cannot grant a role with
 	// permissions exceeding their own.
@@ -111,12 +106,7 @@ func (c *orgMembershipServiceClient) TransferOwnership(ctx context.Context, in *
 // OrgMembershipServiceServer is the server API for OrgMembershipService service.
 // All implementations must embed UnimplementedOrgMembershipServiceServer
 // for forward compatibility.
-//
-// OrgMembershipService manages the people in an org and their access level: listing them, role
-// changes, removal, voluntary leaving, and ownership transfer. Memberships of a workspace are
-// managed by `workspace.v1.WorkspaceMembershipService`.
 type OrgMembershipServiceServer interface {
-	// ListMembers returns the people in an org, newest first.
 	ListMembers(context.Context, *ListMembersRequest) (*ListMembersResponse, error)
 	// ChangeRole assigns a new role to an existing org member. Callers cannot grant a role with
 	// permissions exceeding their own.

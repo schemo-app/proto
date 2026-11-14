@@ -11,14 +11,10 @@ import type { Message } from "@bufbuild/protobuf";
 export declare const file_common_v1_device: GenFile;
 
 /**
- * App is a program as it describes itself.
- *
  * @generated from message common.v1.App
  */
 export declare type App = Message<"common.v1.App"> & {
   /**
-   * The program's name, e.g. "Schemo".
-   *
    * @generated from field: string name = 1;
    */
   name: string;
@@ -36,21 +32,15 @@ export declare type App = Message<"common.v1.App"> & {
 export declare const AppSchema: GenMessage<App>;
 
 /**
- * Device is a machine and the program running on it, as the program reported them when it signed in.
- *
  * @generated from message common.v1.Device
  */
 export declare type Device = Message<"common.v1.Device"> & {
   /**
-   * What the machine is called, as its owner named it.
-   *
    * @generated from field: string name = 1;
    */
   name: string;
 
   /**
-   * What the machine runs, e.g. "macOS".
-   *
    * @generated from field: string platform = 2;
    */
   platform: string;

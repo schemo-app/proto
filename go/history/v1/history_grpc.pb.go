@@ -31,29 +31,15 @@ const (
 // HistoryServiceClient is the client API for HistoryService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-//
-// HistoryService keeps the requests a workspace has sent, what came back, and what the scripts
-// around them reported. It is an append-only log that devices read from a sequence number.
-//
-// Records and runs are JSON documents the server stores as they came. It reads the few fields it
-// filters and orders by, which travel beside the document, and the secret paths of a record, which
-// it withholds from readers who may not see secrets (see `sync.v1.SyncEntity` for the path form).
 type HistoryServiceClient interface {
-	// Append submits a batch of records and runs. A record the server already holds is completed
-	// rather than refused: its document is replaced, the bodies it had not been given are added, and
-	// it takes a new place in the log so followers read it again.
+	// Appending an existing record replaces its document, adds missing bodies and advances its sequence.
 	Append(ctx context.Context, in *AppendRequest, opts ...grpc.CallOption) (*AppendResponse, error)
-	// Amend replaces a record's document, as when the person undoes some of its cookie writes.
 	Amend(ctx context.Context, in *AmendRequest, opts ...grpc.CallOption) (*AmendResponse, error)
-	// Delete removes records by id.
 	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
 	// List returns a page of records without their bodies.
 	List(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListResponse, error)
-	// PullRecords reads the log of changes above a sequence number, for a device that follows it.
 	PullRecords(ctx context.Context, in *PullRecordsRequest, opts ...grpc.CallOption) (*PullRecordsResponse, error)
-	// Get reads one record with its script reports and, on request, its bodies.
 	Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
-	// GetRun reads one collection run.
 	GetRun(ctx context.Context, in *GetRunRequest, opts ...grpc.CallOption) (*GetRunResponse, error)
 }
 
@@ -138,29 +124,15 @@ func (c *historyServiceClient) GetRun(ctx context.Context, in *GetRunRequest, op
 // HistoryServiceServer is the server API for HistoryService service.
 // All implementations must embed UnimplementedHistoryServiceServer
 // for forward compatibility.
-//
-// HistoryService keeps the requests a workspace has sent, what came back, and what the scripts
-// around them reported. It is an append-only log that devices read from a sequence number.
-//
-// Records and runs are JSON documents the server stores as they came. It reads the few fields it
-// filters and orders by, which travel beside the document, and the secret paths of a record, which
-// it withholds from readers who may not see secrets (see `sync.v1.SyncEntity` for the path form).
 type HistoryServiceServer interface {
-	// Append submits a batch of records and runs. A record the server already holds is completed
-	// rather than refused: its document is replaced, the bodies it had not been given are added, and
-	// it takes a new place in the log so followers read it again.
+	// Appending an existing record replaces its document, adds missing bodies and advances its sequence.
 	Append(context.Context, *AppendRequest) (*AppendResponse, error)
-	// Amend replaces a record's document, as when the person undoes some of its cookie writes.
 	Amend(context.Context, *AmendRequest) (*AmendResponse, error)
-	// Delete removes records by id.
 	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
 	// List returns a page of records without their bodies.
 	List(context.Context, *ListRequest) (*ListResponse, error)
-	// PullRecords reads the log of changes above a sequence number, for a device that follows it.
 	PullRecords(context.Context, *PullRecordsRequest) (*PullRecordsResponse, error)
-	// Get reads one record with its script reports and, on request, its bodies.
 	Get(context.Context, *GetRequest) (*GetResponse, error)
-	// GetRun reads one collection run.
 	GetRun(context.Context, *GetRunRequest) (*GetRunResponse, error)
 	mustEmbedUnimplementedHistoryServiceServer()
 }

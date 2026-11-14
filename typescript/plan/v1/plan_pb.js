@@ -55,16 +55,12 @@ export const QuotaKindSchema = /*@__PURE__*/
   enumDesc(file_plan_v1_plan, 0);
 
 /**
- * QuotaKind names something a plan limits.
- *
  * @generated from enum plan.v1.QuotaKind
  */
 export const QuotaKind = /*@__PURE__*/
   tsEnum(QuotaKindSchema);
 
 /**
- * PlanService provides read-only access to what an org is entitled to and how much of it is used.
- *
  * @generated from service plan.v1.PlanService
  */
 export const PlanService = /*@__PURE__*/

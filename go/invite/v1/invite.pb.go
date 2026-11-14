@@ -23,17 +23,14 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// InviteStatus is where an invitation link stands.
 type InviteStatus int32
 
 const (
 	InviteStatus_INVITE_STATUS_UNSPECIFIED InviteStatus = 0
-	// Usable.
-	InviteStatus_INVITE_STATUS_PENDING InviteStatus = 1
-	InviteStatus_INVITE_STATUS_EXPIRED InviteStatus = 2
-	// Used as many times as it allows.
-	InviteStatus_INVITE_STATUS_EXHAUSTED InviteStatus = 3
-	InviteStatus_INVITE_STATUS_REVOKED   InviteStatus = 4
+	InviteStatus_INVITE_STATUS_PENDING     InviteStatus = 1
+	InviteStatus_INVITE_STATUS_EXPIRED     InviteStatus = 2
+	InviteStatus_INVITE_STATUS_EXHAUSTED   InviteStatus = 3
+	InviteStatus_INVITE_STATUS_REVOKED     InviteStatus = 4
 	// Only in a preview: no link has this token.
 	InviteStatus_INVITE_STATUS_NOT_FOUND InviteStatus = 5
 	// Only in a preview: the link names an address and the signed-in caller's is another.
@@ -84,8 +81,6 @@ func (x InviteStatus) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Invite is an invitation link. The token itself never appears here: only in the response that
-// created it and in the URL of whoever opened it.
 type Invite struct {
 	state                      protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Id              string                 `protobuf:"bytes,1,opt,name=id,proto3"`
@@ -335,14 +330,11 @@ func (x *Invite) ClearRevokedAt() {
 type Invite_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Id    string
-	OrgId string
-	// Empty for an invitation to the org itself; set when the link also grants access to one
-	// workspace.
+	Id          string
+	OrgId       string
 	WorkspaceId string
 	Role        *v1.RoleRef
-	// The address this invitation was sent to. Empty for a shareable link.
-	Email string
+	Email       string
 	// How many times the link may be used. Unset means unlimited.
 	MaxUses         *int32
 	UsedCount       int32
@@ -351,8 +343,7 @@ type Invite_builder struct {
 	CreatedByUserId string
 	CreatedByName   string
 	ExpiresAt       *timestamppb.Timestamp
-	// Unset while the link has not been revoked.
-	RevokedAt *timestamppb.Timestamp
+	RevokedAt       *timestamppb.Timestamp
 }
 
 func (b0 Invite_builder) Build() *Invite {
@@ -628,8 +619,7 @@ type CreateInviteResponse_builder struct {
 
 	Invite *Invite
 	// The raw token, returned only this once. The server keeps only its hash.
-	Token string
-	// The full URL, ready to copy or send.
+	Token     string
 	InviteUrl string
 }
 
@@ -866,10 +856,8 @@ type ListInvitesRequest_builder struct {
 
 	OrgId string
 	// Only the invitations in this status. UNSPECIFIED returns every one of them.
-	Status InviteStatus
-	// Maximum items to return. 0 uses the server's default.
-	PageSize int32
-	// Opaque cursor from the previous response's `next_page_token`. Empty starts at the first page.
+	Status    InviteStatus
+	PageSize  int32
 	PageToken string
 }
 
@@ -944,8 +932,7 @@ func (x *ListInvitesResponse) SetNextPageToken(v string) {
 type ListInvitesResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Invites []*Invite
-	// Opaque cursor for the next page. Empty when there are no more results.
+	Invites       []*Invite
 	NextPageToken string
 }
 
@@ -1015,8 +1002,7 @@ func (b0 PreviewInviteRequest_builder) Build() *PreviewInviteRequest {
 	return m0
 }
 
-// PreviewInviteResponse is everything a landing page may know before sign-in. Deliberately small,
-// since anyone holding the token can read it: it names the org but not its contents.
+// Preview returned before sign-in.
 type PreviewInviteResponse struct {
 	state                    protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Status        InviteStatus           `protobuf:"varint,1,opt,name=status,proto3,enum=invite.v1.InviteStatus"`
@@ -1170,17 +1156,14 @@ func (x *PreviewInviteResponse) ClearRole() {
 type PreviewInviteResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// PENDING when the link can be used; otherwise why it cannot.
 	Status InviteStatus
 	// Set whenever the link exists at all, even if it has expired.
 	OrgName       string
 	WorkspaceName string
 	InviterName   string
 	Role          *v1.RoleRef
-	// The scope of the role the invitation grants.
-	RoleScope v11.RoleScope
-	// Whether the signing-in address must match the one this invitation was sent to.
-	EmailBound bool
+	RoleScope     v11.RoleScope
+	EmailBound    bool
 	// The address the invitation is for. Answered only to a signed-in caller, and empty for a link
 	// that names nobody.
 	InviteeEmail string

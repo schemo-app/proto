@@ -13,8 +13,6 @@ import type { Device } from "../../common/v1/device_pb.js";
 export declare const file_account_v1_account: GenFile;
 
 /**
- * Account is the person behind the credentials.
- *
  * @generated from message account.v1.Account
  */
 export declare type Account = Message<"account.v1.Account"> & {
@@ -53,8 +51,6 @@ export declare type Account = Message<"account.v1.Account"> & {
 export declare const AccountSchema: GenMessage<Account>;
 
 /**
- * Session is an active device authorization.
- *
  * @generated from message account.v1.Session
  */
 export declare type Session = Message<"account.v1.Session"> & {
@@ -69,8 +65,6 @@ export declare type Session = Message<"account.v1.Session"> & {
   device?: Device | undefined;
 
   /**
-   * IP address recorded during initial authentication.
-   *
    * @generated from field: string ip = 3;
    */
   ip: string;
@@ -86,8 +80,6 @@ export declare type Session = Message<"account.v1.Session"> & {
   lastSeenAt?: Timestamp | undefined;
 
   /**
-   * True if this session corresponds to the bearer token used in the API request.
-   *
    * @generated from field: bool is_current = 6;
    */
   isCurrent: boolean;
@@ -121,9 +113,6 @@ export declare type MeResponse = Message<"account.v1.MeResponse"> & {
   account?: Account | undefined;
 
   /**
-   * The id of the session the bearer token of this request belongs to. Use it to mark "this
-   * device" in the sessions list.
-   *
    * @generated from field: string session_id = 2;
    */
   sessionId: string;
@@ -184,8 +173,6 @@ export declare const EndSessionRequestSchema: GenMessage<EndSessionRequest>;
  */
 export declare type EndSessionResponse = Message<"account.v1.EndSessionResponse"> & {
   /**
-   * The sessions that remain active.
-   *
    * @generated from field: repeated account.v1.Session sessions = 1;
    */
   sessions: Session[];
@@ -214,8 +201,6 @@ export declare const EndOtherSessionsRequestSchema: GenMessage<EndOtherSessionsR
  */
 export declare type EndOtherSessionsResponse = Message<"account.v1.EndOtherSessionsResponse"> & {
   /**
-   * The sessions that remain active: only the calling one.
-   *
    * @generated from field: repeated account.v1.Session sessions = 1;
    */
   sessions: Session[];
@@ -347,15 +332,10 @@ export declare type SetLanguageResponse = Message<"account.v1.SetLanguageRespons
 export declare const SetLanguageResponseSchema: GenMessage<SetLanguageResponse>;
 
 /**
- * AccountService manages the account associated with the caller's credentials.
- * Every method operates strictly on the authenticated entity identified by the bearer token.
- *
  * @generated from service account.v1.AccountService
  */
 export declare const AccountService: GenService<{
   /**
-   * Me returns identity and state for the current account and caller session.
-   *
    * @generated from rpc account.v1.AccountService.Me
    */
   me: {
@@ -364,8 +344,6 @@ export declare const AccountService: GenService<{
     output: typeof MeResponseSchema;
   },
   /**
-   * ListSessions returns all active sessions for this account.
-   *
    * @generated from rpc account.v1.AccountService.ListSessions
    */
   listSessions: {
@@ -374,8 +352,6 @@ export declare const AccountService: GenService<{
     output: typeof ListSessionsResponseSchema;
   },
   /**
-   * EndSession terminates a specific session by ID.
-   *
    * @generated from rpc account.v1.AccountService.EndSession
    */
   endSession: {
@@ -384,8 +360,6 @@ export declare const AccountService: GenService<{
     output: typeof EndSessionResponseSchema;
   },
   /**
-   * EndOtherSessions terminates all active sessions for this account except the calling one.
-   *
    * @generated from rpc account.v1.AccountService.EndOtherSessions
    */
   endOtherSessions: {
@@ -394,8 +368,6 @@ export declare const AccountService: GenService<{
     output: typeof EndOtherSessionsResponseSchema;
   },
   /**
-   * SignOut terminates the current calling session.
-   *
    * @generated from rpc account.v1.AccountService.SignOut
    */
   signOut: {
@@ -404,8 +376,6 @@ export declare const AccountService: GenService<{
     output: typeof SignOutResponseSchema;
   },
   /**
-   * DeleteAccount permanently purges the account and terminates all associated sessions.
-   *
    * @generated from rpc account.v1.AccountService.DeleteAccount
    */
   deleteAccount: {
@@ -424,9 +394,6 @@ export declare const AccountService: GenService<{
     output: typeof RenameResponseSchema;
   },
   /**
-   * SetLanguage sets the language the person reads. Letters about them that are not about a page
-   * they are on (a new device, a payment) are written in it.
-   *
    * @generated from rpc account.v1.AccountService.SetLanguage
    */
   setLanguage: {

@@ -29,15 +29,11 @@ export declare type ListMembersRequest = Message<"org.v1.ListMembersRequest"> & 
   roleId: string;
 
   /**
-   * Maximum items to return. 0 uses the server's default.
-   *
    * @generated from field: int32 page_size = 3;
    */
   pageSize: number;
 
   /**
-   * Opaque cursor from the previous response's `next_page_token`. Empty starts at the first page.
-   *
    * @generated from field: string page_token = 4;
    */
   pageToken: string;
@@ -59,8 +55,6 @@ export declare type ListMembersResponse = Message<"org.v1.ListMembersResponse"> 
   members: Member[];
 
   /**
-   * Opaque cursor for the next page. Empty when there are no more results.
-   *
    * @generated from field: string next_page_token = 2;
    */
   nextPageToken: string;
@@ -108,8 +102,6 @@ export declare type ChangeRoleResponse = Message<"org.v1.ChangeRoleResponse"> & 
   member?: Member | undefined;
 
   /**
-   * The role the member held before the change.
-   *
    * @generated from field: common.v1.RoleRef previous_role = 2;
    */
   previousRole?: RoleRef | undefined;
@@ -147,8 +139,6 @@ export declare const RemoveMemberRequestSchema: GenMessage<RemoveMemberRequest>;
  */
 export declare type RemoveMemberResponse = Message<"org.v1.RemoveMemberResponse"> & {
   /**
-   * How many workspace memberships were revoked along with the org membership.
-   *
    * @generated from field: int32 workspaces_revoked = 1;
    */
   workspacesRevoked: number;
@@ -181,8 +171,6 @@ export declare const LeaveRequestSchema: GenMessage<LeaveRequest>;
  */
 export declare type LeaveResponse = Message<"org.v1.LeaveResponse"> & {
   /**
-   * How many workspace memberships were revoked along with the org membership.
-   *
    * @generated from field: int32 workspaces_revoked = 1;
    */
   workspacesRevoked: number;
@@ -232,8 +220,6 @@ export declare type TransferOwnershipResponse = Message<"org.v1.TransferOwnershi
   org?: Org | undefined;
 
   /**
-   * The previous owner's membership, with the role they now hold.
-   *
    * @generated from field: common.v1.Member previous_owner = 2;
    */
   previousOwner?: Member | undefined;
@@ -246,16 +232,10 @@ export declare type TransferOwnershipResponse = Message<"org.v1.TransferOwnershi
 export declare const TransferOwnershipResponseSchema: GenMessage<TransferOwnershipResponse>;
 
 /**
- * OrgMembershipService manages the people in an org and their access level: listing them, role
- * changes, removal, voluntary leaving, and ownership transfer. Memberships of a workspace are
- * managed by `workspace.v1.WorkspaceMembershipService`.
- *
  * @generated from service org.v1.OrgMembershipService
  */
 export declare const OrgMembershipService: GenService<{
   /**
-   * ListMembers returns the people in an org, newest first.
-   *
    * @generated from rpc org.v1.OrgMembershipService.ListMembers
    */
   listMembers: {

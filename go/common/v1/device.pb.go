@@ -20,7 +20,6 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// App is a program as it describes itself.
 type App struct {
 	state              protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Name    string                 `protobuf:"bytes,1,opt,name=name,proto3"`
@@ -79,7 +78,6 @@ func (x *App) SetVersion(v string) {
 type App_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The program's name, e.g. "Schemo".
 	Name    string
 	Version string
 }
@@ -93,7 +91,6 @@ func (b0 App_builder) Build() *App {
 	return m0
 }
 
-// Device is a machine and the program running on it, as the program reported them when it signed in.
 type Device struct {
 	state               protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Name     string                 `protobuf:"bytes,1,opt,name=name,proto3"`
@@ -175,9 +172,7 @@ func (x *Device) ClearApp() {
 type Device_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// What the machine is called, as its owner named it.
-	Name string
-	// What the machine runs, e.g. "macOS".
+	Name     string
 	Platform string
 	App      *App
 }

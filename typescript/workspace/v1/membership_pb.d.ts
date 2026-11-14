@@ -12,8 +12,6 @@ import type { Member } from "../../common/v1/people_pb.js";
 export declare const file_workspace_v1_membership: GenFile;
 
 /**
- * WorkspaceMember is a person's place in one workspace.
- *
  * @generated from message workspace.v1.WorkspaceMember
  */
 export declare type WorkspaceMember = Message<"workspace.v1.WorkspaceMember"> & {
@@ -46,15 +44,11 @@ export declare type ListMembersRequest = Message<"workspace.v1.ListMembersReques
   workspaceId: string;
 
   /**
-   * Maximum items to return. 0 uses the server's default.
-   *
    * @generated from field: int32 page_size = 2;
    */
   pageSize: number;
 
   /**
-   * Opaque cursor from the previous response's `next_page_token`. Empty starts at the first page.
-   *
    * @generated from field: string page_token = 3;
    */
   pageToken: string;
@@ -76,8 +70,6 @@ export declare type ListMembersResponse = Message<"workspace.v1.ListMembersRespo
   members: WorkspaceMember[];
 
   /**
-   * Opaque cursor for the next page. Empty when there are no more results.
-   *
    * @generated from field: string next_page_token = 2;
    */
   nextPageToken: string;
@@ -237,16 +229,10 @@ export declare type LeaveResponse = Message<"workspace.v1.LeaveResponse"> & {
 export declare const LeaveResponseSchema: GenMessage<LeaveResponse>;
 
 /**
- * WorkspaceMembershipService manages the people in one workspace. Membership of a workspace is
- * separate from membership of the org above it: an org member may be in none of its workspaces,
- * but a workspace member always belongs to the org.
- *
  * @generated from service workspace.v1.WorkspaceMembershipService
  */
 export declare const WorkspaceMembershipService: GenService<{
   /**
-   * ListMembers returns the people in a workspace.
-   *
    * @generated from rpc workspace.v1.WorkspaceMembershipService.ListMembers
    */
   listMembers: {
@@ -265,9 +251,6 @@ export declare const WorkspaceMembershipService: GenService<{
     output: typeof AddMemberResponseSchema;
   },
   /**
-   * ChangeMemberRole assigns another role within this workspace only; the member's org role is
-   * untouched.
-   *
    * @generated from rpc workspace.v1.WorkspaceMembershipService.ChangeMemberRole
    */
   changeMemberRole: {

@@ -12,8 +12,6 @@ import type { Timestamp } from "@bufbuild/protobuf/wkt";
 export declare const file_role_v1_role: GenFile;
 
 /**
- * Role is a named set of permissions.
- *
  * @generated from message role.v1.Role
  */
 export declare type Role = Message<"role.v1.Role"> & {
@@ -47,9 +45,7 @@ export declare type Role = Message<"role.v1.Role"> & {
   description: string;
 
   /**
-   * Permission keys this role grants (see `PermissionService`). An unknown key is kept and ignored
-   * by a server that does not recognize it, so a client can carry a newer permission across a
-   * round trip.
+   * Unknown permission keys survive a round trip and are ignored by older servers.
    *
    * @generated from field: repeated string permissions = 6;
    */
@@ -79,8 +75,6 @@ export declare type Role = Message<"role.v1.Role"> & {
   assignable: boolean;
 
   /**
-   * Raised by every change to the role.
-   *
    * @generated from field: int32 version = 10;
    */
   version: number;
@@ -108,8 +102,7 @@ export declare type Role = Message<"role.v1.Role"> & {
 export declare const RoleSchema: GenMessage<Role>;
 
 /**
- * PermissionKeys is a set of permission keys, wrapped so that a request can tell "leave the
- * permissions alone" from "replace them with none".
+ * A present empty set clears the permissions.
  *
  * @generated from message role.v1.PermissionKeys
  */
@@ -283,8 +276,6 @@ export declare type UpdateRoleRequest = Message<"role.v1.UpdateRoleRequest"> & {
   description?: string | undefined;
 
   /**
-   * When present, replaces the whole permission set.
-   *
    * @generated from field: role.v1.PermissionKeys permissions = 5;
    */
   permissions?: PermissionKeys | undefined;
@@ -346,8 +337,6 @@ export declare type DeleteRoleResponse = Message<"role.v1.DeleteRoleResponse"> &
 export declare const DeleteRoleResponseSchema: GenMessage<DeleteRoleResponse>;
 
 /**
- * RoleScope names the level a role is written for.
- *
  * @generated from enum role.v1.RoleScope
  */
 export enum RoleScope {
@@ -357,15 +346,11 @@ export enum RoleScope {
   UNSPECIFIED = 0,
 
   /**
-   * Held in the org. Workspace roles are chosen from the org's roles.
-   *
    * @generated from enum value: ROLE_SCOPE_ORG = 1;
    */
   ORG = 1,
 
   /**
-   * Held in one workspace.
-   *
    * @generated from enum value: ROLE_SCOPE_WORKSPACE = 2;
    */
   WORKSPACE = 2,
@@ -377,18 +362,10 @@ export enum RoleScope {
 export declare const RoleScopeSchema: GenEnum<RoleScope>;
 
 /**
- * RoleService manages the roles of an org and its workspaces.
- *
- * A role is a named set of permissions, stored as data rather than compiled into the software: an
- * org uses the built-in roles or adds its own. Built-in roles are immutable, since their names are
- * quoted by every audit entry that ever referenced them.
- *
  * @generated from service role.v1.RoleService
  */
 export declare const RoleService: GenService<{
   /**
-   * GetRole reads one role by id.
-   *
    * @generated from rpc role.v1.RoleService.GetRole
    */
   getRole: {
@@ -397,8 +374,6 @@ export declare const RoleService: GenService<{
     output: typeof GetRoleResponseSchema;
   },
   /**
-   * ListRoles returns the roles of an org, optionally of one scope.
-   *
    * @generated from rpc role.v1.RoleService.ListRoles
    */
   listRoles: {

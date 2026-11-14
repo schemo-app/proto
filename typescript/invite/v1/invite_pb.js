@@ -98,16 +98,12 @@ export const InviteStatusSchema = /*@__PURE__*/
   enumDesc(file_invite_v1_invite, 0);
 
 /**
- * InviteStatus is where an invitation link stands.
- *
  * @generated from enum invite.v1.InviteStatus
  */
 export const InviteStatus = /*@__PURE__*/
   tsEnum(InviteStatusSchema);
 
 /**
- * InviteService creates, lists, revokes, and accepts invitation links.
- *
  * @generated from service invite.v1.InviteService
  */
 export const InviteService = /*@__PURE__*/

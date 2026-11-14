@@ -67,6 +67,9 @@ type Endpoint struct {
 	Parameters  []Parameter `json:"parameters"`
 	Body        *Body       `json:"body"`
 	Responses   []Response  `json:"responses"`
+	Protocol    *Protocol   `json:"protocol,omitempty"`
+	Operation   *string     `json:"operation,omitempty"`
+	Variables   *string     `json:"variables,omitempty"`
 }
 
 type Body struct {
@@ -123,6 +126,15 @@ type Prose struct {
 	Errors string `json:"errors"`
 	Limits string `json:"limits"`
 }
+
+type Protocol string
+
+const (
+	Gql  Protocol = "gql"
+	Grpc Protocol = "grpc"
+	SSE  Protocol = "sse"
+	Ws   Protocol = "ws"
+)
 
 const Format = "schemo.collection-snapshot"
 const Version = 1

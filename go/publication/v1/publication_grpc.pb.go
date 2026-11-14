@@ -30,29 +30,16 @@ const (
 // PublicationServiceClient is the client API for PublicationService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-//
-// PublicationService puts a collection on the open web, and takes it down again.
-//
-// A publication is a *document* the author's device builds and this server stores unread:
-// `PublishRequest.document` is compressed JSON in one shape for every caller, and the server checks
-// the envelope, keeps the bytes and answers what the page is at. Nothing here returns a document
-// except `RestorePublication`, which hands the restored one back to its author: a page is read over
-// plain HTTP, without a token, at the address the publication carries.
 type PublicationServiceClient interface {
-	// Publish puts a collection on the web, or replaces the document of one already there.
 	Publish(ctx context.Context, in *PublishRequest, opts ...grpc.CallOption) (*PublishResponse, error)
-	// Unpublish takes a page down. The address stays taken: a link that was handed out once must
-	// never come to mean something else.
+	// A revoked page keeps its address.
 	Unpublish(ctx context.Context, in *UnpublishRequest, opts ...grpc.CallOption) (*UnpublishResponse, error)
 	// GetPublications answers the state of the named collections. A collection that was never
 	// published, or that sits in a workspace the caller is not in, is absent from the answer.
 	GetPublications(ctx context.Context, in *GetPublicationsRequest, opts ...grpc.CallOption) (*GetPublicationsResponse, error)
-	// ListPublications answers the pages of one workspace, newest first.
 	ListPublications(ctx context.Context, in *ListPublicationsRequest, opts ...grpc.CallOption) (*ListPublicationsResponse, error)
-	// GetPublicationDetails answers a page's statistics and its published versions.
 	GetPublicationDetails(ctx context.Context, in *GetPublicationDetailsRequest, opts ...grpc.CallOption) (*GetPublicationDetailsResponse, error)
-	// RestorePublication publishes an earlier revision of an active page again, as a new revision,
-	// and returns the document now published so the author's device can take it back.
+	// Restores a previous document as a new revision.
 	RestorePublication(ctx context.Context, in *RestorePublicationRequest, opts ...grpc.CallOption) (*RestorePublicationResponse, error)
 }
 
@@ -127,29 +114,16 @@ func (c *publicationServiceClient) RestorePublication(ctx context.Context, in *R
 // PublicationServiceServer is the server API for PublicationService service.
 // All implementations must embed UnimplementedPublicationServiceServer
 // for forward compatibility.
-//
-// PublicationService puts a collection on the open web, and takes it down again.
-//
-// A publication is a *document* the author's device builds and this server stores unread:
-// `PublishRequest.document` is compressed JSON in one shape for every caller, and the server checks
-// the envelope, keeps the bytes and answers what the page is at. Nothing here returns a document
-// except `RestorePublication`, which hands the restored one back to its author: a page is read over
-// plain HTTP, without a token, at the address the publication carries.
 type PublicationServiceServer interface {
-	// Publish puts a collection on the web, or replaces the document of one already there.
 	Publish(context.Context, *PublishRequest) (*PublishResponse, error)
-	// Unpublish takes a page down. The address stays taken: a link that was handed out once must
-	// never come to mean something else.
+	// A revoked page keeps its address.
 	Unpublish(context.Context, *UnpublishRequest) (*UnpublishResponse, error)
 	// GetPublications answers the state of the named collections. A collection that was never
 	// published, or that sits in a workspace the caller is not in, is absent from the answer.
 	GetPublications(context.Context, *GetPublicationsRequest) (*GetPublicationsResponse, error)
-	// ListPublications answers the pages of one workspace, newest first.
 	ListPublications(context.Context, *ListPublicationsRequest) (*ListPublicationsResponse, error)
-	// GetPublicationDetails answers a page's statistics and its published versions.
 	GetPublicationDetails(context.Context, *GetPublicationDetailsRequest) (*GetPublicationDetailsResponse, error)
-	// RestorePublication publishes an earlier revision of an active page again, as a new revision,
-	// and returns the document now published so the author's device can take it back.
+	// Restores a previous document as a new revision.
 	RestorePublication(context.Context, *RestorePublicationRequest) (*RestorePublicationResponse, error)
 	mustEmbedUnimplementedPublicationServiceServer()
 }

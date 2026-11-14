@@ -12,35 +12,27 @@ import type { Timestamp } from "@bufbuild/protobuf/wkt";
 export declare const file_audit_v1_audit: GenFile;
 
 /**
- * AuditFilter selects journal entries. Every field that is left empty matches everything.
+ * Empty filter fields match all entries.
  *
  * @generated from message audit.v1.AuditFilter
  */
 export declare type AuditFilter = Message<"audit.v1.AuditFilter"> & {
   /**
-   * Only entries of this workspace. Empty matches all workspaces of the org.
-   *
    * @generated from field: string workspace_id = 1;
    */
   workspaceId: string;
 
   /**
-   * Only entries made by this user. Empty matches all actors, the system and sync included.
-   *
    * @generated from field: string actor_user_id = 2;
    */
   actorUserId: string;
 
   /**
-   * Only entries of this exact action code, e.g. "org.update".
-   *
    * @generated from field: string action = 3;
    */
   action: string;
 
   /**
-   * Only entries about this target.
-   *
    * @generated from field: string target_id = 4;
    */
   targetId: string;
@@ -72,8 +64,6 @@ export declare type AuditFilter = Message<"audit.v1.AuditFilter"> & {
 export declare const AuditFilterSchema: GenMessage<AuditFilter>;
 
 /**
- * AuditEntry is one immutable event in the journal.
- *
  * @generated from message audit.v1.AuditEntry
  */
 export declare type AuditEntry = Message<"audit.v1.AuditEntry"> & {
@@ -101,8 +91,6 @@ export declare type AuditEntry = Message<"audit.v1.AuditEntry"> & {
   actionKind: ActionKind;
 
   /**
-   * True when what the entry records did not happen: a payment that was refused.
-   *
    * @generated from field: bool failed = 5;
    */
   failed: boolean;
@@ -118,8 +106,6 @@ export declare type AuditEntry = Message<"audit.v1.AuditEntry"> & {
   actorUserId: string;
 
   /**
-   * The actor's display name at the time of the event.
-   *
    * @generated from field: string actor_name = 8;
    */
   actorName: string;
@@ -135,8 +121,6 @@ export declare type AuditEntry = Message<"audit.v1.AuditEntry"> & {
   actorDevice: string;
 
   /**
-   * True when the browser panel did it, whose device name says nothing to a person reading there.
-   *
    * @generated from field: bool from_panel = 11;
    */
   fromPanel: boolean;
@@ -165,8 +149,6 @@ export declare type AuditEntry = Message<"audit.v1.AuditEntry"> & {
   targetId: string;
 
   /**
-   * The target's display name at the time of the event.
-   *
    * @generated from field: string target_name = 16;
    */
   targetName: string;
@@ -200,15 +182,11 @@ export declare type ListRequest = Message<"audit.v1.ListRequest"> & {
   filter?: AuditFilter | undefined;
 
   /**
-   * Maximum items to return. 0 uses the server's default; larger values are clamped to its limit.
-   *
    * @generated from field: int32 page_size = 3;
    */
   pageSize: number;
 
   /**
-   * Opaque cursor from the previous response's `next_page_token`. Empty starts at the first page.
-   *
    * @generated from field: string page_token = 4;
    */
   pageToken: string;
@@ -230,8 +208,6 @@ export declare type ListResponse = Message<"audit.v1.ListResponse"> & {
   entries: AuditEntry[];
 
   /**
-   * Opaque cursor for the next page. Empty when there are no more results.
-   *
    * @generated from field: string next_page_token = 2;
    */
   nextPageToken: string;
@@ -283,8 +259,6 @@ export declare type ExportResponse = Message<"audit.v1.ExportResponse"> & {
   csvChunk: Uint8Array;
 
   /**
-   * Set on the last message of the stream.
-   *
    * @generated from field: bool is_last = 2;
    */
   isLast: boolean;
@@ -317,43 +291,31 @@ export declare const ExportResponseSchema: GenMessage<ExportResponse>;
  */
 export enum ActionKind {
   /**
-   * As a filter: every kind.
-   *
    * @generated from enum value: ACTION_KIND_UNSPECIFIED = 0;
    */
   UNSPECIFIED = 0,
 
   /**
-   * Changes to workspaces and what they hold.
-   *
    * @generated from enum value: ACTION_KIND_CONTENT = 1;
    */
   CONTENT = 1,
 
   /**
-   * Changes to who may do what: orgs, members, roles, invitations, publications.
-   *
    * @generated from enum value: ACTION_KIND_ACCESS = 2;
    */
   ACCESS = 2,
 
   /**
-   * Subscriptions and payments.
-   *
    * @generated from enum value: ACTION_KIND_PLAN = 3;
    */
   PLAN = 3,
 
   /**
-   * Sign-ins, sessions and the account itself.
-   *
    * @generated from enum value: ACTION_KIND_AUTH = 4;
    */
   AUTH = 4,
 
   /**
-   * Reads of history.
-   *
    * @generated from enum value: ACTION_KIND_READ = 5;
    */
   READ = 5,
@@ -365,8 +327,6 @@ export enum ActionKind {
 export declare const ActionKindSchema: GenEnum<ActionKind>;
 
 /**
- * ActorType says who did what an entry records.
- *
  * @generated from enum audit.v1.ActorType
  */
 export enum ActorType {
@@ -386,8 +346,6 @@ export enum ActorType {
   SYSTEM = 2,
 
   /**
-   * A device syncing on a person's behalf.
-   *
    * @generated from enum value: ACTOR_TYPE_SYNC = 3;
    */
   SYNC = 3,
@@ -399,14 +357,10 @@ export enum ActorType {
 export declare const ActorTypeSchema: GenEnum<ActorType>;
 
 /**
- * AuditService provides read-only access to the org's append-only audit journal.
- *
  * @generated from service audit.v1.AuditService
  */
 export declare const AuditService: GenService<{
   /**
-   * List returns journal entries, newest first, one page at a time.
-   *
    * @generated from rpc audit.v1.AuditService.List
    */
   list: {
@@ -415,8 +369,6 @@ export declare const AuditService: GenService<{
     output: typeof ListResponseSchema;
   },
   /**
-   * Export streams the entries that match as chunked CSV, for reporting and archiving.
-   *
    * @generated from rpc audit.v1.AuditService.Export
    */
   export: {

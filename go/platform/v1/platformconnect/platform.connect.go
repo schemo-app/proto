@@ -39,7 +39,6 @@ const (
 
 // PlatformServiceClient is a client for the platform.v1.PlatformService service.
 type PlatformServiceClient interface {
-	// GetInfo returns the server's identity, version, features and limits.
 	GetInfo(context.Context, *v1.GetInfoRequest) (*v1.GetInfoResponse, error)
 }
 
@@ -79,7 +78,6 @@ func (c *platformServiceClient) GetInfo(ctx context.Context, req *v1.GetInfoRequ
 
 // PlatformServiceHandler is an implementation of the platform.v1.PlatformService service.
 type PlatformServiceHandler interface {
-	// GetInfo returns the server's identity, version, features and limits.
 	GetInfo(context.Context, *v1.GetInfoRequest) (*v1.GetInfoResponse, error)
 }
 

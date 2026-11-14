@@ -173,8 +173,6 @@ export const BillingPeriodSchema = /*@__PURE__*/
   enumDesc(file_billing_v1_billing, 0);
 
 /**
- * BillingPeriod is how often a subscription renews.
- *
  * @generated from enum billing.v1.BillingPeriod
  */
 export const BillingPeriod = /*@__PURE__*/
@@ -187,8 +185,6 @@ export const SubscriptionStatusSchema = /*@__PURE__*/
   enumDesc(file_billing_v1_billing, 1);
 
 /**
- * SubscriptionStatus is where a paid subscription stands.
- *
  * @generated from enum billing.v1.SubscriptionStatus
  */
 export const SubscriptionStatus = /*@__PURE__*/
@@ -201,8 +197,6 @@ export const PaymentKindSchema = /*@__PURE__*/
   enumDesc(file_billing_v1_billing, 2);
 
 /**
- * PaymentKind says why a charge was made.
- *
  * @generated from enum billing.v1.PaymentKind
  */
 export const PaymentKind = /*@__PURE__*/
@@ -215,20 +209,12 @@ export const PaymentStatusSchema = /*@__PURE__*/
   enumDesc(file_billing_v1_billing, 3);
 
 /**
- * PaymentStatus is where a payment stands.
- *
  * @generated from enum billing.v1.PaymentStatus
  */
 export const PaymentStatus = /*@__PURE__*/
   tsEnum(PaymentStatusSchema);
 
 /**
- * BillingService manages organization subscriptions, payments, and pricing offers.
- *
- * Org-scoped methods require `org:manage_billing`. If the server has no payment provider
- * configured, they are refused with a dedicated code: check for `FEATURE_BILLING` in
- * `platform.v1` first.
- *
  * @generated from service billing.v1.BillingService
  */
 export const BillingService = /*@__PURE__*/

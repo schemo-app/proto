@@ -12,8 +12,6 @@ import type { Timestamp } from "@bufbuild/protobuf/wkt";
 export declare const file_billing_v1_billing: GenFile;
 
 /**
- * Money is an amount in the smallest unit of a currency.
- *
  * @generated from message billing.v1.Money
  */
 export declare type Money = Message<"billing.v1.Money"> & {
@@ -39,8 +37,6 @@ export declare type Money = Message<"billing.v1.Money"> & {
 export declare const MoneySchema: GenMessage<Money>;
 
 /**
- * Subscription is an org's paid plan, with the price locked in when it was bought.
- *
  * @generated from message billing.v1.Subscription
  */
 export declare type Subscription = Message<"billing.v1.Subscription"> & {
@@ -50,8 +46,6 @@ export declare type Subscription = Message<"billing.v1.Subscription"> & {
   id: string;
 
   /**
-   * The plan's tier; see `plan.v1.Plan.tier`.
-   *
    * @generated from field: string tier = 2;
    */
   tier: string;
@@ -94,8 +88,6 @@ export declare type Subscription = Message<"billing.v1.Subscription"> & {
   amount?: Money | undefined;
 
   /**
-   * A masked description of the payment method, e.g. "Visa •••• 4242".
-   *
    * @generated from field: string payment_method_title = 10;
    */
   paymentMethodTitle: string;
@@ -108,8 +100,6 @@ export declare type Subscription = Message<"billing.v1.Subscription"> & {
 export declare const SubscriptionSchema: GenMessage<Subscription>;
 
 /**
- * Payment is one charge.
- *
  * @generated from message billing.v1.Payment
  */
 export declare type Payment = Message<"billing.v1.Payment"> & {
@@ -154,15 +144,11 @@ export declare type Payment = Message<"billing.v1.Payment"> & {
   createdAt?: Timestamp | undefined;
 
   /**
-   * The end of the period this payment paid for.
-   *
    * @generated from field: google.protobuf.Timestamp paid_period_end = 9;
    */
   paidPeriodEnd?: Timestamp | undefined;
 
   /**
-   * Why a canceled payment was canceled.
-   *
    * @generated from field: string cancel_reason = 10;
    */
   cancelReason: string;
@@ -175,8 +161,6 @@ export declare type Payment = Message<"billing.v1.Payment"> & {
 export declare const PaymentSchema: GenMessage<Payment>;
 
 /**
- * Offer is one entry of the price list.
- *
  * @generated from message billing.v1.Offer
  */
 export declare type Offer = Message<"billing.v1.Offer"> & {
@@ -196,8 +180,6 @@ export declare type Offer = Message<"billing.v1.Offer"> & {
   amount?: Money | undefined;
 
   /**
-   * Seats the amount includes.
-   *
    * @generated from field: int32 seats = 4;
    */
   seats: number;
@@ -247,8 +229,6 @@ export declare type SubscribeRequest = Message<"billing.v1.SubscribeRequest"> & 
   orgId: string;
 
   /**
-   * The tier to buy; see `plan.v1.Plan.tier`.
-   *
    * @generated from field: string tier = 2;
    */
   tier: string;
@@ -259,7 +239,7 @@ export declare type SubscribeRequest = Message<"billing.v1.SubscribeRequest"> & 
   period: BillingPeriod;
 
   /**
-   * A client-generated UUID that makes the purchase safe to retry.
+   * Client-generated UUID for purchase retries.
    *
    * @generated from field: string idempotency_key = 4;
    */
@@ -380,15 +360,11 @@ export declare const GetSubscriptionRequestSchema: GenMessage<GetSubscriptionReq
  */
 export declare type GetSubscriptionResponse = Message<"billing.v1.GetSubscriptionResponse"> & {
   /**
-   * Unset if the org has never bought a subscription.
-   *
    * @generated from field: billing.v1.Subscription subscription = 1;
    */
   subscription?: Subscription | undefined;
 
   /**
-   * True when this server takes payments through the sandbox provider.
-   *
    * @generated from field: bool sandbox = 2;
    */
   sandbox: boolean;
@@ -431,8 +407,6 @@ export declare type RenewNowResponse = Message<"billing.v1.RenewNowResponse"> & 
   paymentId: string;
 
   /**
-   * The provider's confirmation page, when the charge needs 3-D Secure or another confirmation.
-   *
    * @generated from field: string confirmation_url = 2;
    */
   confirmationUrl: string;
@@ -491,15 +465,11 @@ export declare type ListPaymentsRequest = Message<"billing.v1.ListPaymentsReques
   orgId: string;
 
   /**
-   * Maximum items to return. 0 uses the server's default.
-   *
    * @generated from field: int32 page_size = 2;
    */
   pageSize: number;
 
   /**
-   * Opaque cursor from the previous response's `next_page_token`. Empty starts at the first page.
-   *
    * @generated from field: string page_token = 3;
    */
   pageToken: string;
@@ -521,8 +491,6 @@ export declare type ListPaymentsResponse = Message<"billing.v1.ListPaymentsRespo
   payments: Payment[];
 
   /**
-   * Opaque cursor for the next page. Empty when there are no more results.
-   *
    * @generated from field: string next_page_token = 2;
    */
   nextPageToken: string;
@@ -596,8 +564,6 @@ export declare const GetPortalRequestSchema: GenMessage<GetPortalRequest>;
  */
 export declare type GetPortalResponse = Message<"billing.v1.GetPortalResponse"> & {
   /**
-   * The provider's billing portal. Empty if the provider has none.
-   *
    * @generated from field: string portal_url = 1;
    */
   portalUrl: string;
@@ -661,8 +627,6 @@ export declare type CompleteSandboxPaymentResponse = Message<"billing.v1.Complet
 export declare const CompleteSandboxPaymentResponseSchema: GenMessage<CompleteSandboxPaymentResponse>;
 
 /**
- * BillingPeriod is how often a subscription renews.
- *
  * @generated from enum billing.v1.BillingPeriod
  */
 export enum BillingPeriod {
@@ -688,8 +652,6 @@ export enum BillingPeriod {
 export declare const BillingPeriodSchema: GenEnum<BillingPeriod>;
 
 /**
- * SubscriptionStatus is where a paid subscription stands.
- *
  * @generated from enum billing.v1.SubscriptionStatus
  */
 export enum SubscriptionStatus {
@@ -729,8 +691,6 @@ export enum SubscriptionStatus {
 export declare const SubscriptionStatusSchema: GenEnum<SubscriptionStatus>;
 
 /**
- * PaymentKind says why a charge was made.
- *
  * @generated from enum billing.v1.PaymentKind
  */
 export enum PaymentKind {
@@ -740,8 +700,6 @@ export enum PaymentKind {
   UNSPECIFIED = 0,
 
   /**
-   * The first charge of a subscription, or a change of tier or seats.
-   *
    * @generated from enum value: PAYMENT_KIND_INITIAL = 1;
    */
   INITIAL = 1,
@@ -758,8 +716,6 @@ export enum PaymentKind {
 export declare const PaymentKindSchema: GenEnum<PaymentKind>;
 
 /**
- * PaymentStatus is where a payment stands.
- *
  * @generated from enum billing.v1.PaymentStatus
  */
 export enum PaymentStatus {
@@ -769,15 +725,11 @@ export enum PaymentStatus {
   UNSPECIFIED = 0,
 
   /**
-   * Recorded here; the provider has not acknowledged it yet.
-   *
    * @generated from enum value: PAYMENT_STATUS_CREATING = 1;
    */
   CREATING = 1,
 
   /**
-   * Waiting for the customer to confirm, or for the bank to answer.
-   *
    * @generated from enum value: PAYMENT_STATUS_PENDING = 2;
    */
   PENDING = 2,
@@ -796,8 +748,6 @@ export enum PaymentStatus {
   SUCCEEDED = 4,
 
   /**
-   * Refused or abandoned. `Payment.cancel_reason` says why.
-   *
    * @generated from enum value: PAYMENT_STATUS_CANCELED = 5;
    */
   CANCELED = 5,
@@ -809,18 +759,11 @@ export enum PaymentStatus {
 export declare const PaymentStatusSchema: GenEnum<PaymentStatus>;
 
 /**
- * BillingService manages organization subscriptions, payments, and pricing offers.
- *
- * Org-scoped methods require `org:manage_billing`. If the server has no payment provider
- * configured, they are refused with a dedicated code: check for `FEATURE_BILLING` in
- * `platform.v1` first.
- *
  * @generated from service billing.v1.BillingService
  */
 export declare const BillingService: GenService<{
   /**
-   * Subscribe starts a subscription purchase and returns where to confirm the payment. Idempotent:
-   * repeating a request with the same `idempotency_key` returns the active transaction.
+   * Reusing an idempotency key returns the active transaction.
    *
    * @generated from rpc billing.v1.BillingService.Subscribe
    */
@@ -830,8 +773,6 @@ export declare const BillingService: GenService<{
     output: typeof SubscribeResponseSchema;
   },
   /**
-   * GetPaymentStatus reads the state of a payment, which a client polls until it settles.
-   *
    * @generated from rpc billing.v1.BillingService.GetPaymentStatus
    */
   getPaymentStatus: {
@@ -840,8 +781,6 @@ export declare const BillingService: GenService<{
     output: typeof GetPaymentStatusResponseSchema;
   },
   /**
-   * GetSubscription reads the org's current or latest subscription.
-   *
    * @generated from rpc billing.v1.BillingService.GetSubscription
    */
   getSubscription: {
@@ -850,8 +789,6 @@ export declare const BillingService: GenService<{
     output: typeof GetSubscriptionResponseSchema;
   },
   /**
-   * RenewNow charges at once to extend the current subscription period.
-   *
    * @generated from rpc billing.v1.BillingService.RenewNow
    */
   renewNow: {
@@ -870,8 +807,6 @@ export declare const BillingService: GenService<{
     output: typeof CancelSubscriptionResponseSchema;
   },
   /**
-   * ListPayments returns the org's charges, newest first.
-   *
    * @generated from rpc billing.v1.BillingService.ListPayments
    */
   listPayments: {
@@ -891,8 +826,6 @@ export declare const BillingService: GenService<{
     output: typeof ListOffersResponseSchema;
   },
   /**
-   * GetPortal returns the provider's customer portal, where payment methods are managed.
-   *
    * @generated from rpc billing.v1.BillingService.GetPortal
    */
   getPortal: {
@@ -901,8 +834,7 @@ export declare const BillingService: GenService<{
     output: typeof GetPortalResponseSchema;
   },
   /**
-   * CompleteSandboxPayment settles or refuses a pending payment by hand. Only the sandbox provider
-   * takes it; with a real provider it is refused with `noProvider`.
+   * Available only with the sandbox provider.
    *
    * @generated from rpc billing.v1.BillingService.CompleteSandboxPayment
    */

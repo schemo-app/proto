@@ -7,18 +7,11 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/schemo-app/proto/go/role/v1;role";
 
-// RoleService manages the roles of an org and its workspaces.
-//
-// A role is a named set of permissions, stored as data rather than compiled into the software: an
-// org uses the built-in roles or adds its own. Built-in roles are immutable, since their names are
-// quoted by every audit entry that ever referenced them.
 service RoleService {
-  // GetRole reads one role by id.
   rpc GetRole(GetRoleRequest) returns (GetRoleResponse) {
     option (common.v1.access) = ACCESS_ROLE_READ;
   }
 
-  // ListRoles returns the roles of an org, optionally of one scope.
   rpc ListRoles(ListRolesRequest) returns (ListRolesResponse) {
     option (common.v1.access) = ACCESS_ROLE_READ;
   }
@@ -41,18 +34,14 @@ service RoleService {
   }
 }
 
-// RoleScope names the level a role is written for.
 enum RoleScope {
   ROLE_SCOPE_UNSPECIFIED = 0;
 
-  // Held in the org. Workspace roles are chosen from the org's roles.
   ROLE_SCOPE_ORG = 1;
 
-  // Held in one workspace.
   ROLE_SCOPE_WORKSPACE = 2;
 }
 
-// Role is a named set of permissions.
 message Role {
   string id = 1;
 
@@ -66,9 +55,7 @@ message Role {
 
   string description = 5;
 
-  // Permission keys this role grants (see `PermissionService`). An unknown key is kept and ignored
-  // by a server that does not recognize it, so a client can carry a newer permission across a
-  // round trip.
+  // Unknown permission keys survive a round trip and are ignored by older servers.
   repeated string permissions = 6;
 
   // True for a built-in role. It may be read and assigned, never edited or deleted.
@@ -82,7 +69,6 @@ message Role {
   // by transferring ownership.
   bool assignable = 9;
 
-  // Raised by every change to the role.
   int32 version = 10;
 
   string created_by_user_id = 11;
@@ -90,8 +76,7 @@ message Role {
   google.protobuf.Timestamp updated_at = 13;
 }
 
-// PermissionKeys is a set of permission keys, wrapped so that a request can tell "leave the
-// permissions alone" from "replace them with none".
+// A present empty set clears the permissions.
 message PermissionKeys {
   repeated string keys = 1;
 }
@@ -137,7 +122,6 @@ message UpdateRoleRequest {
   optional string name = 3;
   optional string description = 4;
 
-  // When present, replaces the whole permission set.
   PermissionKeys permissions = 5;
 }
 

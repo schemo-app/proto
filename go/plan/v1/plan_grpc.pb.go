@@ -25,8 +25,6 @@ const (
 // PlanServiceClient is the client API for PlanService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-//
-// PlanService provides read-only access to what an org is entitled to and how much of it is used.
 type PlanServiceClient interface {
 	// GetPlan returns the org's effective plan: its tier, features and quotas, with current usage.
 	// An empty `org_id` means the org the caller currently works in.
@@ -54,8 +52,6 @@ func (c *planServiceClient) GetPlan(ctx context.Context, in *GetPlanRequest, opt
 // PlanServiceServer is the server API for PlanService service.
 // All implementations must embed UnimplementedPlanServiceServer
 // for forward compatibility.
-//
-// PlanService provides read-only access to what an org is entitled to and how much of it is used.
 type PlanServiceServer interface {
 	// GetPlan returns the org's effective plan: its tier, features and quotas, with current usage.
 	// An empty `org_id` means the org the caller currently works in.

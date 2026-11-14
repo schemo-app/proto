@@ -22,7 +22,6 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Account is the person behind the credentials.
 type Account struct {
 	state                   protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Id           string                 `protobuf:"bytes,1,opt,name=id,proto3"`
@@ -148,7 +147,6 @@ func (b0 Account_builder) Build() *Account {
 	return m0
 }
 
-// Session is an active device authorization.
 type Session struct {
 	state                 protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Id         string                 `protobuf:"bytes,1,opt,name=id,proto3"`
@@ -288,14 +286,12 @@ func (x *Session) ClearLastSeenAt() {
 type Session_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Id     string
-	Device *v1.Device
-	// IP address recorded during initial authentication.
+	Id         string
+	Device     *v1.Device
 	Ip         string
 	CreatedAt  *timestamppb.Timestamp
 	LastSeenAt *timestamppb.Timestamp
-	// True if this session corresponds to the bearer token used in the API request.
-	IsCurrent bool
+	IsCurrent  bool
 }
 
 func (b0 Session_builder) Build() *Session {
@@ -423,9 +419,7 @@ func (x *MeResponse) ClearAccount() {
 type MeResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Account *Account
-	// The id of the session the bearer token of this request belongs to. Use it to mark "this
-	// device" in the sessions list.
+	Account   *Account
 	SessionId string
 }
 
@@ -645,7 +639,6 @@ func (x *EndSessionResponse) SetSessions(v []*Session) {
 type EndSessionResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The sessions that remain active.
 	Sessions []*Session
 }
 
@@ -748,7 +741,6 @@ func (x *EndOtherSessionsResponse) SetSessions(v []*Session) {
 type EndOtherSessionsResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The sessions that remain active: only the calling one.
 	Sessions []*Session
 }
 

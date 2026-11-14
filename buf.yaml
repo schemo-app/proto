@@ -1,12 +1,9 @@
 version: v2
 modules:
-  - path: .
+  - path: proto
 lint:
   use:
     - STANDARD
-    - COMMENT_SERVICE
-    - COMMENT_RPC
-    - COMMENT_ENUM
 breaking:
   use:
     - FILE

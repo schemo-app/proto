@@ -140,9 +140,6 @@ export const SetLanguageResponseSchema = /*@__PURE__*/
   messageDesc(file_account_v1_account, 17);
 
 /**
- * AccountService manages the account associated with the caller's credentials.
- * Every method operates strictly on the authenticated entity identified by the bearer token.
- *
  * @generated from service account.v1.AccountService
  */
 export const AccountService = /*@__PURE__*/

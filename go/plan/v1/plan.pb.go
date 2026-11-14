@@ -22,18 +22,14 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// QuotaKind names something a plan limits.
 type QuotaKind int32
 
 const (
-	QuotaKind_QUOTA_KIND_UNSPECIFIED QuotaKind = 0
-	// People in the org.
-	QuotaKind_QUOTA_KIND_ORG_MEMBERS QuotaKind = 1
-	// Collections in one workspace.
+	QuotaKind_QUOTA_KIND_UNSPECIFIED           QuotaKind = 0
+	QuotaKind_QUOTA_KIND_ORG_MEMBERS           QuotaKind = 1
 	QuotaKind_QUOTA_KIND_WORKSPACE_COLLECTIONS QuotaKind = 2
 	// Content stored by the org, in megabytes.
-	QuotaKind_QUOTA_KIND_ORG_STORAGE_MB QuotaKind = 3
-	// How long history is kept, in days.
+	QuotaKind_QUOTA_KIND_ORG_STORAGE_MB         QuotaKind = 3
 	QuotaKind_QUOTA_KIND_HISTORY_RETENTION_DAYS QuotaKind = 4
 )
 
@@ -77,7 +73,6 @@ func (x QuotaKind) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// QuotaLimit is the cap a plan puts on one kind of quota.
 type QuotaLimit struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Kind        QuotaKind              `protobuf:"varint,1,opt,name=kind,proto3,enum=plan.v1.QuotaKind"`
@@ -168,7 +163,6 @@ func (b0 QuotaLimit_builder) Build() *QuotaLimit {
 	return m0
 }
 
-// Plan is what an org is entitled to.
 type Plan struct {
 	state                protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Tier      string                 `protobuf:"bytes,1,opt,name=tier,proto3"`
@@ -269,8 +263,7 @@ type Plan_builder struct {
 	Tier string
 	// When the current paid period ends. Unset for a plan that does not expire.
 	ExpiresAt *timestamppb.Timestamp
-	// The features the plan includes.
-	Features []v1.Feature
+	Features  []v1.Feature
 	// The plan's limits. A kind that is not listed is unlimited.
 	Quotas []*QuotaLimit
 }
@@ -286,7 +279,6 @@ func (b0 Plan_builder) Build() *Plan {
 	return m0
 }
 
-// Usage is what the org has consumed, to compare with the plan's quotas.
 type Usage struct {
 	state                     protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Members        int32                  `protobuf:"varint,1,opt,name=members,proto3"`

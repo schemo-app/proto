@@ -105,10 +105,8 @@ type ListMembersRequest_builder struct {
 
 	OrgId string
 	// Only the members holding this role. Empty returns everyone.
-	RoleId string
-	// Maximum items to return. 0 uses the server's default.
-	PageSize int32
-	// Opaque cursor from the previous response's `next_page_token`. Empty starts at the first page.
+	RoleId    string
+	PageSize  int32
 	PageToken string
 }
 
@@ -183,8 +181,7 @@ func (x *ListMembersResponse) SetNextPageToken(v string) {
 type ListMembersResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Members []*v1.Member
-	// Opaque cursor for the next page. Empty when there are no more results.
+	Members       []*v1.Member
 	NextPageToken string
 }
 
@@ -362,8 +359,7 @@ func (x *ChangeRoleResponse) ClearPreviousRole() {
 type ChangeRoleResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Member *v1.Member
-	// The role the member held before the change.
+	Member       *v1.Member
 	PreviousRole *v1.RoleRef
 }
 
@@ -493,7 +489,6 @@ func (x *RemoveMemberResponse) SetWorkspacesRevoked(v int32) {
 type RemoveMemberResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// How many workspace memberships were revoked along with the org membership.
 	WorkspacesRevoked int32
 }
 
@@ -608,7 +603,6 @@ func (x *LeaveResponse) SetWorkspacesRevoked(v int32) {
 type LeaveResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// How many workspace memberships were revoked along with the org membership.
 	WorkspacesRevoked int32
 }
 
@@ -786,8 +780,7 @@ func (x *TransferOwnershipResponse) ClearPreviousOwner() {
 type TransferOwnershipResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Org *Org
-	// The previous owner's membership, with the role they now hold.
+	Org           *Org
 	PreviousOwner *v1.Member
 }
 

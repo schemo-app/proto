@@ -128,8 +128,6 @@ export const ThemeSchema = /*@__PURE__*/
   enumDesc(file_panel_v1_panel, 0);
 
 /**
- * Theme is the colour scheme the panel is drawn in.
- *
  * @generated from enum panel.v1.Theme
  */
 export const Theme = /*@__PURE__*/
@@ -142,17 +140,13 @@ export const NoticeStateSchema = /*@__PURE__*/
   enumDesc(file_panel_v1_panel, 1);
 
 /**
- * NoticeState is one of the states the status screen shows.
- *
  * @generated from enum panel.v1.NoticeState
  */
 export const NoticeState = /*@__PURE__*/
   tsEnum(NoticeStateSchema);
 
 /**
- * PanelService serves the browser panel: signing in with an emailed link, and confirming a desktop
- * app that asked to sign in. It is called from the panel's own browser session, not with a bearer
- * token.
+ * Uses the browser session for email sign-in and desktop authorization.
  *
  * @generated from service panel.v1.PanelService
  */

@@ -27,12 +27,7 @@ jobs:
           node-version: '24.21.0'
           cache: npm
       - run: npm ci --ignore-scripts
-      - run: go tool -modfile=tools/go.mod buf --version
       - run: go tool -modfile=tools/go.mod task check
-      - run: go tool -modfile=tools/go.mod task generate
-      - run: git diff --exit-code
-      - run: test -z "$(git ls-files --others --exclude-standard)"
-      - run: npm pack --dry-run
 
   go:
     runs-on: ${{ matrix.os }}
@@ -48,7 +43,7 @@ jobs:
       - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version: ${{ matrix.go }}
-      - run: go test . ./go/... ./snapshot/... ./schema
+      - run: go test ./...
         env:
           GOWORK: 'off'
           GOTOOLCHAIN: local

@@ -22,13 +22,11 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Visibility is who a page is for.
 type Visibility int32
 
 const (
 	Visibility_VISIBILITY_UNSPECIFIED Visibility = 0
-	// Listable and searchable: the page names its collection to anyone.
-	Visibility_VISIBILITY_PUBLIC Visibility = 1
+	Visibility_VISIBILITY_PUBLIC      Visibility = 1
 	// Reachable at its address and nowhere else. This is the default.
 	Visibility_VISIBILITY_UNLISTED Visibility = 2
 	// Answers only to a reader who sends the password. The password is sent with the publish, and the
@@ -74,14 +72,12 @@ func (x Visibility) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// PublicationStatus is whether a page answers at all.
 type PublicationStatus int32
 
 const (
 	PublicationStatus_PUBLICATION_STATUS_UNSPECIFIED PublicationStatus = 0
 	PublicationStatus_PUBLICATION_STATUS_ACTIVE      PublicationStatus = 1
-	// Taken down by its author. The row stays, and so does the address.
-	PublicationStatus_PUBLICATION_STATUS_REVOKED PublicationStatus = 2
+	PublicationStatus_PUBLICATION_STATUS_REVOKED     PublicationStatus = 2
 )
 
 // Enum value maps for PublicationStatus.
@@ -120,7 +116,6 @@ func (x PublicationStatus) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Publication is one page as its owner sees it.
 type Publication struct {
 	state                      protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Id              string                 `protobuf:"bytes,1,opt,name=id,proto3"`
@@ -358,30 +353,23 @@ type Publication_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	Id string
-	// The last segment of the page's address. Issued once and never again: not by the author, and not
-	// by a later publish of the same collection.
-	Slug string
-	// The address to hand out, absolute.
+	// URL slug reserved for this page, even after revocation.
+	Slug          string
 	PublicUrl     string
 	CollectionId  string
 	WorkspaceId   string
 	WorkspaceName string
-	// What the page is titled, as it was at the last publish.
-	Title      string
-	Visibility Visibility
-	Status     PublicationStatus
+	Title         string
+	Visibility    Visibility
+	Status        PublicationStatus
 	// Raised by every publish that carried a different document. A publish of the same bytes leaves
 	// it alone.
-	Revision int64
-	// The digest of the published document, as the device computed it. A device compares this with
-	// the digest of what it would publish now to say whether the page is behind.
-	ContentHash string
-	// The environment whose base address the page shows, by name.
+	Revision        int64
+	ContentHash     string
 	EnvironmentName string
 	PublishedAt     *timestamppb.Timestamp
 	UpdatedAt       *timestamppb.Timestamp
-	// Whether this caller may publish over it or take it down.
-	CanManage bool
+	CanManage       bool
 }
 
 func (b0 Publication_builder) Build() *Publication {
@@ -406,7 +394,6 @@ func (b0 Publication_builder) Build() *Publication {
 	return m0
 }
 
-// PublicationVersion is one revision a page has had.
 type PublicationVersion struct {
 	state                      protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Revision        int64                  `protobuf:"varint,1,opt,name=revision,proto3"`
@@ -512,12 +499,10 @@ func (x *PublicationVersion) ClearPublishedAt() {
 type PublicationVersion_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Revision    int64
-	PublishedAt *timestamppb.Timestamp
-	// The environment the version was published with, by name.
+	Revision        int64
+	PublishedAt     *timestamppb.Timestamp
 	EnvironmentName string
-	// How many requests the version documents.
-	RequestCount int64
+	RequestCount    int64
 	// The revision this one restored. Zero for a version that was published, not restored.
 	RestoredFrom int64
 }
@@ -659,17 +644,13 @@ type PublishRequest_builder struct {
 	WorkspaceId  string
 	// UNSPECIFIED publishes as UNLISTED.
 	Visibility Visibility
-	// The page's document, gzipped. The server stores these bytes and never rewrites them, so nothing
-	// about the page arrives beside them: the title, language and environment are read out of the
-	// document itself, and a page and its summary cannot come to disagree.
+	// Gzipped snapshot JSON containing the title, locale and environment.
 	Document []byte
-	// The digest of the uncompressed document, as the device computed it. The server recomputes it,
-	// and refuses bytes whose digest is not the one they arrived under.
+	// Digest of the uncompressed snapshot, verified by the server.
 	ContentHash string
-	// The author has been told the page will answer to anyone. Required for VISIBILITY_PUBLIC.
+	// Required for public visibility.
 	Confirmed bool
-	// The password a page published with VISIBILITY_PASSWORD answers to. Required there, and cleared
-	// by a publish of any other visibility: the server keeps a hash, and never the password.
+	// Required for password visibility. The server stores a hash.
 	Password string
 }
 
@@ -1072,10 +1053,8 @@ type ListPublicationsRequest_builder struct {
 
 	WorkspaceId string
 	// Only the pages in this status. UNSPECIFIED returns every one of them.
-	Status PublicationStatus
-	// Maximum items to return. 0 uses the server's default.
-	PageSize int32
-	// Opaque cursor from the previous response's `next_page_token`. Empty starts at the first page.
+	Status    PublicationStatus
+	PageSize  int32
 	PageToken string
 }
 
@@ -1150,8 +1129,7 @@ func (x *ListPublicationsResponse) SetNextPageToken(v string) {
 type ListPublicationsResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Publications []*Publication
-	// Opaque cursor for the next page. Empty when there are no more results.
+	Publications  []*Publication
 	NextPageToken string
 }
 
@@ -1293,11 +1271,8 @@ func (x *GetPublicationDetailsResponse) SetVersions(v []*PublicationVersion) {
 type GetPublicationDetailsResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// How many times the page has been viewed.
-	Views int64
-	// How many times a reader has imported the collection from the page.
-	Imports int64
-	// The page's versions, newest first.
+	Views    int64
+	Imports  int64
 	Versions []*PublicationVersion
 }
 
@@ -1370,8 +1345,7 @@ type RestorePublicationRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	PublicationId string
-	// The revision to make current again.
-	Revision int64
+	Revision      int64
 }
 
 func (b0 RestorePublicationRequest_builder) Build() *RestorePublicationRequest {

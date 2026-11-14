@@ -27,18 +27,11 @@ const (
 // SyncServiceClient is the client API for SyncService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-//
-// SyncService keeps a workspace's content the same on every device that works in it. Devices push
-// the mutations they made and pull the ones others made; the server numbers every accepted
-// mutation, per workspace, in one sequence.
 type SyncServiceClient interface {
-	// Push submits a batch of entity mutations to one workspace. Each entity is judged on its own and
-	// answered in its own result, so one refusal does not cost the rest of the batch.
+	// Each mutation has its own result.
 	Push(ctx context.Context, in *PushRequest, opts ...grpc.CallOption) (*PushResponse, error)
-	// Pull returns the entity changes above a sequence number.
 	Pull(ctx context.Context, in *PullRequest, opts ...grpc.CallOption) (*PullResponse, error)
-	// Connect opens a long-lived stream that tells the device when a workspace it follows has moved,
-	// so that it pulls at once instead of waiting for its timer.
+	// Streams workspace changes as notifications. Fetch the data with Pull.
 	Connect(ctx context.Context, in *ConnectRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[ConnectResponse], error)
 }
 
@@ -92,18 +85,11 @@ type SyncService_ConnectClient = grpc.ServerStreamingClient[ConnectResponse]
 // SyncServiceServer is the server API for SyncService service.
 // All implementations must embed UnimplementedSyncServiceServer
 // for forward compatibility.
-//
-// SyncService keeps a workspace's content the same on every device that works in it. Devices push
-// the mutations they made and pull the ones others made; the server numbers every accepted
-// mutation, per workspace, in one sequence.
 type SyncServiceServer interface {
-	// Push submits a batch of entity mutations to one workspace. Each entity is judged on its own and
-	// answered in its own result, so one refusal does not cost the rest of the batch.
+	// Each mutation has its own result.
 	Push(context.Context, *PushRequest) (*PushResponse, error)
-	// Pull returns the entity changes above a sequence number.
 	Pull(context.Context, *PullRequest) (*PullResponse, error)
-	// Connect opens a long-lived stream that tells the device when a workspace it follows has moved,
-	// so that it pulls at once instead of waiting for its timer.
+	// Streams workspace changes as notifications. Fetch the data with Pull.
 	Connect(*ConnectRequest, grpc.ServerStreamingServer[ConnectResponse]) error
 	mustEmbedUnimplementedSyncServiceServer()
 }

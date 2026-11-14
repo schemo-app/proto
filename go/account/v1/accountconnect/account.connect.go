@@ -58,22 +58,14 @@ const (
 
 // AccountServiceClient is a client for the account.v1.AccountService service.
 type AccountServiceClient interface {
-	// Me returns identity and state for the current account and caller session.
 	Me(context.Context, *v1.MeRequest) (*v1.MeResponse, error)
-	// ListSessions returns all active sessions for this account.
 	ListSessions(context.Context, *v1.ListSessionsRequest) (*v1.ListSessionsResponse, error)
-	// EndSession terminates a specific session by ID.
 	EndSession(context.Context, *v1.EndSessionRequest) (*v1.EndSessionResponse, error)
-	// EndOtherSessions terminates all active sessions for this account except the calling one.
 	EndOtherSessions(context.Context, *v1.EndOtherSessionsRequest) (*v1.EndOtherSessionsResponse, error)
-	// SignOut terminates the current calling session.
 	SignOut(context.Context, *v1.SignOutRequest) (*v1.SignOutResponse, error)
-	// DeleteAccount permanently purges the account and terminates all associated sessions.
 	DeleteAccount(context.Context, *v1.DeleteAccountRequest) (*v1.DeleteAccountResponse, error)
 	// Rename changes the name the account is shown under. An empty name clears it.
 	Rename(context.Context, *v1.RenameRequest) (*v1.RenameResponse, error)
-	// SetLanguage sets the language the person reads. Letters about them that are not about a page
-	// they are on (a new device, a payment) are written in it.
 	SetLanguage(context.Context, *v1.SetLanguageRequest) (*v1.SetLanguageResponse, error)
 }
 
@@ -225,22 +217,14 @@ func (c *accountServiceClient) SetLanguage(ctx context.Context, req *v1.SetLangu
 
 // AccountServiceHandler is an implementation of the account.v1.AccountService service.
 type AccountServiceHandler interface {
-	// Me returns identity and state for the current account and caller session.
 	Me(context.Context, *v1.MeRequest) (*v1.MeResponse, error)
-	// ListSessions returns all active sessions for this account.
 	ListSessions(context.Context, *v1.ListSessionsRequest) (*v1.ListSessionsResponse, error)
-	// EndSession terminates a specific session by ID.
 	EndSession(context.Context, *v1.EndSessionRequest) (*v1.EndSessionResponse, error)
-	// EndOtherSessions terminates all active sessions for this account except the calling one.
 	EndOtherSessions(context.Context, *v1.EndOtherSessionsRequest) (*v1.EndOtherSessionsResponse, error)
-	// SignOut terminates the current calling session.
 	SignOut(context.Context, *v1.SignOutRequest) (*v1.SignOutResponse, error)
-	// DeleteAccount permanently purges the account and terminates all associated sessions.
 	DeleteAccount(context.Context, *v1.DeleteAccountRequest) (*v1.DeleteAccountResponse, error)
 	// Rename changes the name the account is shown under. An empty name clears it.
 	Rename(context.Context, *v1.RenameRequest) (*v1.RenameResponse, error)
-	// SetLanguage sets the language the person reads. Letters about them that are not about a page
-	// they are on (a new device, a payment) are written in it.
 	SetLanguage(context.Context, *v1.SetLanguageRequest) (*v1.SetLanguageResponse, error)
 }
 

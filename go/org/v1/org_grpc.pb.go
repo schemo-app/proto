@@ -29,22 +29,15 @@ const (
 // OrgServiceClient is the client API for OrgService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-//
-// OrgService manages an org's identity and configuration. The people in it are managed by
-// `OrgMembershipService`.
 type OrgServiceClient interface {
 	// Create creates an org and makes the caller its owner. Any signed-in caller may create one,
 	// subject to server-level limits.
 	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
-	// Update changes an org's name, description, slug, or settings.
 	Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateResponse, error)
 	// Delete removes an org and everything it holds: workspaces, content, history, memberships. Every
 	// device with one of its workspaces stops syncing it. The caller must name the org to confirm.
 	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
-	// Get reads one org.
 	Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
-	// ListMine returns every org the caller belongs to, with the role held in each. Clients call it
-	// right after sign-in to learn which workspaces to expect.
 	ListMine(ctx context.Context, in *ListMineRequest, opts ...grpc.CallOption) (*ListMineResponse, error)
 }
 
@@ -109,22 +102,15 @@ func (c *orgServiceClient) ListMine(ctx context.Context, in *ListMineRequest, op
 // OrgServiceServer is the server API for OrgService service.
 // All implementations must embed UnimplementedOrgServiceServer
 // for forward compatibility.
-//
-// OrgService manages an org's identity and configuration. The people in it are managed by
-// `OrgMembershipService`.
 type OrgServiceServer interface {
 	// Create creates an org and makes the caller its owner. Any signed-in caller may create one,
 	// subject to server-level limits.
 	Create(context.Context, *CreateRequest) (*CreateResponse, error)
-	// Update changes an org's name, description, slug, or settings.
 	Update(context.Context, *UpdateRequest) (*UpdateResponse, error)
 	// Delete removes an org and everything it holds: workspaces, content, history, memberships. Every
 	// device with one of its workspaces stops syncing it. The caller must name the org to confirm.
 	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
-	// Get reads one org.
 	Get(context.Context, *GetRequest) (*GetResponse, error)
-	// ListMine returns every org the caller belongs to, with the role held in each. Clients call it
-	// right after sign-in to learn which workspaces to expect.
 	ListMine(context.Context, *ListMineRequest) (*ListMineResponse, error)
 	mustEmbedUnimplementedOrgServiceServer()
 }

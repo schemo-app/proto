@@ -47,9 +47,7 @@ const (
 
 // RoleServiceClient is a client for the role.v1.RoleService service.
 type RoleServiceClient interface {
-	// GetRole reads one role by id.
 	GetRole(context.Context, *v1.GetRoleRequest) (*v1.GetRoleResponse, error)
-	// ListRoles returns the roles of an org, optionally of one scope.
 	ListRoles(context.Context, *v1.ListRolesRequest) (*v1.ListRolesResponse, error)
 	// CreateRole adds a custom role to an org. A caller may only grant permissions they hold
 	// themselves.
@@ -161,9 +159,7 @@ func (c *roleServiceClient) DeleteRole(ctx context.Context, req *v1.DeleteRoleRe
 
 // RoleServiceHandler is an implementation of the role.v1.RoleService service.
 type RoleServiceHandler interface {
-	// GetRole reads one role by id.
 	GetRole(context.Context, *v1.GetRoleRequest) (*v1.GetRoleResponse, error)
-	// ListRoles returns the roles of an org, optionally of one scope.
 	ListRoles(context.Context, *v1.ListRolesRequest) (*v1.ListRolesResponse, error)
 	// CreateRole adds a custom role to an org. A caller may only grant permissions they hold
 	// themselves.

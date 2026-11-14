@@ -22,15 +22,12 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// RecordSource is where a record came from.
 type RecordSource int32
 
 const (
 	RecordSource_RECORD_SOURCE_UNSPECIFIED RecordSource = 0
-	// Sent from the app.
-	RecordSource_RECORD_SOURCE_MANUAL RecordSource = 1
-	// Captured from a browser by the extension.
-	RecordSource_RECORD_SOURCE_BROWSER RecordSource = 2
+	RecordSource_RECORD_SOURCE_MANUAL      RecordSource = 1
+	RecordSource_RECORD_SOURCE_BROWSER     RecordSource = 2
 )
 
 // Enum value maps for RecordSource.
@@ -69,7 +66,6 @@ func (x RecordSource) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// BodySide says which half of the exchange a body belongs to.
 type BodySide int32
 
 const (
@@ -114,16 +110,13 @@ func (x BodySide) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// AppendRefusal is why one record or run of a batch was not taken.
 type AppendRefusal int32
 
 const (
 	// Not refused: the record or run was stored.
 	AppendRefusal_APPEND_REFUSAL_UNSPECIFIED AppendRefusal = 0
-	// Larger than the server's limits (see `platform.v1.Limits`). It will not fit next time either.
-	AppendRefusal_APPEND_REFUSAL_TOO_LARGE AppendRefusal = 1
-	// The caller may not write to the workspace.
-	AppendRefusal_APPEND_REFUSAL_FORBIDDEN AppendRefusal = 2
+	AppendRefusal_APPEND_REFUSAL_TOO_LARGE   AppendRefusal = 1
+	AppendRefusal_APPEND_REFUSAL_FORBIDDEN   AppendRefusal = 2
 	// Nothing to store, or a document that is not a JSON object.
 	AppendRefusal_APPEND_REFUSAL_EMPTY AppendRefusal = 3
 )
@@ -166,7 +159,6 @@ func (x AppendRefusal) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Record is one request that was sent, with how it went.
 type Record struct {
 	state                protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Id        string                 `protobuf:"bytes,1,opt,name=id,proto3"`
@@ -318,13 +310,10 @@ type Record_builder struct {
 	// The run this record was sent by. Empty for a request sent on its own.
 	RunId     string
 	StartedAt *timestamppb.Timestamp
-	// Everything else about the exchange — method, URL, headers, the answer, timings, cookie writes,
-	// the browser tab — as a JSON object.
-	Data []byte
-	// Paths in `data` that hold a secret.
+	// Exchange data as a JSON object.
+	Data    []byte
 	Secrets []string
-	// Secret paths whose value is not in `data`. Sent again, a withheld path keeps the value the
-	// server holds.
+	// Withheld values are omitted from data and preserved on push.
 	Withheld []string
 }
 
@@ -343,7 +332,6 @@ func (b0 Record_builder) Build() *Record {
 	return m0
 }
 
-// RecordBody is one body of a record.
 type RecordBody struct {
 	state                protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Side      BodySide               `protobuf:"varint,1,opt,name=side,proto3,enum=history.v1.BodySide"`
@@ -447,8 +435,6 @@ func (b0 RecordBody_builder) Build() *RecordBody {
 	return m0
 }
 
-// Run is a collection run. It is a document of its own, kept once by its id however many records the
-// run produced, and it follows the same log the records do.
 type Run struct {
 	state                   protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Id           string                 `protobuf:"bytes,1,opt,name=id,proto3"`
@@ -563,7 +549,6 @@ func (b0 Run_builder) Build() *Run {
 	return m0
 }
 
-// RecordEntry is a record with its bodies and the reports of the scripts around it.
 type RecordEntry struct {
 	state              protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Record  *Record                `protobuf:"bytes,1,opt,name=record,proto3"`
@@ -666,7 +651,6 @@ func (b0 RecordEntry_builder) Build() *RecordEntry {
 	return m0
 }
 
-// AppendResult is how one record or run of a batch went.
 type AppendResult struct {
 	state              protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Id      string                 `protobuf:"bytes,1,opt,name=id,proto3"`
@@ -725,7 +709,6 @@ func (x *AppendResult) SetRefusal(v AppendRefusal) {
 type AppendResult_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The id of the record or the run.
 	Id string
 	// UNSPECIFIED when it was stored.
 	Refusal AppendRefusal
@@ -740,8 +723,6 @@ func (b0 AppendResult_builder) Build() *AppendResult {
 	return m0
 }
 
-// RecordChange is one entry of the log: a record written or completed, a record deleted, or a run
-// written.
 type RecordChange struct {
 	state             protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Seq    int64                  `protobuf:"varint,1,opt,name=seq,proto3"`
@@ -910,11 +891,9 @@ func (x *RecordChange) WhichChange() case_RecordChange_Change {
 type RecordChange_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The entry's place in the log.
 	Seq int64
 	// Fields of oneof xxx_hidden_Change:
-	Record *Record
-	// The id of a record that was deleted. Nothing else is left of it.
+	Record          *Record
 	DeletedRecordId *string
 	Run             *Run
 	// -- end of xxx_hidden_Change
@@ -956,7 +935,6 @@ type recordChange_Record struct {
 }
 
 type recordChange_DeletedRecordId struct {
-	// The id of a record that was deleted. Nothing else is left of it.
 	DeletedRecordId string `protobuf:"bytes,3,opt,name=deleted_record_id,json=deletedRecordId,proto3,oneof"`
 }
 
@@ -1562,11 +1540,9 @@ type ListRequest_builder struct {
 	// Only the records from this source. UNSPECIFIED returns every source.
 	Source RecordSource
 	// Only the records started within this range. An unset bound is open.
-	From *timestamppb.Timestamp
-	To   *timestamppb.Timestamp
-	// Maximum items to return. 0 uses the server's default.
-	PageSize int32
-	// Opaque cursor from the previous response's `next_page_token`. Empty starts at the first page.
+	From      *timestamppb.Timestamp
+	To        *timestamppb.Timestamp
+	PageSize  int32
 	PageToken string
 }
 
@@ -1656,11 +1632,9 @@ func (x *ListResponse) SetHeadSeq(v int64) {
 type ListResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Records []*Record
-	// Opaque cursor for the next page. Empty when there are no more results.
+	Records       []*Record
 	NextPageToken string
-	// The workspace's log sequence number at the time of the read.
-	HeadSeq int64
+	HeadSeq       int64
 }
 
 func (b0 ListResponse_builder) Build() *ListResponse {
@@ -1744,9 +1718,8 @@ type PullRecordsRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	WorkspaceId string
-	// Read the changes above this sequence number.
-	AfterSeq int64
-	// Maximum changes to return. A log read is not a page: it continues from `next_seq`.
+	AfterSeq    int64
+	// Maximum changes to return.
 	Limit int32
 }
 
@@ -1859,13 +1832,10 @@ type PullRecordsResponse_builder struct {
 	Changes []*RecordChange
 	// Pass this as `after_seq` to continue.
 	NextSeq int64
-	// Whether more changes are waiting above `next_seq`.
 	HasMore bool
-	// The lowest sequence number the log still holds: retention removed everything below it, and a
-	// read from a lower number starts here.
+	// Reads below this sequence resume at the retention floor.
 	FloorSeq int64
-	// The highest sequence number in the log.
-	HeadSeq int64
+	HeadSeq  int64
 }
 
 func (b0 PullRecordsResponse_builder) Build() *PullRecordsResponse {

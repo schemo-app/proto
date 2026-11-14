@@ -13,8 +13,6 @@ import type { Feature } from "../../common/v1/feature_pb.js";
 export declare const file_plan_v1_plan: GenFile;
 
 /**
- * QuotaLimit is the cap a plan puts on one kind of quota.
- *
  * @generated from message plan.v1.QuotaLimit
  */
 export declare type QuotaLimit = Message<"plan.v1.QuotaLimit"> & {
@@ -38,8 +36,6 @@ export declare type QuotaLimit = Message<"plan.v1.QuotaLimit"> & {
 export declare const QuotaLimitSchema: GenMessage<QuotaLimit>;
 
 /**
- * Plan is what an org is entitled to.
- *
  * @generated from message plan.v1.Plan
  */
 export declare type Plan = Message<"plan.v1.Plan"> & {
@@ -59,8 +55,6 @@ export declare type Plan = Message<"plan.v1.Plan"> & {
   expiresAt?: Timestamp | undefined;
 
   /**
-   * The features the plan includes.
-   *
    * @generated from field: repeated common.v1.Feature features = 3;
    */
   features: Feature[];
@@ -80,8 +74,6 @@ export declare type Plan = Message<"plan.v1.Plan"> & {
 export declare const PlanSchema: GenMessage<Plan>;
 
 /**
- * Usage is what the org has consumed, to compare with the plan's quotas.
- *
  * @generated from message plan.v1.Usage
  */
 export declare type Usage = Message<"plan.v1.Usage"> & {
@@ -162,8 +154,6 @@ export declare type GetPlanResponse = Message<"plan.v1.GetPlanResponse"> & {
 export declare const GetPlanResponseSchema: GenMessage<GetPlanResponse>;
 
 /**
- * QuotaKind names something a plan limits.
- *
  * @generated from enum plan.v1.QuotaKind
  */
 export enum QuotaKind {
@@ -173,15 +163,11 @@ export enum QuotaKind {
   UNSPECIFIED = 0,
 
   /**
-   * People in the org.
-   *
    * @generated from enum value: QUOTA_KIND_ORG_MEMBERS = 1;
    */
   ORG_MEMBERS = 1,
 
   /**
-   * Collections in one workspace.
-   *
    * @generated from enum value: QUOTA_KIND_WORKSPACE_COLLECTIONS = 2;
    */
   WORKSPACE_COLLECTIONS = 2,
@@ -194,8 +180,6 @@ export enum QuotaKind {
   ORG_STORAGE_MB = 3,
 
   /**
-   * How long history is kept, in days.
-   *
    * @generated from enum value: QUOTA_KIND_HISTORY_RETENTION_DAYS = 4;
    */
   HISTORY_RETENTION_DAYS = 4,
@@ -207,8 +191,6 @@ export enum QuotaKind {
 export declare const QuotaKindSchema: GenEnum<QuotaKind>;
 
 /**
- * PlanService provides read-only access to what an org is entitled to and how much of it is used.
- *
  * @generated from service plan.v1.PlanService
  */
 export declare const PlanService: GenService<{

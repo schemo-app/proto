@@ -29,20 +29,12 @@ const (
 // InviteServiceClient is the client API for InviteService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-//
-// InviteService creates, lists, revokes, and accepts invitation links.
 type InviteServiceClient interface {
-	// CreateInvite creates an invitation. The returned token is shown once and never again: only its
-	// hash is stored.
 	CreateInvite(ctx context.Context, in *CreateInviteRequest, opts ...grpc.CallOption) (*CreateInviteResponse, error)
-	// RevokeInvite invalidates a link that has not been used up.
 	RevokeInvite(ctx context.Context, in *RevokeInviteRequest, opts ...grpc.CallOption) (*RevokeInviteResponse, error)
-	// ListInvites returns the links an org has created, with their current status.
 	ListInvites(ctx context.Context, in *ListInvitesRequest, opts ...grpc.CallOption) (*ListInvitesResponse, error)
-	// PreviewInvite reports whether a link is still usable and whose it is, without requiring a
-	// session. A dead link is reported as a status in the body, not as a transport error.
+	// An anonymous preview omits the invitee address.
 	PreviewInvite(ctx context.Context, in *PreviewInviteRequest, opts ...grpc.CallOption) (*PreviewInviteResponse, error)
-	// AcceptInvite redeems a link for the signed-in caller. Holding the token is the permission.
 	AcceptInvite(ctx context.Context, in *AcceptInviteRequest, opts ...grpc.CallOption) (*AcceptInviteResponse, error)
 }
 
@@ -107,20 +99,12 @@ func (c *inviteServiceClient) AcceptInvite(ctx context.Context, in *AcceptInvite
 // InviteServiceServer is the server API for InviteService service.
 // All implementations must embed UnimplementedInviteServiceServer
 // for forward compatibility.
-//
-// InviteService creates, lists, revokes, and accepts invitation links.
 type InviteServiceServer interface {
-	// CreateInvite creates an invitation. The returned token is shown once and never again: only its
-	// hash is stored.
 	CreateInvite(context.Context, *CreateInviteRequest) (*CreateInviteResponse, error)
-	// RevokeInvite invalidates a link that has not been used up.
 	RevokeInvite(context.Context, *RevokeInviteRequest) (*RevokeInviteResponse, error)
-	// ListInvites returns the links an org has created, with their current status.
 	ListInvites(context.Context, *ListInvitesRequest) (*ListInvitesResponse, error)
-	// PreviewInvite reports whether a link is still usable and whose it is, without requiring a
-	// session. A dead link is reported as a status in the body, not as a transport error.
+	// An anonymous preview omits the invitee address.
 	PreviewInvite(context.Context, *PreviewInviteRequest) (*PreviewInviteResponse, error)
-	// AcceptInvite redeems a link for the signed-in caller. Holding the token is the permission.
 	AcceptInvite(context.Context, *AcceptInviteRequest) (*AcceptInviteResponse, error)
 	mustEmbedUnimplementedInviteServiceServer()
 }
